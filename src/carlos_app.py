@@ -50,14 +50,19 @@ def init_simulation(vehicle: Vehicle, env: Environment, agent: None, dt: float):
     sim = Simulation(vehicle=vehicle, environment=env, agent=agent, dt=dt)
     return sim
 
-
 #### Sim Execution ####
 def execute_simulation(sim: Simulation):
     sim.sim_step()
     sim_status = sim.get_sim_status()
     return sim_status
 
-
+def main():
+    vehicle = init_vehicle(Point(0, 0), Point(0, 1), 10.0)
+    lane = init_lane("./layouts/train_straight_layout_0.txt")
+    env = init_environment(lane)
+    sensor_array = init_sensor_array()
+    agent = init_agent(sensor_array)
+    sim = init_simulation(vehicle, env, agent, dt=0.1)
 
 
 

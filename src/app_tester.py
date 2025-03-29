@@ -3,7 +3,7 @@ from point import Point
 from vehicle import Vehicle
 from environment import Environment
 import carlos_app as app
-
+import graphics
 
 def test_init_lane():
     lane = app.init_lane("./layouts/train_straight_layout_0.txt")
@@ -16,6 +16,7 @@ def test_init_lane():
     assert lane.closed_loop == False, "Lane closed loop parameter does not match expected value."
     assert lane.lane_width == 12.0, "Lane width does not match expected value."
     print("Lane initialization test passed.")
+    return lane  # Return the lane object for further testing
     
 def test_init_environment():
     lane = app.init_lane("./layouts/train_straight_layout_0.txt")
@@ -23,6 +24,7 @@ def test_init_environment():
     assert env is not None, "Environment initialization failed."
     assert isinstance(env.lane, Lane), "Environment lane is not a Lane object."
     print("Environment initialization test passed.")
+    return env  # Return the environment object for further testing
     
 def test_init_vehicle():
     center_point = Point(0, 0)
@@ -45,6 +47,14 @@ def test_init_vehicle():
     assert vehicle.velocity.x == 0.0, "Vehicle velocity does not match expected value."
     assert vehicle.velocity.y == 10.0, "Vehicle velocity does not match expected value."
     print("Vehicle initialization test passed.")
+    return vehicle  # Return the vehicle object for further testing
+
+def test_graphics():
+    env = test_init_environment()
+    vehicle = test_init_vehicle()
+    graphics.plot_environment(env)  # Plot the environment
+    graphics.plot_vehicle(vehicle)  # Plot the vehicle
+    graphics.show()  # Show the plot
     
 #### Main Test Function ####
 def main_test():
@@ -52,5 +62,6 @@ def main_test():
     test_init_environment()
     test_init_vehicle()
     
-main_test()
+# main_test()
+test_graphics()
     
