@@ -51,5 +51,6 @@ class Vehicle:
             dt (float): Time step in seconds.
         """
         # Placeholder for actual implementation
+        self.build_body()
         pass
         
