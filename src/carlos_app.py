@@ -13,9 +13,19 @@ class Agent:
     def __init__(self, sensor_array: SensorArray):
         self.sensors = sensor_array
 
-    def make_decision(self):
-        # Placeholder for making decisions based on sensor data
-        pass
+    def decide(self, sensor_data, heading, speed):
+        steering = 0.0
+        acceleration = 0.0
+        return steering, acceleration
+    
+    def sense(self, env: Environment, vehicle: Vehicle):
+        """Senses the environment using the sensors in the array. The sensors are updated based on the vehicle's position and heading.
+        Args:
+            env (Environment): Environment object representing the environment.
+            vehicle (Vehicle): Vehicle object representing the vehicle.
+        """
+        sensor_data = self.sensor_array.sense(env, vehicle)
+        return sensor_data
 
 
 #### Lane Initialization ####
