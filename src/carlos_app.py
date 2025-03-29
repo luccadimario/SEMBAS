@@ -7,32 +7,40 @@ from sensor_array import SensorArray
 import math
 import layout_utils
 
-# Lane Initialization:
+#### Lane Initialization ####
 lane_ctrl_points, lane_width, closed_loop = layout_utils.load_lane_from_file()
 lane = Lane(control_points=lane_ctrl_points, lane_width=lane_width, closed_loop=closed_loop)
 
-# Environment Initialization:
+
+#### Environment Initialization ####
 env = Environment(lane)
 
-# Vehicle Initialization:
-vehicle = Vehicle()
-vehicle.setup(Point(0, 0), Point(1, 0), 0, 0)  # Placeholder for actual implementation
 
-# Sensor Array Initialization:
+#### Vehicle Initialization ####
+vehicle = Vehicle()
+center_point = Point(0, 0)  # Placeholder for actual implementation
+heading_point = Point(1, 0)  # Placeholder for actual implementation
+speed = 10  # Speed in mph
+vehicle.vehicle_setup(center_point=center_point, heading_point=heading_point, speed=speed)
+
+
+#### Sensor Array Initialization ####
 num_sensors = 5
 sensor_length = 10
 sensor_angle_spread = math.pi / 4
 sensor_array = SensorArray(num_sensors=num_sensors, sensor_length=sensor_length, sensor_angle_spread=sensor_angle_spread)
 
-# Agent Initialization:
+
+#### Agent Initialization ####
 agent = None  # Placeholder for actual agent implementation
 
-# Simulation Initialization:
+
+#### Simulation Initialization ####
 dt = 0.1  # Time step in seconds
 sim = Simulation(vehicle=vehicle, environment=env, agent=agent, dt=dt)
 
 
-# Sim Execution:
+#### Sim Execution ####
 sim.sim_step()
 sim_status = sim.get_sim_status()
 print(sim_status)  # Placeholder for actual implementation
