@@ -4,7 +4,7 @@ class Vehicle:
     def __init__(self):
         pass
     
-    def vehicle_setup(self, center_point: Point, heading_point: Point, speed: float):
+    def vehicle_setup(self, center_point: Point, heading_point: Point, speed: float, length: float = 12, width: float = 6):     # Tested as of 3/29/2025
         """Sets up the vehicle based on the given center point, heading point and speed.
         
         Args:
@@ -15,8 +15,10 @@ class Vehicle:
         self.center_point = center_point
         self.heading_point = heading_point
         self.speed = speed
+        self.build_body(length, width)
+        self.calculate_velocity()
         
-    def calculate_velocity(self):
+    def calculate_velocity(self):   # Tested as of 3/29/2025
         """Calculates the velocity of the vehicle based on the center point, heading point, and speed.
         
         Returns:
@@ -26,8 +28,13 @@ class Vehicle:
         direction = direction / direction.norm()
         self.velocity = direction * self.speed
         
-    def build_body(self, width: float = 6, length: float = 12):
+    def build_body(self, length: float = 12, width: float = 6):  # Tested as of 3/29/2025
         """Builds the body of the vehicle based on the given width and length and the center point.
+        Body is represented as a list of points in this order:
+        - Front left: (-width/2, length/2)
+        - Front right: (width/2, length/2)
+        - Back right: (width/2, -length/2)
+        - Back left: (-width/2, -length/2)
         
         Args:
             width (float): Width of the vehicle in feet.
@@ -36,10 +43,10 @@ class Vehicle:
         self.width = width
         self.length = length
         self.body = [
-            Point(self.center_point.x - width / 2, self.center_point.y - length / 2),
-            Point(self.center_point.x + width / 2, self.center_point.y - length / 2),
-            Point(self.center_point.x + width / 2, self.center_point.y + length / 2),
-            Point(self.center_point.x - width / 2, self.center_point.y + length / 2)
+            Point(self.center_point.x - width / 2, self.center_point.y + length / 2),  # Front left
+            Point(self.center_point.x + width / 2, self.center_point.y + length / 2),  # Front right
+            Point(self.center_point.x + width / 2, self.center_point.y - length / 2),  # Back right
+            Point(self.center_point.x - width / 2, self.center_point.y - length / 2),  # Back left
         ]
         
     def update_position(self, steering: float, acceleration: float, dt: float):

@@ -12,6 +12,7 @@ class Lane:
         """
         self.lane_width = lane_width
         self.closed_loop = closed_loop
+        self.control_points = control_points
         self.lane_setup(control_points, lane_width, closed_loop)
         
     def lane_setup(self, control_points: list[Point], lane_width: float=None, closed_loop: bool=None):

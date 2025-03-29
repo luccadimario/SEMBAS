@@ -30,9 +30,6 @@ class Point:
     def __truediv__(self, other: float) -> "Point":
         return self.__mul__(1.0 / other)
 
-    def norm(self, p: int = 2) -> float:
-        return (self.x**p + self.y**p) ** (1.0 / p)
-
     def values(self):
         return [self.x, self.y]
 

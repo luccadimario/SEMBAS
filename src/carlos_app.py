@@ -8,40 +8,59 @@ import math
 import layout_utils
 
 #### Lane Initialization ####
-lane_ctrl_points, lane_width, closed_loop = layout_utils.load_lane_from_file()
-lane = Lane(control_points=lane_ctrl_points, lane_width=lane_width, closed_loop=closed_loop)
-
+def init_lane(file_path: str = None): # Tested as of 3/29/2025
+    """Initializes a lane object based on the given file path. If no file path is provided, a file dialog will be opened to select the file.
+    The file should contain the control points, lane width and closed loop parameter."""
+    lane_ctrl_points, lane_width, closed_loop = layout_utils.load_lane_from_file(file_path)
+    lane = Lane(control_points=lane_ctrl_points, lane_width=lane_width, closed_loop=closed_loop)
+    return lane
 
 #### Environment Initialization ####
-env = Environment(lane)
+def init_environment(lane): # Tested as of 3/29/2025
+    """Initializes an environment object based on the given lane object."""
+    env = Environment(lane)
+    return env
 
 
 #### Vehicle Initialization ####
-vehicle = Vehicle()
-center_point = Point(0, 0)  # Placeholder for actual implementation
-heading_point = Point(1, 0)  # Placeholder for actual implementation
-speed = 10  # Speed in mph
-vehicle.vehicle_setup(center_point=center_point, heading_point=heading_point, speed=speed)
+def init_vehicle(center_point, heading_point, speed): # Tested as of 3/29/2025
+    """Initializes a vehicle object based on the given center point, heading point and speed."""
+    vehicle = Vehicle()
+    vehicle.vehicle_setup(center_point=center_point, heading_point=heading_point, speed=speed)
+    return vehicle
 
 
 #### Sensor Array Initialization ####
-num_sensors = 5
-sensor_length = 10
-sensor_angle_spread = math.pi / 4
-sensor_array = SensorArray(num_sensors=num_sensors, sensor_length=sensor_length, sensor_angle_spread=sensor_angle_spread)
+def init_sensor_array(): 
+    num_sensors = 5
+    sensor_length = 10
+    sensor_angle_spread = math.pi / 4
+    sensor_array = SensorArray(num_sensors=num_sensors, sensor_length=sensor_length, sensor_angle_spread=sensor_angle_spread)
+    return sensor_array
 
 
 #### Agent Initialization ####
-agent = None  # Placeholder for actual agent implementation
+def init_agent(sensor_array: SensorArray):
+    agent = None  # Placeholder for actual agent implementation
+    return agent
 
 
 #### Simulation Initialization ####
-dt = 0.1  # Time step in seconds
-sim = Simulation(vehicle=vehicle, environment=env, agent=agent, dt=dt)
+def init_simulation(vehicle: Vehicle, env: Environment, agent: None, dt: float):
+    sim = Simulation(vehicle=vehicle, environment=env, agent=agent, dt=dt)
+    return sim
 
 
 #### Sim Execution ####
-sim.sim_step()
-sim_status = sim.get_sim_status()
-print(sim_status)  # Placeholder for actual implementation
-sim.sim_reset(longitude=0.5, latitude=0.5, dir_angle_offset=0, speed=10)  # Placeholder for actual implementation
+def execute_simulation(sim: Simulation):
+    sim.sim_step()
+    sim_status = sim.get_sim_status()
+    return sim_status
+
+
+
+
+
+    
+    
+    
