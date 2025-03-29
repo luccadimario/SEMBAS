@@ -36,16 +36,24 @@ def plot_vehicle(vehicle: Vehicle): # Tested as of 3/29/2025
     vehicle_body = vehicle.body
     vehicle_x = [p.x for p in vehicle_body]
     vehicle_y = [p.y for p in vehicle_body]
-    ax.fill(vehicle_x, vehicle_y, 'g', label='Vehicle Body')
+    ax.fill(vehicle_x, vehicle_y, 'b', label='Vehicle Body')
     
     # Plot vehicle center point
-    ax.plot(vehicle.center_point.x, vehicle.center_point.y, 'bo', label='Vehicle Center')
+    ax.plot(vehicle.center_point.x, vehicle.center_point.y, 'ro', label='Vehicle Center')
     
     # Plot vehicle heading with arrow
     ax.quiver(vehicle.center_point.x, vehicle.center_point.y,
               vehicle.heading_point.x - vehicle.center_point.x,
               vehicle.heading_point.y - vehicle.center_point.y,
-              angles='xy', scale_units='xy', scale=1, color='r', label='Heading')
+              angles='xy', scale_units='xy', scale=0.1, color='r', label='Heading')
+    
+def plot_sensors(sensor_array): # Tested as of 3/29/2025
+    """Plots the sensors in the sensor array."""
+    ax = plt.gca()
+    label = 'Sensor'
+    for sensor in sensor_array.sensors:
+        ax.plot([sensor.origin_point.x, sensor.end_point.x], [sensor.origin_point.y, sensor.end_point.y], 'r--', label=label)
+        label = None
     
 def show(): # Tested as of 3/29/2025
     """Displays the plot."""

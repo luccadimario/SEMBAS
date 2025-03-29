@@ -6,7 +6,7 @@ import math
 import numpy as np
 
 class SensorArray:
-    def __init__(self, num_sensors: int, sensor_length: float, sensor_angle_spread: float):
+    def __init__(self, num_sensors: int, sensor_length: float, sensor_angle_spread: float): # Tested as of 3/29/2025
         """Represents an array of sensors in the environment. The sensor array is represented by a list of sensor objects.
 
         Args:
@@ -18,7 +18,7 @@ class SensorArray:
         self.sensor_angle_spread = sensor_angle_spread
         self.setup_sensors(sensor_length)
         
-    def setup_sensors(self, sensor_length: float):
+    def setup_sensors(self, sensor_length: float): # Tested as of 3/29/2025
         """Sets up the sensors in the array based on the number of sensors, sensor length and angle spread.
         Args:
             sensor_length (float): Length of each sensor in feet.
@@ -27,14 +27,15 @@ class SensorArray:
         angles = np.linspace(-angle_max, angle_max, self.num_sensors)
         self.sensors = [Sensor(sensor_length=sensor_length, angle_offset=angle) for angle in angles]
         
-    def update_sensors(self, origin_point: Point, direction_vector: Point):
+    def update_sensors(self, origin_point: Point, direction_vector: Point): # Tested as of 3/29/2025
         """Updates the sensors in the array based on the given origin point and direction vector.
 
         Args:
             origin_point (Point): Point object representing the origin of the sensor array.
             direction_vector (Point): Point object representing the direction vector of the sensor array.
         """
-        pass
+        for sensor in self.sensors:
+            sensor.update_sensor(origin_point, direction_vector)
     
     def sense(self, env: Environment, vehicle: Vehicle):
         """Senses the environment using the sensors in the array. The sensors are updated based on the vehicle's position and heading.

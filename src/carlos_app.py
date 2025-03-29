@@ -43,7 +43,7 @@ def init_vehicle(center_point, heading_point, speed): # Tested as of 3/29/2025
 
 
 #### Sensor Array Initialization ####
-def init_sensor_array(num_sensors: int = 5, sensor_length: float = 10, sensor_angle_spread: float = math.pi / 2): 
+def init_sensor_array(num_sensors: int = 5, sensor_length: float = 10, sensor_angle_spread: float = math.pi / 2): # Tested as of 3/29/2025
     """Initializes a sensor array object based on the given number of sensors, sensor length and angle spread."""
     sensor_array = SensorArray(num_sensors=num_sensors, sensor_length=sensor_length, sensor_angle_spread=sensor_angle_spread)
     return sensor_array
