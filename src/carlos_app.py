@@ -7,6 +7,17 @@ from sensor_array import SensorArray
 import math
 import layout_utils
 
+
+# PLACEHOLDER AGENT CLASS FOR TESTING
+class Agent:
+    def __init__(self, sensor_array: SensorArray):
+        self.sensors = sensor_array
+
+    def make_decision(self):
+        # Placeholder for making decisions based on sensor data
+        pass
+
+
 #### Lane Initialization ####
 def init_lane(file_path: str = None): # Tested as of 3/29/2025
     """Initializes a lane object based on the given file path. If no file path is provided, a file dialog will be opened to select the file.
@@ -14,6 +25,7 @@ def init_lane(file_path: str = None): # Tested as of 3/29/2025
     lane_ctrl_points, lane_width, closed_loop = layout_utils.load_lane_from_file(file_path)
     lane = Lane(control_points=lane_ctrl_points, lane_width=lane_width, closed_loop=closed_loop)
     return lane
+
 
 #### Environment Initialization ####
 def init_environment(lane): # Tested as of 3/29/2025
@@ -31,30 +43,30 @@ def init_vehicle(center_point, heading_point, speed): # Tested as of 3/29/2025
 
 
 #### Sensor Array Initialization ####
-def init_sensor_array(): 
-    num_sensors = 5
-    sensor_length = 10
-    sensor_angle_spread = math.pi / 4
+def init_sensor_array(num_sensors: int = 5, sensor_length: float = 10, sensor_angle_spread: float = math.pi / 2): 
+    """Initializes a sensor array object based on the given number of sensors, sensor length and angle spread."""
     sensor_array = SensorArray(num_sensors=num_sensors, sensor_length=sensor_length, sensor_angle_spread=sensor_angle_spread)
     return sensor_array
 
 
 #### Agent Initialization ####
 def init_agent(sensor_array: SensorArray):
-    agent = None  # Placeholder for actual agent implementation
+    agent = Agent(sensor_array)  # Placeholder for actual agent implementation
     return agent
 
 
 #### Simulation Initialization ####
-def init_simulation(vehicle: Vehicle, env: Environment, agent: None, dt: float):
+def init_simulation(vehicle: Vehicle, env: Environment, agent, dt: float):
     sim = Simulation(vehicle=vehicle, environment=env, agent=agent, dt=dt)
     return sim
+
 
 #### Sim Execution ####
 def execute_simulation(sim: Simulation):
     sim.sim_step()
     sim_status = sim.get_sim_status()
     return sim_status
+
 
 def main():
     vehicle = init_vehicle(Point(0, 0), Point(0, 1), 10.0)

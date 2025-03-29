@@ -4,6 +4,8 @@ from vehicle import Vehicle
 from environment import Environment
 import carlos_app as app
 import graphics
+import math
+from sensor import Sensor
 
 def test_init_lane():
     lane = app.init_lane("./layouts/train_straight_layout_0.txt")
@@ -49,11 +51,29 @@ def test_init_vehicle():
     print("Vehicle initialization test passed.")
     return vehicle  # Return the vehicle object for further testing
 
+def test_init_sensor_array():
+    """Test function to initialize the sensor array."""
+    sensor_array = app.init_sensor_array(num_sensors=5, sensor_length=10, sensor_angle_spread=math.pi / 2)
+    assert sensor_array is not None, "Sensor array initialization failed."
+    assert sensor_array.num_sensors == 5, "Sensor array number of sensors does not match."
+    assert sensor_array.sensor_angle_spread == math.pi / 2, "Sensor array angle spread does not match."
+    assert len(sensor_array.sensors) == 5, "Sensor array sensors list length does not match."
+    assert all(isinstance(sensor, Sensor) for sensor in sensor_array.sensors), "Sensor array sensors are not Sensor objects."
+    assert all(sensor.sensor_length == 10 for sensor in sensor_array.sensors), "Sensor array sensors length does not match."
+    assert sensor_array.sensors[0].angle_offset == -math.pi / 4, "Sensor array first sensor angle does not match."
+    assert sensor_array.sensors[4].angle_offset == math.pi / 4, "Sensor array last sensor angle does not match."
+    assert sensor_array.sensors[2].angle_offset == 0, "Sensor array middle sensor angle does not match."
+    print("Sensor array initialization test passed.")
+    return sensor_array  # Return the sensor array object for further testing
+
 def test_graphics():
     env = test_init_environment()
     vehicle = test_init_vehicle()
+    sensor_array = test_init_sensor_array()
     graphics.plot_environment(env)  # Plot the environment
     graphics.plot_vehicle(vehicle)  # Plot the vehicle
+    # sensor_array.update_sensors(vehicle.center_point, vehicle.heading_point)  # Update sensor positions based on vehicle
+    # graphics.plot_sensors(sensor_array)
     graphics.show()  # Show the plot
     
 #### Main Test Function ####

@@ -3,6 +3,7 @@ from point import Point
 from vehicle import Vehicle
 from environment import Environment
 import math
+import numpy as np
 
 class SensorArray:
     def __init__(self, num_sensors: int, sensor_length: float, sensor_angle_spread: float):
@@ -15,15 +16,16 @@ class SensorArray:
         """
         self.num_sensors = num_sensors
         self.sensor_angle_spread = sensor_angle_spread
+        self.setup_sensors(sensor_length)
         
     def setup_sensors(self, sensor_length: float):
         """Sets up the sensors in the array based on the number of sensors, sensor length and angle spread.
         Args:
             sensor_length (float): Length of each sensor in feet.
         """
-        self.sensors = []
-        # placeholder for implementation
-        self.sensors = [Sensor(sensor_length, 0) for _ in range(self.num_sensors)]
+        angle_max = self.sensor_angle_spread / 2
+        angles = np.linspace(-angle_max, angle_max, self.num_sensors)
+        self.sensors = [Sensor(sensor_length=sensor_length, angle_offset=angle) for angle in angles]
         
     def update_sensors(self, origin_point: Point, direction_vector: Point):
         """Updates the sensors in the array based on the given origin point and direction vector.
@@ -42,5 +44,6 @@ class SensorArray:
             vehicle (Vehicle): Vehicle object representing the vehicle.
         """
         pass
+    
         
             
