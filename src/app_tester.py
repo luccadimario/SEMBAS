@@ -5,7 +5,7 @@ from environment import Environment
 import carlos_app as app
 import graphics
 import math
-from sensor import Sensor
+from sensor import Sensor, SensorArray
 
 def test_init_lane():
     lane = app.init_lane("./layouts/train_straight_layout_0.txt")

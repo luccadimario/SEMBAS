@@ -1,7 +1,7 @@
 from point import Point
 from vehicle import Vehicle
 from environment import Environment
-from sensor_array import SensorArray
+from sensors import SensorArray
 
 class Simulation:
     def __init__(self, vehicle: Vehicle, environment: Environment, agent, dt: float = 0.1):
