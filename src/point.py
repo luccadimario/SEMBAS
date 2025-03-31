@@ -35,3 +35,5 @@ class Point:
 
     def distanceTo(self, other: "Point") -> float:
         return (self - other).norm(p=2)
+    
+    

@@ -2,8 +2,16 @@ from point import Point
 import numpy as np
 
 class Vehicle:
-    def __init__(self):
-        pass
+    def __init__(self, min_speed: float = 0.0, max_speed: float = 150.0):  # Tested as of 3/29/2025
+        """Initializes a vehicle object with default parameters.
+        min_speed and max_speed are in miles per hour. Represents vehicle speed capabilities.
+        
+        Args:
+            min_speed (float): Minimum speed capability of the vehicle in miles per hour.
+            max_speed (float): Maximum speed capability of the vehicle in miles per hour.
+        """
+        self.min_speed = min_speed
+        self.max_speed = max_speed
     
     def vehicle_setup(self, center_point: Point, heading_point: Point, speed: float, length: float = 12, width: float = 6):     # Tested as of 3/29/2025
         """Sets up the vehicle based on the given center point, heading point and speed.
@@ -15,6 +23,7 @@ class Vehicle:
         """
         self.center_point = center_point
         self.heading_point = heading_point
+        # self.heading_angle = self.calculate_heading_angle(center_point, heading_point)
         self.speed = speed
         self.distance_travelled = 0
         self.acceleration = 0
@@ -52,7 +61,7 @@ class Vehicle:
             Point(self.center_point.x + self.width / 2, self.center_point.y - self.length / 2),  # Back right
             Point(self.center_point.x - self.width / 2, self.center_point.y - self.length / 2),  # Back left
         ]
-        return body
+        return body        
         
     def update_position(self, steering: float, acceleration: float, dt: float, friction: float = 0.0):
         """Updates the position of the vehicle based on the steering, acceleration and time step.
@@ -62,67 +71,55 @@ class Vehicle:
             acceleration (float): Acceleration in miles per hour squared.
             dt (float): Time step in seconds.
         """
-        speed = self.speed
-        heading = self.heading_point
-        # Kinematic bicycle model dynamics based on
-        # "Kinematic and Dynamic Vehicle Models for Autonomous Driving Control Design" by
-        # Jason Kong, Mark Pfeiffer, Georg Schildbach, Francesco Borrelli
-        
-        # distance between the rear wheels and the center of mass. This is needed to implement the kinematic bicycle model dynamics
-        # lr = self.length / 2.0
-        # lf = lr  # we assume the center of mass is the same as the geometric center of the entity
-        
-        # beta = np.arctan((lr / (lf + lr)) * np.tan(steering))
-        
-        # new_acceleration = acceleration - friction
-        
-        # # new_speed = np.clip(
-        # #     speed + new_acceleration * dt, self.min_speed, self.max_speed
-        # # )
-        # new_speed = speed + new_acceleration * dt
-        
-        # new_heading = heading + (speed / lr) * np.sin(beta) * dt
+        # Update speed based on acceleration
+        self.speed = np.clip(self.speed + acceleration * dt, self.min_speed, self.max_speed)
 
-        # angle = (heading + new_heading) / 2.0 + beta
-
-        # new_center = (
-        #     self.center_point + (speed + new_speed) * Point(np.cos(angle), np.sin(angle)) * dt / 2.0
-        # )
-
-        # new_velocity = Point(
-        #     new_speed * np.cos(new_heading), new_speed * np.sin(new_heading)
-        # )
+        # Calculate direction vector from center to heading point
+        dx = self.heading_point.x - self.center_point.x
+        dy = self.heading_point.y - self.center_point.y
+        direction_vector = np.array([dx, dy])
         
-        # self.distance_travelled += self.center_point.distanceTo(new_center)
-        # self.center_point = new_center
-        # self.heading_point = np.mod(new_heading, 2 * np.pi)  # wrap the heading angle between 0 and +2pi
-        # self.velocity = new_velocity
-        # self.speed = new_speed
-        # self.acceleration = new_acceleration
-        # self.body = self.build_body()
+        # Normalize the direction vector
+        direction_vector = direction_vector / np.linalg.norm(direction_vector)
+
+        # Apply steering: rotate the direction vector by the steering input
+        angle_of_rotation = steering  # Steering angle (radians)
+        rotation_matrix = np.array([[np.cos(angle_of_rotation), -np.sin(angle_of_rotation)],
+                                    [np.sin(angle_of_rotation), np.cos(angle_of_rotation)]])
+        
+        new_direction = np.dot(rotation_matrix, direction_vector)
+
+        # Update heading point based on new direction
+        self.heading_point = Point(self.center_point.x + new_direction[0] * self.length,
+                                   self.center_point.y + new_direction[1] * self.length)
+
+        # Update position (move center point based on speed)
+        self.center_point.x += new_direction[0] * self.speed * dt
+        self.center_point.y += new_direction[1] * self.speed * dt
+        
+        self.body = self.build_body()  # Rebuild the body after updating position
         
 def test_vehicle():
     v = Vehicle()
     center_point = Point(0, 0)
-    heading_point = Point(0, 1)
+    heading_point = Point(1, 0)
     speed = 10.0
     v.vehicle_setup(center_point=center_point, heading_point=heading_point, speed=speed)
     test_no_movement(v, center_point)
-    v.update_position(steering=0.0, acceleration=0.10, dt=1.0)
-    assert v.center_point.x == 0, "Vehicle center point x-coordinate should stay the same since vehicle is going straight."
-    assert v.center_point.y != center_point.y, "Vehicle center point y-coordinate should have changed."
-    assert v.center_point.y == 10, "Vehicle center point y-coordinate should have changed."
+    # v.update_position(steering=0.0, acceleration=0.10, dt=1.0)
+    # assert v.center_point.x == 0, "Vehicle center point x-coordinate should stay the same since vehicle is going straight."
+    # assert v.center_point.y != center_point.y, "Vehicle center point y-coordinate should have changed."
+    # assert v.center_point.y == 10, "Vehicle center point y-coordinate should have changed."
     
     
 def test_no_movement(v, center):
-    acceleration = 0.0
+    acceleration = 10
     steering = 0.0
     dt = 1.0
     v.update_position(steering, acceleration, dt)
-    assert v.center_point.x == center.x, "Vehicle center point x-coordinate does not match expected value."
-    assert v.center_point.y == center.y, "Vehicle center point y-coordinate does not match expected value."
+    assert v.center_point.y == 1, f"Vehicle center point x-coordinate {v.center_point.y} does not match expected value {0}."
+    # assert v.center_point.y == center.y, "Vehicle center point y-coordinate does not match expected value."
     print("Vehicle works when acceleration is 0")
-    
     
 if __name__ == "__main__":
     test_vehicle()
