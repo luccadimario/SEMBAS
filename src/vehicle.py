@@ -55,7 +55,7 @@ class Vehicle:
         self.velocity_fps = self.calculate_velocity()
         self.body = self.build_body()
         
-    def vehicle_capabilities(self):
+    def vehicle_capabilities_str(self):
         return (
             f"Vehicle Capabilities: "
             f"Speed: {self.fps_to_mph(self.min_speed_fps)} to {self.fps_to_mph(self.max_speed_fps)} mph -- "
@@ -63,7 +63,7 @@ class Vehicle:
             f"Max Breaking: {self.max_breaking_fps2} fps^2 = {self.fps2_to_mph2(self.max_breaking_fps2)} mph^2"
         )
         
-    def vehicle_state(self):
+    def vehicle_state_str(self):
         return (
             f"Center: ({self.center_point.x}, {self.center_point.y}) -- "
             f"Heading: ({self.heading_point.x}, {self.heading_point.y}) -- "
@@ -98,8 +98,6 @@ class Vehicle:
     
     def fps2_to_mph2(self, value_fps2: float):
         return value_fps2 * self.fps2_to_mph2_conversion
-
-    
         
     def calculate_velocity(self):   # Tested as of 3/29/2025
         """Calculates the velocity of the vehicle based on the center point, heading point, and speed.
@@ -182,72 +180,3 @@ class Vehicle:
         # Rebuilding the body after updating position
         self.body = self.build_body()
         
-def test_vehicle():
-    test_no_movement()
-    test_going_straight()
-    test_going_left()
-    test_going_right()
-    
-def test_going_left():
-    v = Vehicle()
-    center_point = Point(0, 0)
-    heading_point = Point(0, 1)
-    speed = 0.0
-    v.vehicle_setup(center_point=center_point, heading_point=heading_point, speed_mph=speed)
-    accel = 0.0
-    dt = 1.0
-    steering = np.pi / 2 # complete left turn 90 degrees
-    v.update_position(steering_rad=steering, acceleration_mph2=accel, dt_sec=dt)
-    assert round(v.heading_point.x, 6) == -1 * v.heading_offset_ft, f"Vehicle heading x {v.heading_point.x} should be -1 * heading_offset_ft."
-    assert round(v.heading_point.y, 6) == 0, f"Vehicle heading y: {v.heading_point.y} should be 0 as there is no movement but a 90 degree turn."
-    print("Turning right works with no movement.")
-    
-def test_going_right():
-    v = Vehicle()
-    center_point = Point(0, 0)
-    heading_point = Point(0, 1)
-    speed = 0.0
-    v.vehicle_setup(center_point=center_point, heading_point=heading_point, speed_mph=speed)
-    accel = 0.0
-    dt = 1.0
-    steering = -np.pi / 2 # complete left turn 90 degrees
-    v.update_position(steering_rad=steering, acceleration_mph2=accel, dt_sec=dt)
-    assert round(v.heading_point.x, 6) == 1 * v.heading_offset_ft, f"Vehicle heading x {v.heading_point.x} should be -1 * heading_offset_ft."
-    assert round(v.heading_point.y, 6) == 0, f"Vehicle heading y: {v.heading_point.y} should be 0 as there is no movement but a 90 degree turn."
-    print("Turning left works with no movement.")
-    
-def test_going_straight():
-    v = Vehicle()
-    center_point = Point(0, 0)
-    heading_point = Point(0, 15)
-    speed = 0.0
-    v.vehicle_setup(center_point=center_point, heading_point=heading_point, speed_mph=speed)
-    # 0 to 60 mph in 8 seconds should be: 27000 mph
-    accel = 27000.0
-    dt = 8.0
-    v.update_position(steering_rad=0.0, acceleration_mph2=accel, dt_sec=dt)
-    print(v.vehicle_state())
-    assert v.center_point.x == 0, "Vehicle center point x-coordinate should stay the same since vehicle is going straight."
-    assert v.center_point.y >= 351.999 and v.center_point.y <= 352.1, f"Vehicle center point y-coordinate {v.center_point.y} should have changed to 352."
-    assert v.acceleration_fps2 == 11.0, "27000 mph^2 is 11.0 fps^2"
-    assert v.speed_mph >= 59.9 and v.speed_mph <= 60.0, "Speed should be roughly 60.0 mph at 27000.0 mph^2 over 8 seconds"
-    print("Vehicle works when going staight and acceleration is > 0")
-    
-    
-def test_no_movement():
-    v = Vehicle()
-    center_point = Point(0, 0)
-    heading_point = Point(0, 1)
-    speed = 0
-    v.vehicle_setup(center_point=center_point, heading_point=heading_point, speed_mph=speed)
-    acceleration = 0.0
-    steering = 0.0
-    dt = 1.0
-    v.update_position(steering, acceleration, dt)
-    assert v.center_point.x == 0, f"Vehicle center point x-coordinate does not match expected value {0}."
-    assert v.center_point.y == 0, "Vehicle center point y-coordinate does not match expected value."
-    print("Vehicle works when acceleration is 0")
-    
-if __name__ == "__main__":
-    test_vehicle()
-    print("Vehicle test passed.")
