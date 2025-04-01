@@ -10,7 +10,14 @@ class Vehicle:
     mph2_to_fps2_conversion = 5280 / (3600 ** 2)
     fps2_to_mph2_conversion = (3600 ** 2) / 5280
     
-    def __init__(self, vehicle_length_ft: float = 12, vehicle_width_ft: float = 6, min_speed_mph: float = 0.0, max_speed_mph: float = 150.0, heading_offset_ft: float = 15.0, sec_0_to_60: float = 8.0):  # Tested as of 3/29/2025
+    def __init__(self, 
+                 vehicle_length_ft: float = 12, 
+                 vehicle_width_ft: float = 6, 
+                 min_speed_mph: float = 0.0, 
+                 max_speed_mph: float = 150.0, 
+                 heading_offset_ft: float = 15.0, 
+                 sec_0_to_60: float = 8.0
+                 ): # Tested as of 3/31/2025
         """Initializes a vehicle object with default parameters.
         min_speed and max_speed are in miles per hour. Represents vehicle speed capabilities.
         The length and width parameters represent the vehicles dimensions in feet. 
@@ -55,7 +62,8 @@ class Vehicle:
         self.velocity_fps = self.calculate_velocity()
         self.body = self.build_body()
         
-    def vehicle_capabilities_str(self):
+    def vehicle_capabilities_str(self): # Tested as of 3/31/2025
+        """Returns string with the vehicles speed, acceleration, and breaking capabilities."""
         return (
             f"Vehicle Capabilities: "
             f"Speed: {self.fps_to_mph(self.min_speed_fps)} to {self.fps_to_mph(self.max_speed_fps)} mph -- "
@@ -63,7 +71,8 @@ class Vehicle:
             f"Max Breaking: {self.max_breaking_fps2} fps^2 = {self.fps2_to_mph2(self.max_breaking_fps2)} mph^2"
         )
         
-    def vehicle_state_str(self):
+    def vehicle_state_str(self): # Tested as of 3/31/2025
+        """Returns string with center, heading, speed mph, acceleration mph^2, and distance travelled feet"""
         return (
             f"Center: ({self.center_point.x}, {self.center_point.y}) -- "
             f"Heading: ({self.heading_point.x}, {self.heading_point.y}) -- "
@@ -73,30 +82,34 @@ class Vehicle:
         )
         
     @property
-    def speed_mph(self):
+    def speed_mph(self): # Tested as of 3/31/2025
         """Speed in Miles Per Hour"""
         return self.fps_to_mph(self.speed_fps)
     
     @property
-    def acceleration_mph2(self):
+    def acceleration_mph2(self): # Tested as of 3/31/2025
         """Acceleration in Miles Per Hour Squared"""
         return self.fps2_to_mph2(self.acceleration_fps2)
     
     @property
-    def distance_travelled_miles(self):
+    def distance_travelled_miles(self): # Tested as of 3/31/2025
         """Distance Travelled in Miles"""
         return self.distance_travelled_ft / 5280
     
-    def mph_to_fps(self, value_mph: float):
+    def mph_to_fps(self, value_mph: float): # Tested as of 3/31/2025
+        """Converts given mph value to fps"""
         return value_mph * self.mph_to_fps_conversion
     
-    def fps_to_mph(self, value_fps: float):
+    def fps_to_mph(self, value_fps: float): # Tested as of 3/31/2025
+        """Converts given fps value to mph"""
         return value_fps * self.fps_to_mph_conversion
     
-    def mph2_to_fps2(self, value_mph2: float):
+    def mph2_to_fps2(self, value_mph2: float): # Tested as of 3/31/2025
+        """Converts given mph^2 value to fps^2"""
         return value_mph2 * self.mph2_to_fps2_conversion
     
-    def fps2_to_mph2(self, value_fps2: float):
+    def fps2_to_mph2(self, value_fps2: float): # Tested as of 3/31/2025
+        """Converts given fps^2 value to mph^2"""
         return value_fps2 * self.fps2_to_mph2_conversion
         
     def calculate_velocity(self):   # Tested as of 3/29/2025
@@ -129,24 +142,24 @@ class Vehicle:
         ]
         return body        
         
-    def update_position(self, steering_rad: float, acceleration_mph2: float, dt_sec: float, friction: float = 0.0): 
+    def update_position(self, steering_rad: float, acceleration_mph2: float, dt_sec: float): # Tested as of 3/31/2025
         """Updates the position of the vehicle based on the steering, acceleration and time step.
+        
+        Uses kinematic equations to update speed, center point, heading point, and acceleration.
         
         Args:
             steering (float): Steering angle in radians.
             acceleration (float): Acceleration in miles per hour squared.
             dt_sec (float): Time step in seconds.
-            friction (float): Friction, in Newtons, subtracted from the acceleration.
         """        
         # Updating acceleration by clipping by the vehicle max breaking and acceleration capabilities
         self.acceleration_fps2 = np.clip(self.mph2_to_fps2(acceleration_mph2), -self.max_breaking_fps2, self.max_acceleration_fps2)
-        
         
         # v = vo + a t 
         new_speed = self.speed_fps + (self.acceleration_fps2 * dt_sec)
         
         # Update speed based on acceleration and clipping based on the vehicles speed capabilities
-        # new_speed = np.clip(new_speed, self.min_speed_fps, self.max_speed_fps)
+        new_speed = np.clip(new_speed, self.min_speed_fps, self.max_speed_fps)
         
         # Calculate direction vector from center to heading point
         dx = self.heading_point.x - self.center_point.x

@@ -7,6 +7,7 @@ def test_vehicle():
     test_going_straight()
     test_going_left()
     test_going_right()
+    test_breaking()
     
 def test_going_left():
     v = Vehicle()
@@ -46,12 +47,25 @@ def test_going_straight():
     accel = 27000.0
     dt = 8.0
     v.update_position(steering_rad=0.0, acceleration_mph2=accel, dt_sec=dt)
-    print(v.vehicle_state())
+    print(v.vehicle_state_str())
     assert v.center_point.x == 0, "Vehicle center point x-coordinate should stay the same since vehicle is going straight."
     assert v.center_point.y >= 351.999 and v.center_point.y <= 352.1, f"Vehicle center point y-coordinate {v.center_point.y} should have changed to 352."
     assert v.acceleration_fps2 == 11.0, "27000 mph^2 is 11.0 fps^2"
     assert v.speed_mph >= 59.9 and v.speed_mph <= 60.0, "Speed should be roughly 60.0 mph at 27000.0 mph^2 over 8 seconds"
     print("Vehicle works when going staight and acceleration is > 0")
+    
+def test_breaking():
+    v = Vehicle()
+    center_point = Point(0, 0)
+    heading_point = Point(0, 1)
+    speed = 25.0
+    v.vehicle_setup(center_point=center_point, heading_point=heading_point, speed_mph=speed)
+    accel = -1000
+    dt = 5.0
+    v.update_position(steering_rad=0.0, acceleration_mph2=accel, dt_sec=dt)
+    print(v.vehicle_state_str())
+    assert v.speed_mph < speed, "Vehicle should have slowed down."
+    print("Vehicle works when breaking.")
     
     
 def test_no_movement():
