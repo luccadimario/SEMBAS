@@ -66,6 +66,7 @@ def plot_vehicle(vehicle: Vehicle): # Tested as of 3/29/2025
     # Plot vehicle center point
     ax.plot(vehicle.center_point.x, vehicle.center_point.y, 'ro', label='Vehicle Center')
     
+    # ax.plot([vehicle.center_point.x, vehicle.heading_point.x], [vehicle.center_point.y, vehicle.heading_point.y], 'm-', label="heading fr")
     # Plot vehicle heading with arrow
     ax.quiver(vehicle.center_point.x, vehicle.center_point.y,
               vehicle.heading_point.x - vehicle.center_point.x,
@@ -76,16 +77,22 @@ def plot_sensors(sensor_array): # Tested as of 3/29/2025
     """Plots the sensors in the sensor array."""
     ax = plt.gca()
     label = 'Sensor'
-    for sensor in sensor_array.sensors:
+    for i, sensor in enumerate(sensor_array.sensors):
         ax.plot([sensor.origin_point.x, sensor.end_point.x], [sensor.origin_point.y, sensor.end_point.y], 'r--', label=label)
+        ax.annotate(text=f"{i}", xy=(sensor.end_point.values()))
         label = None
+        
+def plot_sensor(sensor):
+    ax = plt.gca()
+    ax.plot([sensor.origin_point.x, sensor.end_point.x], [sensor.origin_point.y, sensor.end_point.y], 'r--', label='sensor')
+    # ax.annotate(text=f"{i}", xy=(sensor.end_point.values()))
     
-def show(): # Tested as of 3/29/2025
+def show(x_lim: list[float]=[0,400], y_lim: list[float]=[0,400]): # Tested as of 3/29/2025
     """Displays the plot."""
     plt.tight_layout()
     plt.legend()
-    plt.xlim(0, 400)
-    plt.ylim(0, 400)
+    plt.xlim(x_lim[0], x_lim[1])
+    plt.ylim(y_lim[0], y_lim[1])
     plt.show()
     
 def render(sim: Simulation):

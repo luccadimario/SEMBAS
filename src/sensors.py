@@ -23,7 +23,7 @@ class SensorArray:
             sensor_length (float): Length of each sensor in feet.
         """
         angle_max = self.sensor_angle_spread / 2
-        angles = np.linspace(-angle_max, angle_max, self.num_sensors)
+        angles = np.linspace(angle_max, -angle_max, self.num_sensors)
         self.sensors = [Sensor(sensor_length=sensor_length, angle_offset=angle) for angle in angles]
         
     def update_sensors(self, origin_point: Point, direction_vector: Point): # Tested as of 3/29/2025
@@ -33,6 +33,7 @@ class SensorArray:
             origin_point (Point): Point object representing the origin of the sensor array.
             direction_vector (Point): Point object representing the direction vector of the sensor array.
         """
+        
         for sensor in self.sensors:
             sensor.update_sensor(origin_point, direction_vector)
     
@@ -80,18 +81,18 @@ class Sensor:
         Returns:
             Point: Point object representing the end point of the sensor.
         """
-        # Calculate the new direction vector based on the angle offset
-        new_direction_vector = Point(
-            direction_vector.x * math.cos(self.angle_offset) - direction_vector.y * math.sin(self.angle_offset),
-            direction_vector.x * math.sin(self.angle_offset) + direction_vector.y * math.cos(self.angle_offset)
-        )
-        # new_direction_vector = direction_vector.rotate_point_by_radians(self.origin_point, self.angle_offset)
-        if self.angle_offset == 0:
-            # If angle offset is 0, the direction vector is unchanged
-            new_direction_vector = direction_vector
-        # Normalize the new direction vector
-        new_direction_vector = new_direction_vector / new_direction_vector.norm()
-        # Calculate the end point of the sensor
-        end_point = self.origin_point + new_direction_vector * self.sensor_length
-        # Return the end point of the sensor
-        return end_point
+        ox, oy = self.origin_point.values()
+        hx, hy = direction_vector.values()
+
+        # Compute the initial heading angle
+        initial_angle = math.atan2(hy - oy, hx - ox)
+
+        # Convert angle offset to radians and apply rotation
+        new_angle = initial_angle + self.angle_offset
+
+        # Compute new heading point using the fixed sensor length
+        new_x = ox + self.sensor_length * math.cos(new_angle)
+        new_y = oy + self.sensor_length * math.sin(new_angle)
+
+        return Point(new_x, new_y)
+

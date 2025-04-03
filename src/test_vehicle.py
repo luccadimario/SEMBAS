@@ -2,7 +2,7 @@ from vehicle import Vehicle
 from point import Point
 import numpy as np
 
-def test_vehicle():
+def run_tests():
     test_no_movement()
     test_going_straight()
     test_going_left()
@@ -83,5 +83,5 @@ def test_no_movement():
     print("Vehicle works when acceleration is 0")
     
 if __name__ == "__main__":
-    test_vehicle()
+    run_tests()
     print("Vehicle test passed.")

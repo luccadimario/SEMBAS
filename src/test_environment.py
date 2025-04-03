@@ -19,5 +19,8 @@ def test_position_from_coordinates():
     G.plot_vehicle(v)
     G.show()
     
-if __name__ == "__main__":
+def run_tests():
     test_position_from_coordinates()
+    
+if __name__ == "__main__":
+    run_tests()

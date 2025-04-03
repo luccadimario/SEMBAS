@@ -57,22 +57,22 @@ def test_init_sensor_array():
     assert len(sensor_array.sensors) == 5, "Sensor array sensors list length does not match."
     assert all(isinstance(sensor, Sensor) for sensor in sensor_array.sensors), "Sensor array sensors are not Sensor objects."
     assert all(sensor.sensor_length == 50 for sensor in sensor_array.sensors), "Sensor array sensors length does not match."
-    assert sensor_array.sensors[0].angle_offset == -math.pi / 4, "Sensor array first sensor angle does not match."
-    assert sensor_array.sensors[4].angle_offset == math.pi / 4, "Sensor array last sensor angle does not match."
+    assert sensor_array.sensors[0].angle_offset == math.pi / 4, "Sensor array first sensor angle does not match."
+    assert sensor_array.sensors[4].angle_offset == -math.pi / 4, "Sensor array last sensor angle does not match."
     assert sensor_array.sensors[2].angle_offset == 0, "Sensor array middle sensor angle does not match."
     test_sensor()
     print("Sensor array initialization test passed.")
     return sensor_array  # Return the sensor array object for further testing
 
 def test_sensor():
-    s = Sensor(sensor_length=50, angle_offset=-math.pi / 4)
+    s = Sensor(sensor_length=50, angle_offset=-math.pi / 2)
     origin = Point(0, 0)
-    direction = Point(-1, 1)
+    direction = Point(0, 1)
     s.update_sensor(origin, direction)
     assert s.origin_point == origin, "Sensor origin point does not match expected value."
-    assert s.angle_offset == -math.pi / 4, "Sensor angle offset does not match expected value."
-    assert s.end_point.x == 0, f"Sensor end point x-coordinate {s.end_point.x} does not match expected value."
-    assert s.end_point.y == 50, "Sensor end point y-coordinate does not match expected value."
+    assert s.angle_offset == -math.pi / 2, "Sensor angle offset does not match expected value."
+    assert s.end_point.x == 50, f"Sensor end point x-coordinate {s.end_point.x} does not match expected value."
+    assert s.end_point.y == 0, "Sensor end point y-coordinate does not match expected value."
     print("Single sensor test passed.")
     
 def sensor_tests():
@@ -91,16 +91,31 @@ def test_graphics():
     graphics.plot_environment(env)  # Plot the environment
     graphics.plot_vehicle(vehicle)  # Plot the vehicle
     sensor_array.update_sensors(vehicle.center_point, vehicle.heading_point)  # Update sensor positions based on vehicle
+    print(f"center: {vehicle.center_point.values()}, heading: {vehicle.heading_point.values()}")
+    print([s.angle_offset for s in sensor_array.sensors])
     graphics.plot_sensors(sensor_array)
     graphics.show()  # Show the plot
     
 #### Main Test Function ####
-def main_test():
+def initialization_tests():
     test_init_lane()
     test_init_environment()
     test_init_vehicle()
+
+import test_environment
+import test_vehicle
+import test_sensors
+def unit_tests():
+    test_vehicle.run_tests()
+    test_environment.run_tests()
+    test_sensors.run_tests()
     
-# main_test()
-test_graphics()
-# sensor_tests()
+def integration_tests():
+    test_graphics()
+
+if __name__ == "__main__":
+    initialization_tests()
+    unit_tests()
+    integration_tests()
+
     
