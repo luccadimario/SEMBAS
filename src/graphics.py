@@ -3,6 +3,24 @@ from lane import Lane
 from simulation import Simulation
 from vehicle import Vehicle
 from environment import Environment
+from point import Point
+import numpy as np
+
+def list_points_as_values(point_list: list[Point]) -> tuple[list[float], list[float]]:
+    """Takes in a list of points and returns 2 lists: x values and y values.
+    
+    Args:
+        point_list (list[Point]): List of Point objects.
+        
+    Returns:
+        tuple(list[float], list[float]): X values and Y values of the given list of points.
+    """
+    x = []
+    y = []
+    for p in point_list:
+        x.append(p.x)
+        y.append(p.y)
+    return x, y
  
 def plot_environment(environment: Environment): # Tested as of 3/29/2025
     """Plots the environment with its lane and vehicle."""
@@ -12,31 +30,38 @@ def plot_environment(environment: Environment): # Tested as of 3/29/2025
 def plot_lane(lane: Lane): # Tested as of 3/29/2025
     """Plots the lane with its center line, left edge and right edge."""
     ax = plt.gca()
+    
     # Plot center line
-    ax.plot(lane.center_line[:, 0], lane.center_line[:, 1], 'k--', label='Center Line')
+    center_x, center_y = list_points_as_values(lane.center_line)
+    ax.plot(center_x, center_y, 'k--', label='Center Line')
     
     # Plot control points
-    cx = []
-    cy = []
-    for p in lane.control_points:
-        cx.append(p.x)
-        cy.append(p.y)
-    ax.plot(cx, cy, 'ro', label='Control Points')
+    ctrl_x, ctrl_y = list_points_as_values(lane.control_points)
+    ax.plot(ctrl_x, ctrl_y, 'ro', label='Control Points')
     
     # Plot left edge
-    ax.plot(lane.left_edge[:, 0], lane.left_edge[:, 1], 'b-', label='Left Edge')
+    left_x, left_y = list_points_as_values(lane.left_edge)
+    ax.plot(left_x, left_y, 'b-', label='Left Edge')
     
     # Plot right edge
-    ax.plot(lane.right_edge[:, 0], lane.right_edge[:, 1], 'm-', label='Right Edge')
+    right_x, right_y = list_points_as_values(lane.right_edge)
+    ax.plot(right_x, right_y, 'm-', label='Right Edge')
+    
+    ax.fill(
+        np.concatenate((left_x, right_x[::-1])),
+        np.concatenate((left_y, right_y[::-1])),
+        color="gray",
+        alpha=0.5,
+        label="Lane Area",
+    )
+    
     
 def plot_vehicle(vehicle: Vehicle): # Tested as of 3/29/2025
     """Plots the vehicle with its body, center point and heading."""
     ax = plt.gca()
     # Plot vehicle body
-    vehicle_body = vehicle.body
-    vehicle_x = [p.x for p in vehicle_body]
-    vehicle_y = [p.y for p in vehicle_body]
-    ax.fill(vehicle_x, vehicle_y, 'b', label='Vehicle Body')
+    body_x, body_y = list_points_as_values(vehicle.body.corners)
+    ax.fill(body_x, body_y, 'b', label='Vehicle Body')
     
     # Plot vehicle center point
     ax.plot(vehicle.center_point.x, vehicle.center_point.y, 'ro', label='Vehicle Center')
@@ -45,7 +70,7 @@ def plot_vehicle(vehicle: Vehicle): # Tested as of 3/29/2025
     ax.quiver(vehicle.center_point.x, vehicle.center_point.y,
               vehicle.heading_point.x - vehicle.center_point.x,
               vehicle.heading_point.y - vehicle.center_point.y,
-              angles='xy', scale_units='xy', scale=0.1, color='r', label='Heading')
+              angles='xy', scale_units='xy', scale=0.1, color='g', label='Heading')
     
 def plot_sensors(sensor_array): # Tested as of 3/29/2025
     """Plots the sensors in the sensor array."""
@@ -59,6 +84,8 @@ def show(): # Tested as of 3/29/2025
     """Displays the plot."""
     plt.tight_layout()
     plt.legend()
+    plt.xlim(0, 400)
+    plt.ylim(0, 400)
     plt.show()
     
 def render(sim: Simulation):

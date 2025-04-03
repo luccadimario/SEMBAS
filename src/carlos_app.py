@@ -48,7 +48,7 @@ def init_environment(lane): # Tested as of 3/29/2025
 def init_vehicle(center_point, heading_point, speed): # Tested as of 3/29/2025
     """Initializes a vehicle object based on the given center point, heading point and speed."""
     vehicle = Vehicle()
-    vehicle.vehicle_setup(center_point=center_point, heading_point=heading_point, speed=speed)
+    vehicle.vehicle_setup(center_point=center_point, heading_point=heading_point, speed_mph=speed)
     return vehicle
 
 

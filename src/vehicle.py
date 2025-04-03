@@ -11,7 +11,7 @@ class Vehicle:
     fps2_to_mph2_conversion = (3600 ** 2) / 5280
     
     def __init__(self, 
-                 vehicle_length_ft: float = 12, 
+                 vehicle_length_ft: float = 10, 
                  vehicle_width_ft: float = 6, 
                  min_speed_mph: float = 0.0, 
                  max_speed_mph: float = 150.0, 
@@ -36,8 +36,7 @@ class Vehicle:
             heading_offset (float): The heading point offset from the center point in feet. Defaults to 15.0 feet.
             sec_0_to_60 (float): Number of seconds it takes the car to accelerate from 0 to 60 mph. Default is 8.0.
         """
-        self.vehicle_length_ft = vehicle_length_ft
-        self.vehicle_width_ft = vehicle_width_ft
+        self.body = VehicleBody(vehicle_length=vehicle_length_ft, vehicle_width=vehicle_width_ft)
         self.min_speed_fps = self.mph_to_fps(min_speed_mph)
         self.max_speed_fps = self.mph_to_fps(max_speed_mph)
         self.heading_offset_ft = heading_offset_ft
@@ -60,7 +59,7 @@ class Vehicle:
         self.distance_travelled_ft = 0
         self.acceleration_fps2 = 0
         self.velocity_fps = self.calculate_velocity()
-        self.body = self.build_body()
+        self.body.build_body(center_point=center_point, heading_point=heading_point)
         
     def vehicle_capabilities_str(self): # Tested as of 3/31/2025
         """Returns string with the vehicles speed, acceleration, and breaking capabilities."""
@@ -120,27 +119,7 @@ class Vehicle:
         """
         direction = self.heading_point - self.center_point
         direction = direction / direction.norm()
-        return direction * self.speed_fps
-        
-    def build_body(self):  # Tested as of 3/29/2025
-        """Builds the body of the vehicle based on the given width and length and the center point.
-        Body is represented as a list of points in this order:
-        - Front left: (-width/2, length/2)
-        - Front right: (width/2, length/2)
-        - Back right: (width/2, -length/2)
-        - Back left: (-width/2, -length/2)
-        
-        Args:
-            width (float): Width of the vehicle in feet.
-            length (float): Length of the vehicle in feet.
-        """
-        body = [
-            Point(self.center_point.x - self.vehicle_width_ft / 2, self.center_point.y + self.vehicle_length_ft / 2),  # Front left
-            Point(self.center_point.x + self.vehicle_width_ft / 2, self.center_point.y + self.vehicle_length_ft / 2),  # Front right
-            Point(self.center_point.x + self.vehicle_width_ft / 2, self.center_point.y - self.vehicle_length_ft / 2),  # Back right
-            Point(self.center_point.x - self.vehicle_width_ft / 2, self.center_point.y - self.vehicle_length_ft / 2),  # Back left
-        ]
-        return body        
+        return direction * self.speed_fps       
         
     def update_position(self, steering_rad: float, acceleration_mph2: float, dt_sec: float): # Tested as of 3/31/2025
         """Updates the position of the vehicle based on the steering, acceleration and time step.
@@ -191,5 +170,44 @@ class Vehicle:
         # Adding the distance travelled in feet
         self.distance_travelled_ft += self.center_point.distanceTo(Point(prev_center[0], prev_center[1]))
         # Rebuilding the body after updating position
-        self.body = self.build_body()
+        self.body.build_body(self.center_point, self.heading_point)
+        
+        
+class VehicleBody:
+    def __init__(self, vehicle_length: float, vehicle_width: float):
+        self.length = vehicle_length
+        self.width = vehicle_width
+        self.set_base_corners()
+        
+    def set_base_corners(self):
+        half_length = self.length / 2
+        half_width = self.width / 2
+        self.base_corners = [
+            Point(half_length, -half_width), # Front Left
+            Point(half_length, half_width), # Front Right
+            Point(-half_length, half_width), # Back Right
+            Point(-half_length, -half_width), # Back Left
+        ]
+        
+    def build_body(self, center_point: Point, heading_point: Point):
+        """Creates the vehicle corners based on the center point and heading point.
+        
+        Corners are in the order of: Front left, front right, back right, back left
+        
+        Args:
+            center_point (float): Center point of the vehicle.
+            heading_point (float): Heading point of the vehicle.
+            
+        """
+
+        # Compute the heading angle (in radians)
+        angle = math.atan2(heading_point.y - center_point.y, heading_point.x - center_point.x)
+        self.corners = []
+        for c in self.base_corners:
+            c = c + center_point
+            c = c.rotate_point_by_radians(center_point, angle)
+            self.corners.append(c)
+        
+    
+        
         

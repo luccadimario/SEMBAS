@@ -85,6 +85,7 @@ class Sensor:
             direction_vector.x * math.cos(self.angle_offset) - direction_vector.y * math.sin(self.angle_offset),
             direction_vector.x * math.sin(self.angle_offset) + direction_vector.y * math.cos(self.angle_offset)
         )
+        # new_direction_vector = direction_vector.rotate_point_by_radians(self.origin_point, self.angle_offset)
         if self.angle_offset == 0:
             # If angle offset is 0, the direction vector is unchanged
             new_direction_vector = direction_vector

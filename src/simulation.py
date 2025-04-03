@@ -36,8 +36,7 @@ class Simulation:
             speed (float): Speed of the vehicle in miles per hour.
         """
         self.reset_sim_status()
-        center_point = Point(0, 0) # Placeholder for actual implementation
-        heading_point = Point(0, 0) # Placeholder for actual implementation
+        center_point, heading_point = self.environment.position_from_coordiantes(longitude=longitude, latitude=latitude, angle_offset=dir_angle_offset)
         self.vehicle.vehicle_setup(center_point, heading_point, speed)
         
     def get_state(self) -> list[Point, float, list[float]]:

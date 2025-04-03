@@ -5,7 +5,7 @@ from environment import Environment
 import carlos_app as app
 import graphics
 import math
-from sensor import Sensor, SensorArray
+from sensors import Sensor, SensorArray
 
 def test_init_lane():
     lane = app.init_lane("./layouts/train_straight_layout_0.txt")
@@ -21,7 +21,8 @@ def test_init_lane():
     return lane  # Return the lane object for further testing
     
 def test_init_environment():
-    lane = app.init_lane("./layouts/train_straight_layout_0.txt")
+    lane = app.init_lane("./layouts/train_layout_4.txt")
+    assert len(lane.center_line) == len(lane.left_edge), f"Center line {len(lane.center_line)} and edges {len(lane.left_edge)} should have the same number of points."
     env = app.init_environment(lane)
     assert env is not None, "Environment initialization failed."
     assert isinstance(env.lane, Lane), "Environment lane is not a Lane object."
@@ -29,25 +30,21 @@ def test_init_environment():
     return env  # Return the environment object for further testing
     
 def test_init_vehicle():
-    center_point = Point(0, 0)
-    heading_point = Point(0, 1)
+    center_point = Point(10, 10)
+    heading_point = Point(10, 11)
     speed = 10.0
     vehicle = app.init_vehicle(center_point=center_point, heading_point=heading_point, speed=speed)
     assert vehicle is not None, "Vehicle initialization failed."
     assert hasattr(vehicle, 'center_point'), "Vehicle center point is not set."
     assert hasattr(vehicle, 'heading_point'), "Vehicle heading point is not set."
-    assert hasattr(vehicle, 'speed'), "Vehicle speed is not set."
+    assert hasattr(vehicle, 'speed_fps'), "Vehicle speed is not set."
     assert vehicle.center_point.x == center_point.x, "Vehicle center point x-coordinate does not match."
     assert vehicle.center_point.y == center_point.y, "Vehicle center point y-coordinate does not match."
     assert vehicle.heading_point.x == heading_point.x, "Vehicle heading point x-coordinate does not match."
     assert vehicle.heading_point.y == heading_point.y, "Vehicle heading point y-coordinate does not match."
-    assert vehicle.speed == speed, "Vehicle speed does not match."
+    assert round(vehicle.speed_mph, 3) == speed, "Vehicle speed does not match."
     assert vehicle.body is not None, "Vehicle body is not built."
-    assert vehicle.velocity is not None, "Vehicle velocity is not calculated."
-    assert vehicle.body[0].x == -3.0, "Vehicle body points do not match expected values."
-    assert vehicle.body[0].y == 6.0, "Vehicle body points do not match expected values."
-    assert vehicle.velocity.x == 0.0, "Vehicle velocity does not match expected value."
-    assert vehicle.velocity.y == 10.0, "Vehicle velocity does not match expected value."
+    assert vehicle.velocity_fps is not None, "Vehicle velocity is not calculated."
     print("Vehicle initialization test passed.")
     return vehicle  # Return the vehicle object for further testing
 

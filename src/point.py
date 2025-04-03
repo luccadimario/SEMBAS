@@ -1,4 +1,4 @@
-import math
+import numpy as np
 
 
 class Point:
@@ -35,5 +35,41 @@ class Point:
 
     def distanceTo(self, other: "Point") -> float:
         return (self - other).norm(p=2)
+    
+    def rotate_point_by_radians(
+        self, point: "Point", rotation_angle: float
+    ) -> "Point":
+        """Returns the new point that is rotated around a center point by a given angle.
+
+        Args:
+            point (Point): Center point of the rotation.
+            rotation_angle (float): Angle, in raidans, to rotate from the center point to get the heading point.
+            Positive values rotate to the left, negative values rotate to the right. pi = -pi is facing backwards.
+
+        Returns:
+            Point: New heading of the vehicle
+        """
+        # clip angle to [-pi, pi]
+        rotation_angle = np.clip(rotation_angle, -np.pi, np.pi)
+
+        # Compute the direction vector from (x1, y1) to (x2, y2)
+        x1, y1 = point.x, point.y
+        x2, y2 = self.x, self.y
+        dx = x2 - x1
+        dy = y2 - y1
+
+        # Rotate the vector
+        cos_angle = np.cos(rotation_angle)
+        sin_angle = np.sin(rotation_angle)
+
+        # Apply rotation matrix
+        new_dx = cos_angle * dx - sin_angle * dy
+        new_dy = sin_angle * dx + cos_angle * dy
+
+        # Create the offset point
+        offset_x = x1 + new_dx
+        offset_y = y1 + new_dy
+
+        return Point(offset_x, offset_y)
     
     
