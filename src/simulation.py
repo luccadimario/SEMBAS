@@ -2,6 +2,8 @@ from point import Point
 from vehicle import Vehicle
 from environment import Environment
 from sensors import SensorArray
+import random
+import numpy as np
 
 class Simulation:
     def __init__(self, vehicle: Vehicle, environment: Environment, agent, dt: float = 0.1):
@@ -38,6 +40,15 @@ class Simulation:
         self.reset_sim_status()
         center_point, heading_point = self.environment.position_from_coordiantes(longitude=longitude, latitude=latitude, angle_offset=dir_angle_offset)
         self.vehicle.vehicle_setup(center_point, heading_point, speed)
+        self.agent.sensors.update_sensors(self.vehicle.center_point, self.vehicle.heading_point)
+        
+    def sim_random_reset(self, speed_range: list[float]=[0,75]):
+        longitude = random.uniform(0, 1)
+        latitude = random.uniform(0, 1)
+        dir_angle_offset = random.uniform(-np.pi, np.pi)
+        speed = random.uniform(speed_range[0], speed_range[1])
+        center_point, heading_point = self.environment.position_from_coordiantes(longitude=longitude, latitude=latitude, angle_offset=dir_angle_offset)
+        self.vehicle.vehicle_setup(center_point=center_point, heading_point=heading_point, speed_mph=speed)
         
     def get_state(self) -> list[Point, float, list[float]]:
         """
@@ -45,7 +56,7 @@ class Simulation:
         """
         # Placeholder for actual implementation
         sensor_detections = self.agent.sensors.sense(self.environment, self.vehicle)
-        return [self.vehicle.heading_point, self.vehicle.speed, sensor_detections]
+        return [self.vehicle.heading_point.x, self.vehicle.heading_point.y, self.vehicle.speed, sensor_detections]
     
     def sim_step(self) -> None:
         """Executes a single step in the simulation.

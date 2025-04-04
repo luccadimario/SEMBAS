@@ -55,7 +55,8 @@ class Vehicle:
         """
         self.center_point = center_point
         self.heading_point = heading_point
-        self.speed_fps = self.mph_to_fps(speed_mph)
+        speed_fps = self.mph_to_fps(speed_mph)
+        self.speed_fps = np.clip(speed_fps, self.min_speed_fps, self.max_speed_fps)
         self.distance_travelled_ft = 0
         self.acceleration_fps2 = 0
         self.velocity_fps = self.calculate_velocity()

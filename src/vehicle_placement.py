@@ -102,7 +102,7 @@ def lateral_adjustment(latitude: float, angle_offset: float) -> float:
     if latitude == 0 and (0 < angle_offset < np.pi):
         angle_offset *= -1
     # Else on the right edge and angle_offset is pointing outside the lane, reverse the angle_offset
-    elif latitude == 1 and ((0 < angle_offset < -np.pi)):
+    elif latitude == 1 and (0 > angle_offset > -np.pi):
         angle_offset *= -1
     return angle_offset
 
@@ -127,5 +127,11 @@ def open_loop_adjustment(longitude: float, latitude: float, angle_offset: float)
             angle_offset = 0
         elif angle_offset > (np.pi / 2):
             angle_offset = np.pi / 2
+    elif longitude == 0 or longitude == 1:
+        if np.pi / 2 < angle_offset < np.pi:
+            angle_offset = np.pi / 2
+        if -np.pi / 2 > angle_offset > -np.pi:
+            angle_offset = -np.pi / 2
     return angle_offset
+
 

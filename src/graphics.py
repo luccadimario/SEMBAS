@@ -87,21 +87,22 @@ def plot_sensor(sensor):
     ax.plot([sensor.origin_point.x, sensor.end_point.x], [sensor.origin_point.y, sensor.end_point.y], 'r--', label='sensor')
     # ax.annotate(text=f"{i}", xy=(sensor.end_point.values()))
     
-def show(x_lim: list[float]=[0,400], y_lim: list[float]=[0,400]): # Tested as of 3/29/2025
+def show(title: str="", x_lim: list[float]=[0,400], y_lim: list[float]=[0,400]): # Tested as of 3/29/2025
     """Displays the plot."""
     plt.tight_layout()
     plt.legend()
     plt.xlim(x_lim[0], x_lim[1])
     plt.ylim(y_lim[0], y_lim[1])
+    plt.title(title)
     plt.show()
     
-def render(sim: Simulation):
+def render_simulation(sim: Simulation):
     """Renders the simulation by plotting the lane and vehicle."""
     plt.clf()  # Clear the current figure
     env = sim.environment
     plot_environment(env)  # Plot the environment
     vehicle = sim.vehicle
     plot_vehicle(vehicle)  # Plot the vehicle
-    plt.title("Simulation Visualization")
-    show()
+    sensors = sim.agent.sensors
+    plot_sensors(sensor_array=sensors)
     
