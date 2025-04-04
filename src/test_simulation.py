@@ -44,13 +44,16 @@ def test_sim_reset_left_edge():
     graphics.render_simulation(sim=sim)
     graphics.show("Initial reset")
     sim.sim_reset(longitude=0.5, latitude=0.0, dir_angle_offset=math.pi/4, speed=45.0)
-    # center_point, heading_point = env.get_lane_position_and_heading(lane=sim.environment.lane, longitude=0.5, latitude=0.0, angle_offset=math.pi/4)
-    # sim.vehicle.vehicle_setup(center_point=center_point, heading_point=heading_point, speed_mph=45.0)
     graphics.render_simulation(sim=sim)
     graphics.show("Vehicle .5 down lane, left edge, 45 deg angle towards center")
 
 def test_sim_random_reset():
     sim = init_sim()
+    longitude = 0.0
+    latitude = 0.5
+    speed = 25.0
+    dir_angle_offset = 0.0
+    sim.sim_reset(longitude=longitude, latitude=latitude, dir_angle_offset=dir_angle_offset, speed=speed)
     graphics.render_simulation(sim=sim)
     graphics.show(title="Before random reset")
     sim.sim_random_reset()
@@ -66,6 +69,7 @@ def test_sim_status():
 def run_tests():
     test_sim_reset_right_edge()
     test_sim_reset_left_edge()
+    test_sim_random_reset()
     
 
 if __name__ == "__main__":
