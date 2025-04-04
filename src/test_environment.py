@@ -12,8 +12,8 @@ def test_position_from_coordinates():
     longitude = 0.0
     latitude = 0.5
     angle_offset = 0.0
-    center, heading = env.position_from_coordiantes(longitude, latitude, angle_offset)
     v = Vehicle()
+    center, heading = env.position_from_coordinates(longitude, latitude, angle_offset, heading_offset=v.heading_offset_ft)
     v.vehicle_setup(center_point=center, heading_point=heading, speed_mph=25.0)
     G.plot_environment(env)
     G.plot_vehicle(v)

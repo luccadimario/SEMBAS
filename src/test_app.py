@@ -6,6 +6,11 @@ import carlos_app as app
 import graphics
 import math
 from sensors import Sensor, SensorArray
+import test_vehicle_placement
+import test_simulation
+import test_environment
+import test_vehicle
+import test_sensors
 
 def test_init_lane():
     lane = app.init_lane("./layouts/train_straight_layout_0.txt")
@@ -102,13 +107,12 @@ def initialization_tests():
     test_init_environment()
     test_init_vehicle()
 
-import test_environment
-import test_vehicle
-import test_sensors
 def unit_tests():
     test_vehicle.run_tests()
     test_environment.run_tests()
     test_sensors.run_tests()
+    test_vehicle_placement.run_tests()
+    test_simulation.run_tests()
     
 def integration_tests():
     test_graphics()

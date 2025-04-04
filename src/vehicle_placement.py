@@ -3,90 +3,6 @@ from lane import Lane
 import numpy as np
 
 
-
-
-def get_center_point_from_index(lane: Lane, index: int, fractional: float) -> Point:
-        """Returns the center position at the given index with the fractional part.
-
-        Args:
-            lane (Lane): Lane object to use for the center_line points and the closed_loop flag.
-            index (int): Index of the center point.
-            fractional (float): Fractional part for interpolation.
-
-        Returns:
-            Point: The center position at the given index with the fractional part.
-        """
-        center_pos = None
-        lane_center_line = lane.center_line
-        if index >= len(lane_center_line) - 1:
-            
-            if lane.closed_loop:
-                # If the lane is closed, the points on either side of the returned point should be the first and second center line points
-                index = 0
-            else:
-                # If the lane is not closed, the center position returned should just be the last point in the center_line list
-                center_pos = Point(lane_center_line[-1].x, lane_center_line[-1].y)
-        
-        if center_pos is None:
-            # Finding the center line points on either side of the given fractional
-            p1 = Point(lane_center_line[index].x, lane_center_line[index].y)
-            p2 = Point(lane_center_line[index + 1].x, lane_center_line[index + 1].y)
-            # Creating the point from p1 and p2 with the fractional part
-            center_pos = Point(
-                p1.x * (1 - fractional) + p2.x * fractional,
-                p1.y * (1 - fractional) + p2.y * fractional,
-            )
-        return center_pos
-    
-def calculate_tangent(lane: Lane, center_pos: Point, index: int) -> Point:
-        """Approximates the tangent at the given point using finite differences.
-
-        Args:
-            center_pos (Point): Point to calculate tangent from.
-            index (int): Index of the center point.
-
-        Returns:
-            Point: The tangent at the given point.
-        """
-        tangent = None
-        if index == len(lane.center_line) - 1:
-            tangent = Point(
-                center_pos.x - lane.center_line[index - 1].x,
-                center_pos.y - lane.center_line[index - 1].y,
-            )
-        else:
-            tangent = Point(
-                lane.center_line[index + 1].x - center_pos.x,
-                lane.center_line[index + 1].y - center_pos.y,
-            )
-        return tangent
-    
-def get_normal_and_direction_vectors(tangent: Point) -> list[Point]:
-    """Noramlizes the tangent vector and rotates it 90 degrees to get the normal vector.
-    Normalizes the tangent vector to get the direction vector at the center position.
-
-    Args:
-        tangent (Point): The tangent vector.
-
-    Returns:
-        Point: The normal vector.
-        Point: The direction vector.
-    """
-    normal = None
-    direction = None
-    magnitude = (tangent.x**2 + tangent.y**2) ** 0.5
-    if magnitude == 0:
-        normal = Point(0, 0)
-        direction = Point(0, 0)
-    else:
-        normal = Point(
-            -tangent.y / magnitude, tangent.x / magnitude
-        )  # Rotate 90 degrees
-        direction = Point(tangent.x / magnitude, tangent.y / magnitude)
-    return normal, direction
-
-
-
 def lateral_adjustment(latitude: float, angle_offset: float) -> float:
     """Given a latitude and an angle_offset, returns an adjusted angle_offset to take into account if the latitude falls on the edge of the lane. 
 
@@ -133,5 +49,103 @@ def open_loop_adjustment(longitude: float, latitude: float, angle_offset: float)
         if -np.pi / 2 > angle_offset > -np.pi:
             angle_offset = -np.pi / 2
     return angle_offset
+
+def interpolate_points(points: list[Point], t: float) -> Point:
+    """Given a list of points and a parameter t, returns the interpolated point at that parameter t.
+    The parameter t is a value between 0 and 1, where 0 corresponds to the first point in the list and 1 corresponds to the last point.
+    The interpolation is done by calculating the distance along the path defined by the points and finding the corresponding point.
+    
+    Args:
+        points (list[Point]): List of Point objects representing the points to interpolate.
+        t (float): Parameter t representing the position along the lane from 0 to 1.
+        
+    Returns:
+        Point: The interpolated point at the given parameter t.
+    """
+    if t <= 0: return points[0]
+    if t >= 1: return points[-1]
+    
+    total_dist = sum(
+        np.hypot(points[i+1].x - points[i].x, points[i+1].y - points[i].y)
+        for i in range(len(points)-1)
+    )
+    
+    target_dist = t * total_dist
+    acc_dist = 0.0
+    
+    for i in range(len(points)-1):
+        p1, p2 = points[i], points[i+1]
+        seg_len = np.hypot(p2.x - p1.x, p2.y - p1.y)
+        if acc_dist + seg_len >= target_dist:
+            local_t = (target_dist - acc_dist) / seg_len
+            x = p1.x + local_t * (p2.x - p1.x)
+            y = p1.y + local_t * (p2.y - p1.y)
+            return Point(x, y)
+        acc_dist += seg_len
+    
+    return points[-1]
+
+def get_direction(points: list[Point], t: float, delta: float=0.01) -> Point:
+    """Given a list of points and a parameter t, returns the direction vector at that point.
+    The direction vector is calculated by taking the difference between the points at t - delta and t + delta.
+
+    Args:
+        points (list[Point]): List of Point objects representing the points to interpolate.
+        t (float): Parameter t representing the position along the lane from 0 to 1.
+        delta (float, optional): A small value to calculate the direction vector. Defaults to 0.01.
+
+    Returns:
+        Point: The direction vector at the given parameter t represented by a point.
+    """
+    t1 = max(0.0, t - delta)
+    t2 = min(1.0, t + delta)
+    p1 = interpolate_points(points, t1)
+    p2 = interpolate_points(points, t2)
+    dx = p2.x - p1.x
+    dy = p2.y - p1.y
+    norm = np.hypot(dx, dy)
+    return Point(dx / norm, dy / norm) if norm != 0 else Point(0.0, 0.0)
+
+def get_center_point(lane: Lane, longitude: float, latitude: float) -> Point:
+    """Given a lane and a longitude and latitude, returns the center point in the lane at the coordinates provided.
+
+    Args:
+        lane (Lane): Lane object representing the lane.
+        longitude (float): Longitude distance from 0 to 1 where 0 is the start of the lane and 1 is the end of the lane.
+        latitude (float): Lateral distance from 0 to 1 where 0 is the left edge of the lane and 1 is the right edge of the lane.
+
+    Returns:
+        Point: The center point in the lane at the coordinates provided.
+    """
+    # 1. Interpolate the corresponding points along each lane edge
+    left_pt = interpolate_points(lane.left_edge, longitude)
+    right_pt = interpolate_points(lane.right_edge, longitude)
+
+    # 2. Linearly interpolate across the lane from left to right
+    x = left_pt.x + (right_pt.x - left_pt.x) * latitude
+    y = left_pt.y + (right_pt.y - left_pt.y) * latitude
+    center_pt = Point(x, y)
+    
+    return center_pt
+
+def get_rotation_vector(direction_vector: Point, angle_offset: float) -> Point:
+    """Given a direction vector and an angle offset, returns the rotated vector.
+    
+    Args:
+        direction_vector (Point): The direction vector to rotate.
+        angle_offset (float): The angle offset in radians.
+        
+    Returns:
+        Point: The rotated vector as a Point object.
+    """
+    # Apply angle offset to that direction
+    cos_theta = np.cos(angle_offset)
+    sin_theta = np.sin(angle_offset)
+    rotated_x = direction_vector.x * cos_theta - direction_vector.y * sin_theta
+    rotated_y = direction_vector.x * sin_theta + direction_vector.y * cos_theta
+    
+    return Point(rotated_x, rotated_y)
+
+
 
 

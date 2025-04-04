@@ -38,7 +38,8 @@ class Simulation:
             speed (float): Speed of the vehicle in miles per hour.
         """
         self.reset_sim_status()
-        center_point, heading_point = self.environment.position_from_coordiantes(longitude=longitude, latitude=latitude, angle_offset=dir_angle_offset)
+        heading_offset = self.vehicle.heading_offset_ft
+        center_point, heading_point = self.environment.position_from_coordinates(longitude=longitude, latitude=latitude, angle_offset=dir_angle_offset, heading_offset=heading_offset)
         self.vehicle.vehicle_setup(center_point, heading_point, speed)
         self.agent.sensors.update_sensors(self.vehicle.center_point, self.vehicle.heading_point)
         
@@ -47,7 +48,7 @@ class Simulation:
         latitude = random.uniform(0, 1)
         dir_angle_offset = random.uniform(-np.pi, np.pi)
         speed = random.uniform(speed_range[0], speed_range[1])
-        center_point, heading_point = self.environment.position_from_coordiantes(longitude=longitude, latitude=latitude, angle_offset=dir_angle_offset)
+        center_point, heading_point = self.environment.position_from_coordinates(longitude=longitude, latitude=latitude, angle_offset=dir_angle_offset)
         self.vehicle.vehicle_setup(center_point=center_point, heading_point=heading_point, speed_mph=speed)
         
     def get_state(self) -> list[Point, float, list[float]]:

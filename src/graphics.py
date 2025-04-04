@@ -38,6 +38,8 @@ def plot_lane(lane: Lane): # Tested as of 3/29/2025
     # Plot control points
     ctrl_x, ctrl_y = list_points_as_values(lane.control_points)
     ax.plot(ctrl_x, ctrl_y, 'ro', label='Control Points')
+    for i, (x, y) in enumerate(zip(ctrl_x, ctrl_y)):
+        ax.annotate(text=f"{i}", xy=(x, y), fontsize=8, ha='right')
     
     # Plot left edge
     left_x, left_y = list_points_as_values(lane.left_edge)
@@ -66,12 +68,20 @@ def plot_vehicle(vehicle: Vehicle): # Tested as of 3/29/2025
     # Plot vehicle center point
     ax.plot(vehicle.center_point.x, vehicle.center_point.y, 'ro', label='Vehicle Center')
     
-    # ax.plot([vehicle.center_point.x, vehicle.heading_point.x], [vehicle.center_point.y, vehicle.heading_point.y], 'm-', label="heading fr")
     # Plot vehicle heading with arrow
-    ax.quiver(vehicle.center_point.x, vehicle.center_point.y,
-              vehicle.heading_point.x - vehicle.center_point.x,
-              vehicle.heading_point.y - vehicle.center_point.y,
-              angles='xy', scale_units='xy', scale=0.1, color='g', label='Heading')
+    x = [vehicle.center_point.x, vehicle.heading_point.x]
+    y = [vehicle.center_point.y, vehicle.heading_point.y]
+    ax.annotate(
+        "",
+        xy=(x[1], y[1]),
+        xytext=(x[0], y[0]),
+        arrowprops=dict(
+            facecolor="green",
+            edgecolor="green",
+            arrowstyle="->",
+            lw=2,
+        ),
+    )
     
 def plot_sensors(sensor_array): # Tested as of 3/29/2025
     """Plots the sensors in the sensor array."""
