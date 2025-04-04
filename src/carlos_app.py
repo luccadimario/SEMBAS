@@ -13,7 +13,7 @@ class Agent:
     def __init__(self, sensor_array: SensorArray):
         self.sensors = sensor_array
 
-    def decide(self, sensor_data, heading, speed):
+    def decide(self, state):
         steering = 0.0
         acceleration = 0.0
         return steering, acceleration

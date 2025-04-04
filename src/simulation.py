@@ -58,7 +58,7 @@ class Simulation:
         """
         # Placeholder for actual implementation
         sensor_detections = self.agent.sensors.sense(self.environment, self.vehicle)
-        return [self.vehicle.heading_point.x, self.vehicle.heading_point.y, self.vehicle.speed, sensor_detections]
+        return [self.vehicle.heading_point.x, self.vehicle.heading_point.y, self.vehicle.speed_mph, sensor_detections]
     
     def sim_step(self) -> None:
         """Executes a single step in the simulation.
@@ -84,10 +84,13 @@ class Simulation:
         """
         self.total_time_steps += 1
         self.vehicle_in_lane = self.environment.point_in_lane(self.vehicle.center_point)
-        self.vehicle_in_motion = self.vehicle.speed > 0
+        self.vehicle_in_motion = self.vehicle.speed_mph > 0
         
     def get_sim_status(self) -> tuple[float, bool, bool]:
         """Returns the current simulation status: the total time steps, vehicle in lane status, vehicle in motion status.
+        
+        Returns:
+            tuple[float, bool, bool]: Tuple of three values representing: total time steps, vehicle in lane status, vehicle in motion status.
         """
         return self.total_time_steps, self.vehicle_in_lane, self.vehicle_in_motion
         

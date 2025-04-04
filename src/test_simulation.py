@@ -62,14 +62,41 @@ def test_sim_random_reset():
     
 def test_sim_step():
     sim = init_sim()
-
+    sim.sim_random_reset()
+    # sim.agent.sensors.update_sensors(sim.vehicle.center_point, sim.vehicle.heading_point)
+    original_x = sim.vehicle.center_point.x
+    original_y = sim.vehicle.center_point.y
+    graphics.render_simulation(sim=sim)
+    graphics.show(title="Before simulation step")
+    sim.sim_step()
+    graphics.render_simulation(sim=sim)
+    assert sim.total_time_steps == 1, "Total time steps should be 1 after one step."
+    assert sim.vehicle.center_point.x != original_x, "Vehicle should have moved after one step."
+    assert sim.vehicle.center_point.y != original_y, "Vehicle should have moved after one step."
+    graphics.show("Simulation step")
+    graphics.show(title="After simulation step")
+    print("Simulation step executed correctly.")
+    
 def test_sim_status():
     sim = init_sim()
+    sim.sim_random_reset()
+    sim_status = sim.get_sim_status()
+    assert sim_status[0] == 0, "Total time steps should be 0 after initialization."
+    assert sim_status[1] == True, "Vehicle should be in lane after initialization."
+    assert sim_status[2] == True, "Vehicle should be in motion after initialization."
+    sim.sim_step()
+    sim_status = sim.get_sim_status()
+    assert sim_status[0] == 1, "Total time steps should be 1 after one step."
+    print("Simulation status updates correctly.")
+    
 
 def run_tests():
     test_sim_reset_right_edge()
     test_sim_reset_left_edge()
     test_sim_random_reset()
+    test_sim_status()
+    test_sim_step()
+    print("All simulation tests passed!")
     
 
 if __name__ == "__main__":

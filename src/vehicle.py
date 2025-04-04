@@ -200,7 +200,6 @@ class VehicleBody:
             heading_point (float): Heading point of the vehicle.
             
         """
-
         # Compute the heading angle (in radians)
         angle = math.atan2(heading_point.y - center_point.y, heading_point.x - center_point.x)
         self.corners = []
