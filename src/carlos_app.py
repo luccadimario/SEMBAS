@@ -6,6 +6,7 @@ from simulation import Simulation
 from sensor_array import SensorArray
 import math
 import layout_utils
+from carlos_logging import logger
 
 
 # PLACEHOLDER AGENT CLASS FOR TESTING
@@ -26,7 +27,6 @@ class Agent:
         """
         sensor_data = self.sensor_array.sense(env, vehicle)
         return sensor_data
-
 
 #### Lane Initialization ####
 def init_lane(file_path: str = None): # Tested as of 3/29/2025
