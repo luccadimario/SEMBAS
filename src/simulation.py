@@ -1,7 +1,6 @@
 from point import Point
 from vehicle import Vehicle
 from environment import Environment
-from sensor_array import SensorArray
 import random
 import numpy as np
 

@@ -1,11 +1,8 @@
 from lane import Lane
 from point import Point
-from vehicle import Vehicle
-from environment import Environment
 import carlos_app as app
 import graphics
 import math
-from sensor_array import SensorArray
 from sensor import Sensor
 import test_vehicle_placement
 import test_simulation

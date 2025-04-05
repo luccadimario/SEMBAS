@@ -1,6 +1,5 @@
 from point import Point
 from environment import Environment
-import math
 import numpy as np
 import sensor_detection as SD
 from sensor import Sensor

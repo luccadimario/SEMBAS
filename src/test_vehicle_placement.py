@@ -1,6 +1,4 @@
 import vehicle_placement as VP
-from vehicle import Vehicle
-from point import Point
 import numpy as np
 
 

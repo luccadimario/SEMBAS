@@ -5,7 +5,6 @@ from sensor import Sensor
 from lane import Lane
 from environment import Environment
 from vehicle import Vehicle
-import matplotlib.pyplot as plt
 import math
 
 def test_calc_end_point():

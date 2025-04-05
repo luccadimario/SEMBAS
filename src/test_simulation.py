@@ -7,8 +7,6 @@ from sensor_array import SensorArray
 import layout_utils
 import math
 import graphics
-from point import Point
-import numpy as np
 
 def init_sim():
     lane_ctrl_points, lane_width, closed_loop = layout_utils.load_lane_from_file("./layouts/open_loop_0.txt")

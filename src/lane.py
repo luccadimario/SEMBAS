@@ -1,7 +1,6 @@
 from point import Point
 from scipy.interpolate import CubicSpline
 import numpy as np
-import math
 
 class Lane:
     def __init__(self, control_points: list[Point], lane_width: float=12.0, closed_loop: bool = False):

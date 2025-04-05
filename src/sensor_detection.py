@@ -1,5 +1,4 @@
 from point import Point
-import numpy as np
 from sensor import Sensor
 from lane import Lane
 
