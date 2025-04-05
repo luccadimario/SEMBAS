@@ -5,7 +5,8 @@ from environment import Environment
 import carlos_app as app
 import graphics
 import math
-from sensors import Sensor, SensorArray
+from sensor_array import SensorArray
+from sensor import Sensor
 import test_vehicle_placement
 import test_simulation
 import test_environment
@@ -22,7 +23,7 @@ def test_init_lane():
     assert lane.control_points[0].y == 397.41216641207694, "Lane control points do not match expected values."
     assert lane.closed_loop == False, "Lane closed loop parameter does not match expected value."
     assert lane.lane_width == 12.0, "Lane width does not match expected value."
-    print("Lane initialization test passed.")
+    print("App Test: Lane initialization test PASSED.")
     return lane  # Return the lane object for further testing
     
 def test_init_environment():
@@ -31,7 +32,7 @@ def test_init_environment():
     env = app.init_environment(lane)
     assert env is not None, "Environment initialization failed."
     assert isinstance(env.lane, Lane), "Environment lane is not a Lane object."
-    print("Environment initialization test passed.")
+    print("App Test: Environment initialization test PASSED.")
     return env  # Return the environment object for further testing
     
 def test_init_vehicle():
@@ -50,7 +51,7 @@ def test_init_vehicle():
     assert round(vehicle.speed_mph, 3) == speed, "Vehicle speed does not match."
     assert vehicle.body is not None, "Vehicle body is not built."
     assert vehicle.velocity_fps is not None, "Vehicle velocity is not calculated."
-    print("Vehicle initialization test passed.")
+    print("App Test: Vehicle initialization test PASSED.")
     return vehicle  # Return the vehicle object for further testing
 
 def test_init_sensor_array():
@@ -65,8 +66,7 @@ def test_init_sensor_array():
     assert sensor_array.sensors[0].angle_offset == math.pi / 4, "Sensor array first sensor angle does not match."
     assert sensor_array.sensors[4].angle_offset == -math.pi / 4, "Sensor array last sensor angle does not match."
     assert sensor_array.sensors[2].angle_offset == 0, "Sensor array middle sensor angle does not match."
-    test_sensor()
-    print("Sensor array initialization test passed.")
+    print("App Test: Sensor array initialization test PASSED.")
     return sensor_array  # Return the sensor array object for further testing
 
 def test_sensor():
@@ -78,7 +78,7 @@ def test_sensor():
     assert s.angle_offset == -math.pi / 2, "Sensor angle offset does not match expected value."
     assert s.end_point.x == 50, f"Sensor end point x-coordinate {s.end_point.x} does not match expected value."
     assert s.end_point.y == 0, "Sensor end point y-coordinate does not match expected value."
-    print("Single sensor test passed.")
+    print("App Test: Single sensor test PASSED.")
     
 def sensor_tests():
     sensor_array = test_init_sensor_array()
@@ -87,7 +87,7 @@ def sensor_tests():
     sensor_array.update_sensors(center_point, Point(0, 1))  # Update sensor positions based on vehicle
     assert sensor_array.sensors[0].origin_point == center_point, "Sensor origin point does not match vehicle center point."
     assert sensor_array.sensors[2].end_point.x == 0, "Sensor end point x-coordinate does not match expected value."
-    print("Sensor tests passed.")
+    print("App Test: Sensor tests PASSED.")
 
 def test_graphics():
     env = test_init_environment()
@@ -96,30 +96,31 @@ def test_graphics():
     graphics.plot_environment(env)  # Plot the environment
     graphics.plot_vehicle(vehicle)  # Plot the vehicle
     sensor_array.update_sensors(vehicle.center_point, vehicle.heading_point)  # Update sensor positions based on vehicle
-    print(f"center: {vehicle.center_point.values()}, heading: {vehicle.heading_point.values()}")
-    print([s.angle_offset for s in sensor_array.sensors])
+    # print(f"center: {vehicle.center_point.values()}, heading: {vehicle.heading_point.values()}")
+    # print([s.angle_offset for s in sensor_array.sensors])
     graphics.plot_sensors(sensor_array)
-    graphics.show()  # Show the plot
+    graphics.show(title="Graphics Test")  # Show the plot
+    print("App Test: Graphics test NEEDS VISUAL CONFIRMATION.")
     
 #### Main Test Function ####
 def initialization_tests():
     test_init_lane()
     test_init_environment()
     test_init_vehicle()
+    print("App Test: Initialization tests PASSED.\n")
 
-def unit_tests():
+def run_all_tests():
     test_vehicle.run_tests()
     test_environment.run_tests()
     test_sensors.run_tests()
     test_vehicle_placement.run_tests()
     test_simulation.run_tests()
-    
-def integration_tests():
+    initialization_tests()
     test_graphics()
+    print("App Test: All tests PASSED.")
 
 if __name__ == "__main__":
-    initialization_tests()
-    unit_tests()
-    integration_tests()
+    # initialization_tests()
+    run_all_tests()
 
     

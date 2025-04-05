@@ -3,7 +3,7 @@ from vehicle import Vehicle
 from lane import Lane
 from environment import Environment
 from simulation import Simulation
-from sensors import SensorArray
+from sensor_array import SensorArray
 import math
 import layout_utils
 

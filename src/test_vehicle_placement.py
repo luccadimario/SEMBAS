@@ -18,7 +18,7 @@ def test_lateral_adjustment():
         result = VP.lateral_adjustment(latitude, angle_offset)
         # print(f"{i}: Expected {expected}, Actual {result}")
         assert result == expected, f"{i}: Expected {expected}, but got {result}"
-    print("All lateral adjustment tests passed!")
+    print("Vehicle Placement Test: All lateral adjustment tests PASSED")
         
 def test_open_loop_adjustment():
     """Tests the open loop adjustment function."""
@@ -49,11 +49,12 @@ def test_open_loop_adjustment():
         result = VP.open_loop_adjustment(longitude, latitude, angle_offset)
         # print(f"{i}: Expected {angle_offset}, Actual {result}")
         assert result == expected, f"{i}: Expected {expected}, but got {result}"
-    print("All open loop adjustment tests passed!")
+    print("Vehicle Placement Test: All open loop adjustment tests PASSED")
         
 def run_tests():
     test_lateral_adjustment()
     test_open_loop_adjustment()
+    print("Vehicle Placement Test: All tests PASSED.\n")
     
 if __name__ == "__main__":
     run_tests()

@@ -1,7 +1,7 @@
 from point import Point
 from vehicle import Vehicle
 from environment import Environment
-from sensors import SensorArray
+from sensor_array import SensorArray
 import random
 import numpy as np
 
@@ -54,11 +54,10 @@ class Simulation:
         
     def get_state(self) -> list[Point, float, list[float]]:
         """
-        Returns the current state of the simulation, including the vehicle's heading, speed, and the sensor detections.
+        Returns the current state of the simulation, including the vehicle's heading, speed, and the sensor data.
         """
-        # Placeholder for actual implementation
-        sensor_detections = self.agent.sensors.sense(self.environment, self.vehicle)
-        return [self.vehicle.heading_point.x, self.vehicle.heading_point.y, self.vehicle.speed_mph, sensor_detections]
+        _,sensor_data = self.agent.sensors.sense(self.environment, self.vehicle)
+        return [self.vehicle.heading_point.x, self.vehicle.heading_point.y, self.vehicle.speed_mph, sensor_data]
     
     def sim_step(self) -> None:
         """Executes a single step in the simulation.
@@ -75,6 +74,8 @@ class Simulation:
         steering, accleration = self.agent.decide(state)
         
         self.vehicle.update_position(steering, accleration, self.dt)
+        
+        self.agent.sensors.update_sensors(self.vehicle.center_point, self.vehicle.heading_point)
         
         self.update_sim_status()
         

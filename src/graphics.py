@@ -4,6 +4,7 @@ from simulation import Simulation
 from vehicle import Vehicle
 from environment import Environment
 from point import Point
+from sensor_array import SensorArray
 import numpy as np
 
 def list_points_as_values(point_list: list[Point]) -> tuple[list[float], list[float]]:
@@ -83,19 +84,25 @@ def plot_vehicle(vehicle: Vehicle): # Tested as of 3/29/2025
         ),
     )
     
-def plot_sensors(sensor_array): # Tested as of 3/29/2025
+def plot_sensors(sensor_array: SensorArray): # Tested as of 3/29/2025
     """Plots the sensors in the sensor array."""
     ax = plt.gca()
     label = 'Sensor'
     for i, sensor in enumerate(sensor_array.sensors):
         ax.plot([sensor.origin_point.x, sensor.end_point.x], [sensor.origin_point.y, sensor.end_point.y], 'r--', label=label)
-        ax.annotate(text=f"{i}", xy=(sensor.end_point.values()))
+        # ax.annotate(text=f"{i}", xy=(sensor.end_point.values()))
         label = None
+    
         
-def plot_sensor(sensor):
+def plot_sensor_detections(detection_points, detection_distances):
+    """Plots the sensor detections."""
     ax = plt.gca()
-    ax.plot([sensor.origin_point.x, sensor.end_point.x], [sensor.origin_point.y, sensor.end_point.y], 'r--', label='sensor')
-    # ax.annotate(text=f"{i}", xy=(sensor.end_point.values()))
+    label = 'Sensor Detection'
+    for i, point in enumerate(detection_points):
+        if point is not None:
+            ax.plot(point.x, point.y, 'kx', label=label)
+            ax.annotate(text=f"{detection_distances[i]: .2f}", xy=(point.x, point.y), fontsize=8, ha='right')
+            label = None
     
 def show(title: str="", x_lim: list[float]=[0,400], y_lim: list[float]=[0,400]): # Tested as of 3/29/2025
     """Displays the plot."""
@@ -113,6 +120,8 @@ def render_simulation(sim: Simulation):
     plot_environment(env)  # Plot the environment
     vehicle = sim.vehicle
     plot_vehicle(vehicle)  # Plot the vehicle
-    sensors = sim.agent.sensors
+    sensors = sim.agent.sensors  # Get the sensor array
+    points, detections = sensors.sense(env=env, vehicle=vehicle)  # Update sensor data
     plot_sensors(sensor_array=sensors)
+    plot_sensor_detections(detection_points=points, detection_distances=detections)  # Plot the sensor detections
     

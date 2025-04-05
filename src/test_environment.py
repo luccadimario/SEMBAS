@@ -21,6 +21,7 @@ def test_position_from_coordinates():
     
 def run_tests():
     test_position_from_coordinates()
+    print("Environment Test: All tests PASSED.\n")
     
 if __name__ == "__main__":
     run_tests()
