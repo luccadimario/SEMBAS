@@ -23,3 +23,14 @@ class Agent:
         """
         sensor_data = self.sensor_array.sense(env, vehicle)
         return sensor_data
+    
+class SimpleAgent(Agent):
+    """Simple agent that makes decisions based on the sensor data."""
+    
+    def __init__(self, sensor_array: SensorArray):
+        super().__init__(sensor_array)
+    
+    def decide(self, state):
+        """Makes a decision based on the sensor data."""
+        # Implement your decision-making logic here
+        return 1.0, 1.0

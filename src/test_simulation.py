@@ -1,22 +1,58 @@
 from simulation import Simulation
 from vehicle import Vehicle
 from lane import Lane
-from agent import Agent
+from agent import SimpleAgent
 from environment import Environment
 from sensor_array import SensorArray
 import layout_utils
 import math
 import graphics
+import matplotlib.pyplot as plt
+from point import Point
+import numpy as np
 
 
 def init_sim():
-    lane_ctrl_points, lane_width, closed_loop = layout_utils.load_lane_from_file("./layouts/open_loop_0.txt")
-    lane = Lane(control_points=lane_ctrl_points, lane_width=lane_width, closed_loop=closed_loop)
+    # lane_ctrl_points, lane_width, closed_loop = layout_utils.load_lane_from_file("./layouts/open_loop_0.txt")
+    lane_ctrl_points = [Point(100, 100), Point(300, 100)]
+    lane = Lane(control_points=lane_ctrl_points, lane_width=12.0, closed_loop=False)
     env = Environment(lane)
     v = Vehicle()
     sensor_arr = SensorArray(num_sensors=5, sensor_length=50, sensor_angle_spread=math.pi)
-    agent = Agent(sensor_array=sensor_arr)
+    agent = SimpleAgent(sensor_array=sensor_arr)
     return Simulation(vehicle=v, environment=env, agent=agent)
+
+def test_sim_reset_left_edge():
+    sim = init_sim()
+    longitude = 0.0
+    latitude = 0.5
+    speed = 25.0
+    dir_angle_offset = 0.0
+    sim.sim_reset(longitude=longitude, latitude=latitude, dir_angle_offset=dir_angle_offset, speed=speed)
+    
+    plt.subplot(2, 4, 1)
+    graphics.render_simulation_subplots(sim=sim)
+    plt.title("Simulation Test - Reset Left Edge - Initial")
+    plt.xlim(50, 350)
+    plt.ylim(50, 150)
+    
+    sim.sim_reset(longitude=0.5, latitude=0.0, dir_angle_offset=math.pi/4, speed=45.0)
+    
+    plt.subplot(2, 4, 5)
+    graphics.render_simulation_subplots(sim=sim)
+    plt.title("Vehicle .5 down lane, left edge, 45 deg angle towards center")
+    plt.xlim(50, 350)
+    plt.ylim(50, 150)
+    
+    assert 199.999999 <= sim.vehicle.center_point.x <= 200.000001, "Vehicle center point X does not match expected value."
+    assert 105.000001 <= sim.vehicle.center_point.y <= 106.000002, "Vehicle center point Y does not match expected value."
+    
+    hx = (np.cos(-math.pi/4) * sim.vehicle.heading_offset_ft) + sim.vehicle.center_point.x
+    assert (hx-0.000001) <= sim.vehicle.heading_point.x <= (hx+0.000001), f"Vehicle heading point X {sim.vehicle.heading_point.x} does not match expected value {hx}."
+    hy = (np.sin(-math.pi/4) * sim.vehicle.heading_offset_ft) + sim.vehicle.center_point.y
+    assert (hy-0.000001) <= sim.vehicle.heading_point.y <= (hy+0.000001), "Vehicle heading point Y does not match expected value."
+    
+    print("Simulation Test: Visualization of left edge reset PASSED. CONFIRM VISUALLY")
 
 def test_sim_reset_right_edge():
     sim = init_sim()
@@ -25,27 +61,29 @@ def test_sim_reset_right_edge():
     speed = 25.0
     dir_angle_offset = 0.0
     sim.sim_reset(longitude=longitude, latitude=latitude, dir_angle_offset=dir_angle_offset, speed=speed)
-    graphics.render_simulation(sim=sim)
-    graphics.show("Initial reset")
-    sim.sim_reset(longitude=0.5, latitude=1.0, dir_angle_offset=math.pi/4, speed=45.0)
-    graphics.render_simulation(sim=sim)
-    graphics.show("Vehicle .5 down lane, right edge, 45 deg angle towards center")
-    print("Simulation Test: Visualization of right edge reset NEEDS VISUAL CONFIRMATION.")
+    plt.subplot(2, 4, 2)
+    graphics.render_simulation_subplots(sim=sim)
+    plt.title("Simulation Test - Reset Right Edge - Initial")
+    plt.xlim(50, 350)
+    plt.ylim(50, 150)
     
-def test_sim_reset_left_edge():
-    sim = init_sim()
-    longitude = 0.0
-    latitude = 0.5
-    speed = 25.0
-    dir_angle_offset = 0.0
-    sim.sim_reset(longitude=longitude, latitude=latitude, dir_angle_offset=dir_angle_offset, speed=speed)
-    graphics.render_simulation(sim=sim)
-    graphics.show("Initial reset")
-    sim.sim_reset(longitude=0.5, latitude=0.0, dir_angle_offset=math.pi/4, speed=45.0)
-    graphics.render_simulation(sim=sim)
-    graphics.show("Vehicle .5 down lane, left edge, 45 deg angle towards center")
-    print("Simulation Test: Visualization of left edge reset NEEDS VISUAL CONFIRMATION.")
+    sim.sim_reset(longitude=0.5, latitude=1.0, dir_angle_offset=-math.pi/4, speed=45.0)
+    plt.subplot(2, 4, 6)
+    graphics.render_simulation_subplots(sim=sim)
+    plt.title("0.5 down lane, right edge, 45 deg angle towards center")
+    plt.xlim(50, 350)
+    plt.ylim(50, 150)
+    
+    assert 199.999999 <= sim.vehicle.center_point.x <= 200.000001, "Vehicle center point X does not match expected value."
+    assert 93.999999 <= sim.vehicle.center_point.y <= 94.000001, "Vehicle center point Y does not match expected value."
+    hx = (np.cos(math.pi/4) * sim.vehicle.heading_offset_ft) + sim.vehicle.center_point.x
+    assert (hx-0.000001) <= sim.vehicle.heading_point.x <= (hx+0.000001), "Vehicle heading point X does not match expected value."
+    hy = (np.sin(math.pi/4) * sim.vehicle.heading_offset_ft) + sim.vehicle.center_point.y
+    assert (hy-0.000001) <= sim.vehicle.heading_point.y <= (hy+0.000001), "Vehicle heading point Y does not match expected value."
+    
+    print("Simulation Test: Visualization of right edge reset PASSED. CONFIRM VISUALLY.")
 
+    
 def test_sim_random_reset():
     sim = init_sim()
     longitude = 0.0
@@ -53,11 +91,19 @@ def test_sim_random_reset():
     speed = 25.0
     dir_angle_offset = 0.0
     sim.sim_reset(longitude=longitude, latitude=latitude, dir_angle_offset=dir_angle_offset, speed=speed)
-    graphics.render_simulation(sim=sim)
-    graphics.show(title="Before random reset")
+    plt.subplot(2, 4, 3)
+    graphics.render_simulation_subplots(sim=sim)
+    plt.title("Simulation Test - Random Reset - Initial")
+    plt.xlim(50, 350)
+    plt.ylim(50, 150)
+    
     sim.sim_random_reset()
-    graphics.render_simulation(sim=sim)
-    graphics.show(title="After random reset")
+    plt.subplot(2, 4, 7)
+    graphics.render_simulation_subplots(sim=sim)
+    plt.title("Simulation Test - Random Reset - After")
+    plt.xlim(50, 350)
+    plt.ylim(50, 150)
+    
     print("Simulation Test: Random reset visualization NEEDS VISUAL CONFIRMATION.")
     
 def test_sim_step():
@@ -66,15 +112,24 @@ def test_sim_step():
     # sim.agent.sensors.update_sensors(sim.vehicle.center_point, sim.vehicle.heading_point)
     original_x = sim.vehicle.center_point.x
     original_y = sim.vehicle.center_point.y
-    graphics.render_simulation(sim=sim)
-    graphics.show(title="Before simulation step")
+    plt.subplot(2, 4, 4)
+    graphics.render_simulation_subplots(sim=sim)
+    plt.title("Simulation Test - Step - Initial")
+    plt.xlim(50, 350)
+    plt.ylim(50, 150)
+    
     sim.sim_step()
-    graphics.render_simulation(sim=sim)
+    plt.subplot(2, 4, 8)
+    graphics.render_simulation_subplots(sim=sim)
+    plt.title("Simulation Test - Step - After")
+    plt.xlim(50, 350)
+    plt.ylim(50, 150)
+    
     assert sim.total_time_steps == 1, "Total time steps should be 1 after one step."
     assert sim.vehicle.center_point.x != original_x, "Vehicle should have moved after one step."
     assert sim.vehicle.center_point.y != original_y, "Vehicle should have moved after one step."
-    graphics.show(title="After simulation step")
-    print("Simulation Test: Simulation step PASSED.")
+    
+    print("Simulation Test: Simulation step PASSED. CONFIRM VISUALLY")
     
 def test_sim_status():
     sim = init_sim()
@@ -102,12 +157,13 @@ def test_get_state():
     
 
 def run_tests():
-    test_sim_reset_right_edge()
     test_sim_reset_left_edge()
+    test_sim_reset_right_edge()
     test_sim_random_reset()
     test_sim_status()
     test_sim_step()
     test_get_state()
+    graphics.show(title="Simulation Test - Step - After", x_lim=[50, 350], y_lim=[50, 150])
     print("Simulation Test: All tests PASSED.\n")
     
 

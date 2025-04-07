@@ -125,3 +125,14 @@ def render_simulation(sim: Simulation):
     plot_sensors(sensor_array=sensors)
     plot_sensor_detections(detection_points=points, detection_distances=detections)  # Plot the sensor detections
     
+def render_simulation_subplots(sim: Simulation):
+    """Renders the simulation by plotting the lane and vehicle."""
+    env = sim.environment
+    plot_environment(env)  # Plot the environment
+    vehicle = sim.vehicle
+    plot_vehicle(vehicle)  # Plot the vehicle
+    sensors = sim.agent.sensors  # Get the sensor array
+    points, detections = sensors.sense(env=env, vehicle=vehicle)  # Update sensor data
+    plot_sensors(sensor_array=sensors)
+    plot_sensor_detections(detection_points=points, detection_distances=detections)  # Plot the sensor detections
+    
