@@ -7,8 +7,9 @@ from sensor_array import SensorArray
 import math
 import layout_utils
 import carlos_logging
-from agent import Agent
+from agent import TestAgent
 import time
+import graphics
 
 # Creating Log
 def init_log(file_path: str = None):
@@ -54,7 +55,7 @@ def init_sensor_array(num_sensors: int = 5, sensor_length: float = 10, sensor_an
 
 #### Agent Initialization ####
 def init_agent(sensor_array: SensorArray):
-    agent = Agent(sensor_array)  # Placeholder for actual agent implementation
+    agent = TestAgent(sensor_array)  # Placeholder for actual agent implementation
     return agent
 
 
@@ -78,6 +79,20 @@ def main():
     sensor_array = init_sensor_array()
     agent = init_agent(sensor_array)
     sim = init_simulation(vehicle, env, agent, dt=0.1)
+    return sim
+    
+    
+def run_sim(sim: Simulation):
+    sim.sim_reset(longitude=0.0, latitude=0.5, dir_angle_offset=0.0, speed=25.0)
+    for i in range(20):
+        graphics.render_simulation(sim)
+        graphics.show()
+        sim.sim_step()
+    
+if __name__ == "__main__":
+    sim = main()
+    run_sim(sim)
+    
 
 
 

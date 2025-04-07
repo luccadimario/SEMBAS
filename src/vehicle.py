@@ -165,7 +165,7 @@ class Vehicle:
         
         # Update heading point based on new direction
         self.heading_point.x = self.center_point.x + new_direction[0] * self.heading_offset_ft
-        self.heading_point.y = self.center_point.x + new_direction[1] * self.heading_offset_ft
+        self.heading_point.y = self.center_point.y + new_direction[1] * self.heading_offset_ft
         
         self.speed_fps = new_speed
         # Adding the distance travelled in feet
