@@ -38,8 +38,9 @@ INITIAL_DIR_ANGLE_OFFSET = 0.0  # radians
 
 
 #### Lane Initialization ####
-lane_ctrl_points, lane_width, closed_loop = layout_utils.load_lane_from_file(LAYOUT_FILE_PATH)
-lane = Lane(control_points=lane_ctrl_points, lane_width=lane_width, closed_loop=closed_loop)
+# lane_ctrl_points, lane_width, closed_loop = layout_utils.load_lane_from_file(LAYOUT_FILE_PATH)
+# lane = Lane(control_points=lane_ctrl_points, lane_width=lane_width, closed_loop=closed_loop)
+lane = Lane(control_points=[Point(50,350), Point(350, 350)], lane_width=12.0, closed_loop=False)
 
 #### Environment Initialization ####
 env = Environment(lane)
@@ -104,7 +105,7 @@ def execute_simulation(sim: Simulation, train: bool=True, render: bool=False) ->
             if render:
                 graphics.render_simulation(sim=sim)
                 graphics.show()
-                input()
+                # input()
 
             # Update state
             state = next_state
@@ -138,17 +139,23 @@ def plot_rewards(reward_log, window=50):
     plt.grid(True)
     plt.tight_layout()
     plt.show()
-
     
-reward_log = execute_simulation(sim=sim, render=True)
-carlos_logging.log_message("Simulation Executed")
-plot_rewards(reward_log, window=50)
-carlos_logging.log_message("Carlos App Finished")
-input("Press Enter to begin test...")
-
+    
 while True:
-    reward_log = execute_simulation(sim=sim, train=False, render=True)
-    # input()("Press Enter to continue...")
+    graphics.render_simulation(sim=sim)
+    graphics.show()
+    sim.sim_step()
+    
+    
+    
+# reward_log = execute_simulation(sim=sim, render=True)
+# carlos_logging.log_message("Simulation Executed")
+# plot_rewards(reward_log, window=50)
+# carlos_logging.log_message("Carlos App Finished")
+# input("Press Enter to begin test...")
+
+# while True:
+#     reward_log = execute_simulation(sim=sim, train=False, render=True)
     
 
 

@@ -70,9 +70,9 @@ class Simulation:
         
         state = self.get_state()
         
-        steering, accleration = self.agent.decide(state)
+        steering, acceleration = self.agent.decide(state)
         
-        self.vehicle.update_position(steering, accleration, self.dt)
+        self.vehicle.update_position(steering, acceleration, self.dt)
         
         self.agent.sensors.update_sensors(self.vehicle.center_point, self.vehicle.heading_point)
         

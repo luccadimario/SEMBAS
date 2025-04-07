@@ -160,12 +160,15 @@ class Vehicle:
         # Takes into account acceleration over time
         displacement = (self.speed_fps * dt_sec) + (0.5 * self.acceleration_fps2 * (dt_sec ** 2))
         # Update position (move center point based on speed)
-        self.center_point.x += new_direction[0] * displacement
-        self.center_point.y += new_direction[1] * displacement 
+        cx = self.center_point.x + new_direction[0] * displacement
+        cy = self.center_point.y + new_direction[1] * displacement 
+        self.center_point = Point(cx, cy)
         
         # Update heading point based on new direction
-        self.heading_point.x = self.center_point.x + new_direction[0] * self.heading_offset_ft
-        self.heading_point.y = self.center_point.x + new_direction[1] * self.heading_offset_ft
+        hx = self.center_point.x + new_direction[0] * self.heading_offset_ft
+        hy = self.center_point.y + new_direction[1] * self.heading_offset_ft
+        self.heading_point = Point(hx, hy)
+        
         
         self.speed_fps = new_speed
         # Adding the distance travelled in feet
