@@ -1,6 +1,6 @@
 from lane import Lane
 from point import Point
-import carlos_app as app
+import carlos_app_for_tests as app
 import graphics
 import math
 from sensor import Sensor
