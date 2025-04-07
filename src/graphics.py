@@ -114,7 +114,7 @@ def show(title: str="", x_lim: list[float]=[0,400], y_lim: list[float]=[0,400]):
     plt.show()
     
 def render_simulation(sim: Simulation):
-    """Renders the simulation by plotting the lane and vehicle."""
+    """Renders the simulation by plotting the evironment, vehicle, sensors, and sensor detections. Clears the current figure first."""
     plt.clf()  # Clear the current figure
     env = sim.environment
     plot_environment(env)  # Plot the environment
@@ -126,7 +126,7 @@ def render_simulation(sim: Simulation):
     plot_sensor_detections(detection_points=points, detection_distances=detections)  # Plot the sensor detections
     
 def render_simulation_subplots(sim: Simulation):
-    """Renders the simulation by plotting the lane and vehicle."""
+    """Renders the simulation by plotting the evironment, vehicle, sensors, and sensor detections. DOES NOT clear the current figure first."""
     env = sim.environment
     plot_environment(env)  # Plot the environment
     vehicle = sim.vehicle

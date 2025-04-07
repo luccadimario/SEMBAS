@@ -6,8 +6,20 @@ from simulation import Simulation
 from sensor_array import SensorArray
 import math
 import layout_utils
-from carlos_logging import logger
+import carlos_logging
 from agent import Agent
+import time
+
+# Creating Log
+def init_log(file_path: str = None):
+    curr_time = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
+    if file_path is None:
+        carlos_logging.init_logger(f"./logs/{curr_time}_carlos_app.log")
+    else:
+        carlos_logging.init_logger(file_path)
+        
+init_log()
+carlos_logging.log_message("Carlos App Initialized")
 
 #### Lane Initialization ####
 def init_lane(file_path: str = None): # Tested as of 3/29/2025
