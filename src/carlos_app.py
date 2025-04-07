@@ -7,26 +7,7 @@ from sensor_array import SensorArray
 import math
 import layout_utils
 from carlos_logging import logger
-
-
-# PLACEHOLDER AGENT CLASS FOR TESTING
-class Agent:
-    def __init__(self, sensor_array: SensorArray):
-        self.sensors = sensor_array
-
-    def decide(self, state):
-        steering = 0.0
-        acceleration = 0.0
-        return steering, acceleration
-    
-    def sense(self, env: Environment, vehicle: Vehicle):
-        """Senses the environment using the sensors in the array. The sensors are updated based on the vehicle's position and heading.
-        Args:
-            env (Environment): Environment object representing the environment.
-            vehicle (Vehicle): Vehicle object representing the vehicle.
-        """
-        sensor_data = self.sensor_array.sense(env, vehicle)
-        return sensor_data
+from agent import Agent
 
 #### Lane Initialization ####
 def init_lane(file_path: str = None): # Tested as of 3/29/2025
