@@ -42,16 +42,16 @@ class Simulation:
         self.vehicle.vehicle_setup(center_point, heading_point, speed)
         self.agent.sensors.update_sensors(self.vehicle.center_point, self.vehicle.heading_point)
         
-    def sim_random_reset(self, speed_range: list[float]=[0,75]):
+    def sim_random_reset(self, speed_range: list[float]=[10.0,75.0]):
         longitude = random.uniform(0, 1)
-        latitude = random.uniform(0, 1)
-        dir_angle_offset = random.uniform(-np.pi, np.pi)
+        latitude = random.uniform(0.25, 0.75)
+        dir_angle_offset = random.uniform(-np.pi/4, np.pi/4)
         speed = random.uniform(speed_range[0], speed_range[1])
         center_point, heading_point = self.environment.position_from_coordinates(longitude=longitude, latitude=latitude, angle_offset=dir_angle_offset, heading_offset=self.vehicle.heading_offset_ft)
         self.vehicle.vehicle_setup(center_point=center_point, heading_point=heading_point, speed_mph=speed)
         self.agent.sensors.update_sensors(self.vehicle.center_point, self.vehicle.heading_point)
         
-    def get_state(self) -> list[Point, float, list[float]]:
+    def get_state(self) -> list[float, float, float, list[float]]:
         """
         Returns the current state of the simulation, including the vehicle's heading, speed, and the sensor data.
         """
@@ -77,6 +77,9 @@ class Simulation:
         self.agent.sensors.update_sensors(self.vehicle.center_point, self.vehicle.heading_point)
         
         self.update_sim_status()
+        
+        reward = self.agent.compute_reward(state, in_lane=self.vehicle_in_lane, in_motion=self.vehicle_in_motion)
+        return reward
         
     def update_sim_status(self) -> None:
         """

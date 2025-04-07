@@ -111,7 +111,7 @@ def show(title: str="", x_lim: list[float]=[0,400], y_lim: list[float]=[0,400]):
     plt.xlim(x_lim[0], x_lim[1])
     plt.ylim(y_lim[0], y_lim[1])
     plt.title(title)
-    plt.show()
+    plt.pause(0.1)
     
 def render_simulation(sim: Simulation):
     """Renders the simulation by plotting the evironment, vehicle, sensors, and sensor detections. Clears the current figure first."""

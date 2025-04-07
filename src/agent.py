@@ -15,6 +15,10 @@ class Agent:
         """throws an error if not implemented in child class."""
         raise NotImplementedError("decide() method not implemented in child class.")
     
+    def compute_reward(self, state, in_lane: bool, in_motion: bool) -> float:
+        """Computes the reward based on the state of the vehicle and the environment."""
+        raise NotImplementedError("compute_reward() method not implemented in child class.")
+    
     def sense(self, env: Environment, vehicle: Vehicle):
         """Senses the environment using the sensors in the array. The sensors are updated based on the vehicle's position and heading.
         Args:
@@ -34,3 +38,6 @@ class SimpleAgent(Agent):
         """Makes a decision based on the sensor data."""
         # Implement your decision-making logic here
         return 1.0, 1.0
+    
+    def compute_reward(self, state, in_lane: bool, in_motion: bool) -> float:
+        return 1.0 if in_lane and in_motion else -1.0
