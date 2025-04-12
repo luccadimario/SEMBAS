@@ -57,7 +57,7 @@ class SummerAgent(Agent):
         self.gamma = gamma
         self.max_accel = max_accel
 
-    def flatten_state(self, state: list[float, float, float, list[float]]) -> list[float]:
+    def flatten_state(self, state: torch.Tensor) -> list[float]:
         heading_x, heading_y, speed, sensor_data = state
         return [heading_x, heading_y, speed] + sensor_data
 

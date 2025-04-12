@@ -1,11 +1,17 @@
+from torch import Tensor
+import torch
+from agent import Agent
 from point import Point
 from vehicle import Vehicle
 from environment import Environment
 import random
 import numpy as np
 
+
 class Simulation:
-    def __init__(self, vehicle: Vehicle, environment: Environment, agent, dt: float = 0.1):
+    def __init__(
+        self, vehicle: Vehicle, environment: Environment, agent: Agent, dt: float = 0.1
+    ):
         """Represents a simulation of a vehicle in an environment. The simulation is represented by a vehicle object, environment object and agent object.
 
         Args:
@@ -19,14 +25,16 @@ class Simulation:
         self.agent = agent
         self.dt = dt
         self.reset_sim_status()
-        
+
     def reset_sim_status(self) -> None:
         """Resets the simulation status."""
         self.total_time_steps = 0
         self.vehicle_in_lane = True
         self.vehicle_in_motion = True
-        
-    def sim_reset(self, longitude: float, latitude: float, dir_angle_offset: float, speed: float) -> None:
+
+    def sim_reset(
+        self, longitude: float, latitude: float, dir_angle_offset: float, speed: float
+    ) -> None:
         """Resets the simulation vehicle based on the given longitude, latitude, direction angle offset and speed.
         Also resets the simulation statuses.
 
@@ -38,26 +46,43 @@ class Simulation:
         """
         self.reset_sim_status()
         heading_offset = self.vehicle.heading_offset_ft
-        center_point, heading_point = self.environment.position_from_coordinates(longitude=longitude, latitude=latitude, angle_offset=dir_angle_offset, heading_offset=heading_offset)
+        center_point, heading_point = self.environment.position_from_coordinates(
+            longitude=longitude,
+            latitude=latitude,
+            angle_offset=dir_angle_offset,
+            heading_offset=heading_offset,
+        )
         self.vehicle.vehicle_setup(center_point, heading_point, speed)
-        self.agent.sensors.update_sensors(self.vehicle.center_point, self.vehicle.heading_point)
-        
-    def sim_random_reset(self, speed_range: list[float]=[10.0,75.0]):
+        self.agent.sensors.update_sensors(
+            self.vehicle.center_point, self.vehicle.heading_point
+        )
+
+    def sim_random_reset(self, speed_range: list[float] = [10.0, 75.0]):
         longitude = random.uniform(0, 1)
         latitude = random.uniform(0.25, 0.75)
-        dir_angle_offset = random.uniform(-np.pi/4, np.pi/4)
+        dir_angle_offset = random.uniform(-np.pi / 4, np.pi / 4)
         speed = random.uniform(speed_range[0], speed_range[1])
-        center_point, heading_point = self.environment.position_from_coordinates(longitude=longitude, latitude=latitude, angle_offset=dir_angle_offset, heading_offset=self.vehicle.heading_offset_ft)
-        self.vehicle.vehicle_setup(center_point=center_point, heading_point=heading_point, speed_mph=speed)
-        self.agent.sensors.update_sensors(self.vehicle.center_point, self.vehicle.heading_point)
-        
-    def get_state(self) -> list[float, float, float, list[float]]:
+        center_point, heading_point = self.environment.position_from_coordinates(
+            longitude=longitude,
+            latitude=latitude,
+            angle_offset=dir_angle_offset,
+            heading_offset=self.vehicle.heading_offset_ft,
+        )
+        self.vehicle.vehicle_setup(
+            center_point=center_point, heading_point=heading_point, speed_mph=speed
+        )
+        self.agent.sensors.update_sensors(
+            self.vehicle.center_point, self.vehicle.heading_point
+        )
+
+    def get_state(self) -> Tensor:
         """
         Returns the current state of the simulation, including the vehicle's heading, speed, and the sensor data.
         """
-        _,sensor_data = self.agent.sensors.sense(self.environment, self.vehicle)
-        return [self.vehicle.heading_point.x, self.vehicle.heading_point.y, self.vehicle.speed_mph, sensor_data]
-    
+        _, sensor_data = self.agent.sensors.sense(self.environment, self.vehicle)
+        self.vehicle.heading_point
+        return torch.tensor([self.vehicle.speed_mph, *sensor_data])
+
     def sim_step(self) -> None:
         """Executes a single step in the simulation.
         1. Updates the sensors based on the vehicle's position and heading.
@@ -66,21 +91,27 @@ class Simulation:
         4. Updates the vehicle's position based on the action.
         5. Updates the simulation status.
         """
-        self.agent.sensors.update_sensors(self.vehicle.center_point, self.vehicle.heading_point)
-        
+        self.agent.sensors.update_sensors(
+            self.vehicle.center_point, self.vehicle.heading_point
+        )
+
         state = self.get_state()
-        
+
         steering, acceleration = self.agent.decide(state)
-        
+
         self.vehicle.update_position(steering, acceleration, self.dt)
-        
-        self.agent.sensors.update_sensors(self.vehicle.center_point, self.vehicle.heading_point)
-        
+
+        self.agent.sensors.update_sensors(
+            self.vehicle.center_point, self.vehicle.heading_point
+        )
+
         self.update_sim_status()
-        
-        reward = self.agent.compute_reward(state, in_lane=self.vehicle_in_lane, in_motion=self.vehicle_in_motion)
+
+        reward = self.agent.compute_reward(
+            state, in_lane=self.vehicle_in_lane, in_motion=self.vehicle_in_motion
+        )
         return reward
-        
+
     def update_sim_status(self) -> None:
         """
         Updates the simulation status based on the vehicle's position and heading.
@@ -88,17 +119,11 @@ class Simulation:
         self.total_time_steps += 1
         self.vehicle_in_lane = self.environment.point_in_lane(self.vehicle.center_point)
         self.vehicle_in_motion = self.vehicle.speed_mph > 0
-        
+
     def get_sim_status(self) -> tuple[float, bool, bool]:
         """Returns the current simulation status: the total time steps, vehicle in lane status, vehicle in motion status.
-        
+
         Returns:
             tuple[float, bool, bool]: Tuple of three values representing: total time steps, vehicle in lane status, vehicle in motion status.
         """
         return self.total_time_steps, self.vehicle_in_lane, self.vehicle_in_motion
-        
-        
-        
-        
-        
-    
