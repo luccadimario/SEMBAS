@@ -42,7 +42,7 @@ class NewAgent(Agent):
         )
         self.max_accel = max_accel
         self.model = ActorCriticModel(self.num_inputs, 2)
-        self.optim = optim.Adam(self.model.parameters, lr=lr)
+        self.optim = optim.Adam(self.model.parameters(), lr=lr)
 
         super().__init__(sensor_array)
 
