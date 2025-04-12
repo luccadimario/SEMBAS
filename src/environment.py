@@ -60,7 +60,7 @@ class Environment:
         ):
             in_lane = False
         else:
-            in_lane = abs(center_distance) <= (self.lane.lane_width / 2)
+            in_lane = classification <= (self.lane.lane_width / 2)
 
         left_dist = abs(calc_distance(point, self.lane.left_edge)[0])
         right_dist = abs(calc_distance(point, self.lane.right_edge)[0])
@@ -92,7 +92,6 @@ class Environment:
             Point: The heading point from the center point at the angle_offset from parallel to the center line.
         """
         # Ensuring both are from 0 to 1
-        print(longitude, latitude)
         longitude = np.clip(longitude, 0.0, 1.0)
         latitude = np.clip(latitude, 0.0, 1.0)
 
@@ -108,7 +107,7 @@ class Environment:
 
         lane_direction = VP.get_direction(self.lane.center_line, longitude)
 
-        heading = np.atan2(lane_direction.x, lane_direction.y) + angle_offset
+        heading = np.atan2(lane_direction.y, lane_direction.x) + angle_offset
 
         return center_point, heading
 
