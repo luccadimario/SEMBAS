@@ -2,64 +2,68 @@ from point import Point
 from sensor import Sensor
 from lane import Lane
 
+
 def get_lane_detection(sensor: Sensor, lane: Lane) -> float:
-        """Takes in the edges of the lane and the sensor.
-        Returns the closest point and closest distance of the intersection between the lane edges and the sensor line.
+    """Takes in the edges of the lane and the sensor.
+    Returns the closest point and closest distance of the intersection between the lane edges and the sensor line.
 
-        Args:
-            sensor (Sensor): Sensor object representing the sensor.
-            lane (Lane): Lane object representing the lane.
+    Args:
+        sensor (Sensor): Sensor object representing the sensor.
+        lane (Lane): Lane object representing the lane.
 
-        Returns:
-            tuple(Point, float): Point of the closest intersection and distance to intersection. If no intersection, returns None and -1.0.
-        """
-        right_edge_point, right_edge_intersection = intersections_on_line_segment(lane.right_edge, sensor.origin_point, sensor.end_point)
-        left_edge_point, left_edge_intersection = intersections_on_line_segment(lane.left_edge, sensor.origin_point, sensor.end_point)
-        
-        closest_point = None
-        intersection = None
-        if right_edge_intersection == -1.0:
-            intersection = left_edge_intersection
-            closest_point = left_edge_point if intersection != -1.0 else None
-        elif left_edge_intersection == -1.0:
-            intersection = right_edge_intersection
-            closest_point = right_edge_point
-        elif right_edge_intersection <= left_edge_intersection:
-            intersection = right_edge_intersection
-            closest_point = right_edge_point
-        else:
-            intersection = left_edge_intersection
-            closest_point = left_edge_point
-        # if right_edge_intersection == -1.0 and left_edge_intersection == -1.0:
-        #     intersection = -1.0
-        #     closest_point = None
-        # elif right_edge_intersection == -1.0 and left_edge_intersection != -1.0:
-        #     intersection = left_edge_intersection
-        #     closest_point = left_edge_point
-        # elif right_edge_intersection != -1.0 and left_edge_intersection == -1.0:
-        #     intersection = right_edge_intersection
-        #     closest_point = right_edge_point
-        # elif right_edge_intersection <= left_edge_intersection:
-        #     intersection = right_edge_intersection
-        #     closest_point = right_edge_point
-        # else:
-        #     intersection = left_edge_intersection
-        #     closest_point = left_edge_point
-        
-        return closest_point, intersection
-    
-def intersections_on_line_segment(
-    pt_list: list[Point], pt1: Point, pt2: Point
-):
+    Returns:
+        tuple(Point, float): Point of the closest intersection and distance to intersection. If no intersection, returns None and -1.0.
+    """
+    right_edge_point, right_edge_intersection = intersections_on_line_segment(
+        lane.right_edge, sensor.origin_point, sensor.end_point
+    )
+    left_edge_point, left_edge_intersection = intersections_on_line_segment(
+        lane.left_edge, sensor.origin_point, sensor.end_point
+    )
+
+    closest_point = None
+    intersection = None
+    if right_edge_intersection == -1.0:
+        intersection = left_edge_intersection
+        closest_point = left_edge_point if intersection != -1.0 else None
+    elif left_edge_intersection == -1.0:
+        intersection = right_edge_intersection
+        closest_point = right_edge_point
+    elif right_edge_intersection <= left_edge_intersection:
+        intersection = right_edge_intersection
+        closest_point = right_edge_point
+    else:
+        intersection = left_edge_intersection
+        closest_point = left_edge_point
+    # if right_edge_intersection == -1.0 and left_edge_intersection == -1.0:
+    #     intersection = -1.0
+    #     closest_point = None
+    # elif right_edge_intersection == -1.0 and left_edge_intersection != -1.0:
+    #     intersection = left_edge_intersection
+    #     closest_point = left_edge_point
+    # elif right_edge_intersection != -1.0 and left_edge_intersection == -1.0:
+    #     intersection = right_edge_intersection
+    #     closest_point = right_edge_point
+    # elif right_edge_intersection <= left_edge_intersection:
+    #     intersection = right_edge_intersection
+    #     closest_point = right_edge_point
+    # else:
+    #     intersection = left_edge_intersection
+    #     closest_point = left_edge_point
+
+    return closest_point, intersection
+
+
+def intersections_on_line_segment(pt_list: list[Point], pt1: Point, pt2: Point):
     """Takes in a list of points and two points. Returns the intersection points and distances between the two points.
-    
+
     Args:
         pt_list (list[Point]): List of points representing the line segment.
         pt1 (Point): Start point of the line segment.
         pt2 (Point): End point of the line segment.
-    
+
     Returns:
-        tuple(Point, float): Point and distance to intersection. If no intersection, returns None and -1.0. 
+        tuple(Point, float): Point and distance to intersection. If no intersection, returns None and -1.0.
     """
     distances = []
     points = []
@@ -67,7 +71,7 @@ def intersections_on_line_segment(
         intersection = line_segment_intersection(pt1, pt2, pt_list[i], pt_list[i + 1])
         # print(f"closest: {closest_distance}")
         if intersection is not None:
-            
+
             # print(intersection)
             # distance = (intersection - pt1).norm()
             dist = intersection.distanceTo(pt1)
@@ -80,7 +84,7 @@ def intersections_on_line_segment(
             #     print(f"closest: {closest_distance}")
             distances.append(dist)
             points.append(intersection)
-    
+
     if len(distances) != 0:
         closest_distance = min(distances)
         closest_point = points[distances.index(closest_distance)]
@@ -88,6 +92,7 @@ def intersections_on_line_segment(
         closest_point = None
         closest_distance = -1.0
     return closest_point, closest_distance
+
 
 # Function to check if two line segments intersect
 def line_segment_intersection(p1: Point, p2: Point, q1: Point, q2: Point):
@@ -101,7 +106,7 @@ def line_segment_intersection(p1: Point, p2: Point, q1: Point, q2: Point):
 
     Returns:
         Point: Intersection point if exists, otherwise None.
-        
+
     """
     r = p2 - p1
     s = q2 - q1
@@ -113,16 +118,16 @@ def line_segment_intersection(p1: Point, p2: Point, q1: Point, q2: Point):
         return None  # Parallel or collinear
     t = cross(q_minus_p, s) / r_cross_s
     u = qmp_cross_r / r_cross_s
-    
+
     intersection_point = None
-    
+
     if 0 <= t <= 1 and 0 <= u <= 1:
         intersection_point = p1 + t * r
-        
+
     return intersection_point
+
 
 def cross(v1: Point, v2: Point) -> float:
     """Calculates the cross product of two vectors."""
-    
-    return v1.x * v2.y - v1.y * v2.x
 
+    return v1.x * v2.y - v1.y * v2.x

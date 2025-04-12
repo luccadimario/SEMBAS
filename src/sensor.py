@@ -1,8 +1,11 @@
 from point import Point
 import math
 
+
 class Sensor:
-    def __init__(self, sensor_length: float, angle_offset: float): # Tested as of 3/29/2025
+    def __init__(
+        self, sensor_length: float, angle_offset: float
+    ):  # Tested as of 3/29/2025
         """Represents a sensor in the environment. The sensor is represented by an origin point, end point, and sensor length.
 
         Args:
@@ -11,8 +14,10 @@ class Sensor:
         """
         self.sensor_length = sensor_length
         self.angle_offset = angle_offset
-        
-    def update_sensor(self, origin_point: Point, direction_vector: Point):  # Tested as of 3/29/2025
+
+    def update_sensor(
+        self, origin_point: Point, direction_vector: Point
+    ):  # Tested as of 3/29/2025
         """Updates the sensor based on the given origin point and direction vector.
 
         Args:
@@ -21,8 +26,10 @@ class Sensor:
         """
         self.origin_point = origin_point
         self.end_point = self.calculate_end_point(direction_vector)
-        
-    def calculate_end_point(self, direction_vector: Point) -> Point: # Tested as of 3/29/2025
+
+    def calculate_end_point(
+        self, direction_vector: Point
+    ) -> Point:  # Tested as of 3/29/2025
         """Calculates the end point of the sensor based on the origin point. Direction vector is the direction of the center of the sensor group.
         The sensors actual direction is calculated by adding the angle offset to the direction vector.
         The end point is calculated by adding the new direction vector to the origin point, scaled by the sensor length.
