@@ -1,3 +1,4 @@
+import torch
 from point import Point
 import numpy as np
 import math
@@ -50,7 +51,7 @@ class Vehicle:
         self.max_breaking_fps2 = 15.0
 
     def vehicle_setup(
-        self, center_point: Point, heading_point: Point, speed_mph: float
+        self, center_point: Point, heading: float, speed_mph: float
     ):  # Tested as of 3/29/2025
         """Sets up the vehicle based on the given center point, heading point and speed.
 
@@ -60,13 +61,13 @@ class Vehicle:
             speed_mph (float): Speed of the vehicle in miles per hour.
         """
         self.center_point = center_point
-        self.heading_point = heading_point
         speed_fps = self.mph_to_fps(speed_mph)
         self.speed_fps = np.clip(speed_fps, self.min_speed_fps, self.max_speed_fps)
+        self.heading = heading
         self.distance_travelled_ft = 0
         self.acceleration_fps2 = 0
         self.velocity_fps = self.calculate_velocity()
-        self.body.build_body(center_point=center_point, heading_point=heading_point)
+        self.body.build_body(center_point=center_point, angle=heading)
 
     def vehicle_capabilities_str(self):  # Tested as of 3/31/2025
         """Returns string with the vehicles speed, acceleration, and breaking capabilities."""
@@ -81,7 +82,7 @@ class Vehicle:
         """Returns string with center, heading, speed mph, acceleration mph^2, and distance travelled feet"""
         return (
             f"Center: ({self.center_point.x}, {self.center_point.y}) -- "
-            f"Heading: ({self.heading_point.x}, {self.heading_point.y}) -- "
+            f"Heading: ({self.heading * 180 / np.pi}) deg -- "
             f"Speed: {self.speed_mph} mph -- "
             f"Acceleration: {self.acceleration_mph2} mph^2 -- "
             f"Distance travelled: {self.distance_travelled_ft} feet"
@@ -118,14 +119,19 @@ class Vehicle:
         """Converts given fps^2 value to mph^2"""
         return value_fps2 * self.fps2_to_mph2_conversion
 
-    def calculate_velocity(self):  # Tested as of 3/29/2025
+    def get_direction(self, angle: float = None) -> torch.Tensor:
+        angle = angle or self.heading
+        return torch.tensor([np.cos(angle), np.sin(angle)])
+
+    def calculate_velocity(self) -> torch.Tensor:  # Tested as of 3/29/2025
         """Calculates the velocity of the vehicle based on the center point, heading point, and speed.
 
         Returns:
             float: Velocity of the vehicle in miles per hour.
         """
-        direction = self.heading_point - self.center_point
-        direction = direction / direction.norm()
+        # direction = self.heading_point - self.center_point
+        # direction = direction / direction.norm()
+        direction = self.get_direction()
         return direction * self.speed_fps
 
     def update_position(
@@ -153,47 +159,28 @@ class Vehicle:
         # Update speed based on acceleration and clipping based on the vehicles speed capabilities
         new_speed = np.clip(new_speed, self.min_speed_fps, self.max_speed_fps)
 
-        # Calculate direction vector from center to heading point
-        dx = self.heading_point.x - self.center_point.x
-        dy = self.heading_point.y - self.center_point.y
-        direction_vector = np.array([dx, dy])
-
-        # Normalize the direction vector
-        direction_vector = direction_vector / np.linalg.norm(direction_vector)
-
         # Apply steering: rotate the direction vector by the steering input
-        angle_of_rotation = steering_rad  # Steering angle (radians)
-        rotation_matrix = np.array(
-            [
-                [np.cos(angle_of_rotation), -np.sin(angle_of_rotation)],
-                [np.sin(angle_of_rotation), np.cos(angle_of_rotation)],
-            ]
-        )
+        turn_angle = steering_rad * dt_sec
+        new_heading = self.heading + turn_angle
+        new_direction = self.get_direction(new_heading)
 
-        new_direction = np.dot(rotation_matrix, direction_vector)
-
-        prev_center = self.center_point.values()
         # Takes into account acceleration over time
-        displacement = (self.speed_fps * dt_sec) + (
+        distance = (self.speed_fps * dt_sec) + (
             0.5 * self.acceleration_fps2 * (dt_sec**2)
         )
         # Update position (move center point based on speed)
-        cx = self.center_point.x + new_direction[0] * displacement
-        cy = self.center_point.y + new_direction[1] * displacement
+        cx = self.center_point.x + new_direction[0] * distance
+        cy = self.center_point.y + new_direction[1] * distance
         self.center_point = Point(cx, cy)
 
-        # Update heading point based on new direction
-        hx = self.center_point.x + new_direction[0] * self.heading_offset_ft
-        hy = self.center_point.y + new_direction[1] * self.heading_offset_ft
-        self.heading_point = Point(hx, hy)
-
+        # Update speed
         self.speed_fps = new_speed
+
         # Adding the distance travelled in feet
-        self.distance_travelled_ft += self.center_point.distanceTo(
-            Point(prev_center[0], prev_center[1])
-        )
+        self.distance_travelled_ft += distance
+
         # Rebuilding the body after updating position
-        self.body.build_body(self.center_point, self.heading_point)
+        self.body.build_body(self.center_point, turn_angle)
 
 
 class VehicleBody:
@@ -212,7 +199,7 @@ class VehicleBody:
             Point(-half_length, -half_width),  # Back Left
         ]
 
-    def build_body(self, center_point: Point, heading_point: Point):
+    def build_body(self, center_point: Point, turn_angle: float):
         """Creates the vehicle corners based on the center point and heading point.
 
         Corners are in the order of: Front left, front right, back right, back left
@@ -223,11 +210,9 @@ class VehicleBody:
 
         """
         # Compute the heading angle (in radians)
-        angle = math.atan2(
-            heading_point.y - center_point.y, heading_point.x - center_point.x
-        )
+        # angle = math.atan2(heading_point.y - center_point.y, heading_point.x - center_point.x)
         self.corners = []
         for c in self.base_corners:
             c = c + center_point
-            c = c.rotate_point_by_radians(center_point, angle)
+            c = c.rotate_point_by_radians(center_point, turn_angle)
             self.corners.append(c)
