@@ -7,6 +7,7 @@ from sensor_array import SensorArray
 import os
 import carlos_logging
 
+
 class Actor(nn.Module):
     def __init__(self, input_dim, action_dim):
         super().__init__()
@@ -37,7 +38,16 @@ class Critic(nn.Module):
 
 
 class SummerAgent(Agent):
-    def __init__(self, sensor_array: SensorArray, obs_dim: int, action_dim: int=2, max_accel=5.0, lr_actor=1e-4, lr_critic=1e-3, gamma=0.99):
+    def __init__(
+        self,
+        sensor_array: SensorArray,
+        obs_dim: int,
+        action_dim: int = 2,
+        max_accel=5.0,
+        lr_actor=1e-4,
+        lr_critic=1e-3,
+        gamma=0.99,
+    ):
         """Agent that uses an actor-critic architecture for decision making.
 
         Args:
@@ -90,7 +100,7 @@ class SummerAgent(Agent):
         # 4. Penalize proximity to obstacles
         min_sensor = min(sensor_data)
         if min_sensor < 1.0:
-            reward -= (1.0 - min_sensor)
+            reward -= 1.0 - min_sensor
 
         # 5. Encourage heading toward forward direction
         heading_mag = np.linalg.norm([heading_x, heading_y])
@@ -105,9 +115,10 @@ class SummerAgent(Agent):
 
         return reward
 
-
     def train_step(self, next_state, reward, done):
-        next_state_tensor = torch.tensor(self.flatten_state(next_state), dtype=torch.float32)
+        next_state_tensor = torch.tensor(
+            self.flatten_state(next_state), dtype=torch.float32
+        )
         reward_tensor = torch.tensor([reward], dtype=torch.float32)
         done_tensor = torch.tensor([done], dtype=torch.float32)
 
@@ -127,21 +138,26 @@ class SummerAgent(Agent):
         self.actor_optim.zero_grad()
         actor_loss.backward()
         self.actor_optim.step()
-        
+
     def save(self, dir_path="./checkpoints", tag="latest"):
         os.makedirs(dir_path, exist_ok=True)
-        torch.save({
-            'actor_state_dict': self.actor.state_dict(),
-            'critic_state_dict': self.critic.state_dict(),
-            'actor_optimizer_state_dict': self.actor_optim.state_dict(),
-            'critic_optimizer_state_dict': self.critic_optim.state_dict(),
-        }, os.path.join(dir_path, f"agent_{tag}.pt"))
-        carlos_logging.log_message(f"Saved model checkpoint to {dir_path}/agent_{tag}.pt")
+        torch.save(
+            {
+                "actor_state_dict": self.actor.state_dict(),
+                "critic_state_dict": self.critic.state_dict(),
+                "actor_optimizer_state_dict": self.actor_optim.state_dict(),
+                "critic_optimizer_state_dict": self.critic_optim.state_dict(),
+            },
+            os.path.join(dir_path, f"agent_{tag}.pt"),
+        )
+        carlos_logging.log_message(
+            f"Saved model checkpoint to {dir_path}/agent_{tag}.pt"
+        )
 
     def load(self, path):
         checkpoint = torch.load(path)
-        self.actor.load_state_dict(checkpoint['actor_state_dict'])
-        self.critic.load_state_dict(checkpoint['critic_state_dict'])
-        self.actor_optim.load_state_dict(checkpoint['actor_optimizer_state_dict'])
-        self.critic_optim.load_state_dict(checkpoint['critic_optimizer_state_dict'])
+        self.actor.load_state_dict(checkpoint["actor_state_dict"])
+        self.critic.load_state_dict(checkpoint["critic_state_dict"])
+        self.actor_optim.load_state_dict(checkpoint["actor_optimizer_state_dict"])
+        self.critic_optim.load_state_dict(checkpoint["critic_optimizer_state_dict"])
         carlos_logging.log_message(f"Loaded model checkpoint from {path}")
