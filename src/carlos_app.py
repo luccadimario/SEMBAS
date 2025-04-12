@@ -70,15 +70,18 @@ GAMMA = 0.99
 obs_size = (
     NUM_SENSORS + 2 + 1
 )  # Number of sensors + 2 for vehicle heading + 1 for speed
-agent = SummerAgent(
-    sensor_array,
-    obs_dim=obs_size,
-    action_dim=ACTION_DIM,
-    max_accel=MAX_ACCEL,
-    lr_actor=LR_ACTOR,
-    lr_critic=LR_CRITIC,
-    gamma=GAMMA,
-)  # Placeholder for actual agent implementation
+# agent = SummerAgent(
+#     sensor_array,
+#     obs_dim=obs_size,
+#     action_dim=ACTION_DIM,
+#     max_accel=MAX_ACCEL,
+#     lr_actor=LR_ACTOR,
+#     lr_critic=LR_CRITIC,
+#     gamma=GAMMA,
+# )  # Placeholder for actual agent implementation
+
+agent = NewAgent(sensor_array)
+
 #### Simulation Initialization ####
 sim = Simulation(vehicle=vehicle, environment=env, agent=agent, dt=TIME_STEP_SEC)
 sim.sim_reset(
@@ -170,10 +173,10 @@ def plot_rewards(reward_log, window=50):
     plt.show()
 
 
-while True:
-    graphics.render_simulation(sim=sim)
-    graphics.show()
-    sim.sim_step()
+# while True:
+#     graphics.render_simulation(sim=sim)
+#     graphics.show()
+#     sim.sim_step()
 
 
 # reward_log = execute_simulation(sim=sim, render=True)

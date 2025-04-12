@@ -1,3 +1,4 @@
+import torch
 from lane import Lane
 from point import Point
 import numpy as np
@@ -79,7 +80,6 @@ class Environment:
         longitude: float,
         latitude: float,
         angle_offset: float,
-        heading_offset: float,
     ) -> tuple[Point, Point]:
         """Given a longitude and latitude, both from 0 to 1, returns a point inside the lane longitudinal distance along the lane and lateral distance between the lane edges.
 
@@ -92,8 +92,9 @@ class Environment:
             Point: The heading point from the center point at the angle_offset from parallel to the center line.
         """
         # Ensuring both are from 0 to 1
-        longitude = np.clip(longitude, 0, 1)
-        latitude = np.clip(latitude, 0, 1)
+        print(longitude, latitude)
+        longitude = np.clip(longitude, 0.0, 1.0)
+        latitude = np.clip(latitude, 0.0, 1.0)
 
         # center_point, direction_vector = self.get_lane_position_and_heading(longitude=longitude, latitude=latitude, angle_offset=angle_offset)
         center_point = VP.get_center_point(
@@ -105,19 +106,11 @@ class Environment:
         if not self.lane.closed_loop:
             angle_offset = VP.open_loop_adjustment(longitude, latitude, angle_offset)
 
-        direction_vector = VP.get_direction(self.lane.center_line, longitude)
+        lane_direction = VP.get_direction(self.lane.center_line, longitude)
 
-        rotation_vector = VP.get_rotation_vector(
-            direction_vector=direction_vector, angle_offset=angle_offset
-        )
+        heading = np.atan2(lane_direction.x, lane_direction.y) + angle_offset
 
-        # Heading point a short step ahead
-        heading_point = Point(
-            center_point.x + heading_offset * rotation_vector.x,
-            center_point.y + heading_offset * rotation_vector.y,
-        )
-
-        return center_point, heading_point
+        return center_point, heading
 
 
 ############ Functions to calculate distance between points and lines ################

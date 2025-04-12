@@ -107,7 +107,7 @@ class SummerAgent(Agent):
         if heading_mag > 1e-3:
             heading_unit = np.array([heading_x, heading_y]) / heading_mag
             forward = np.array([1.0, 0.0])
-            angle_diff = np.arccos(np.clip(np.dot(heading_unit, forward), -1.0, 1.0))
+            angle_diff = np.arccos(torch.clip(np.dot(heading_unit, forward), -1.0, 1.0))
             reward -= angle_diff / np.pi  # Normalize to [0, 1]
 
         # 6. Small time penalty

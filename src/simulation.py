@@ -45,16 +45,14 @@ class Simulation:
             speed (float): Speed of the vehicle in miles per hour.
         """
         self.reset_sim_status()
-        heading_offset = self.vehicle.heading_offset_ft
-        center_point, heading_point = self.environment.position_from_coordinates(
+        center_point, heading = self.environment.position_from_coordinates(
             longitude=longitude,
             latitude=latitude,
             angle_offset=dir_angle_offset,
-            heading_offset=heading_offset,
         )
-        self.vehicle.vehicle_setup(center_point, heading_point, speed)
+        self.vehicle.vehicle_setup(center_point, heading, speed)  # TODO
         self.agent.sensors.update_sensors(
-            self.vehicle.center_point, self.vehicle.heading_point
+            self.vehicle.center_point, self.vehicle.get_heading_point()
         )
 
     def sim_random_reset(self, speed_range: list[float] = [10.0, 75.0]):
@@ -62,26 +60,28 @@ class Simulation:
         latitude = random.uniform(0.25, 0.75)
         dir_angle_offset = random.uniform(-np.pi / 4, np.pi / 4)
         speed = random.uniform(speed_range[0], speed_range[1])
-        center_point, heading_point = self.environment.position_from_coordinates(
+        center_point, heading = self.environment.position_from_coordinates(
             longitude=longitude,
             latitude=latitude,
             angle_offset=dir_angle_offset,
-            heading_offset=self.vehicle.heading_offset_ft,
         )
         self.vehicle.vehicle_setup(
-            center_point=center_point, heading_point=heading_point, speed_mph=speed
+            center_point=center_point, heading=heading, speed_mph=speed  # TODO
         )
         self.agent.sensors.update_sensors(
-            self.vehicle.center_point, self.vehicle.heading_point
+            self.vehicle.center_point, self.vehicle.get_heading_point()
         )
 
     def get_state(self) -> Tensor:
         """
         Returns the current state of the simulation, including the vehicle's heading, speed, and the sensor data.
+        speed, heading, *sensor_data
         """
         _, sensor_data = self.agent.sensors.sense(self.environment, self.vehicle)
-        self.vehicle.heading_point
-        return torch.tensor([self.vehicle.speed_mph, *sensor_data])
+        return torch.tensor(
+            [self.vehicle.speed_mph, self.vehicle.heading, *sensor_data],
+            dtype=torch.float32,
+        )
 
     def sim_step(self) -> None:
         """Executes a single step in the simulation.
@@ -92,17 +92,18 @@ class Simulation:
         5. Updates the simulation status.
         """
         self.agent.sensors.update_sensors(
-            self.vehicle.center_point, self.vehicle.heading_point
+            self.vehicle.center_point, self.vehicle.get_heading_point()
         )
 
         state = self.get_state()
 
-        steering, acceleration = self.agent.decide(state)
+        action = self.agent.decide(state)
+        steering, acceleration = action[0], action[1]
 
         self.vehicle.update_position(steering, acceleration, self.dt)
 
         self.agent.sensors.update_sensors(
-            self.vehicle.center_point, self.vehicle.heading_point
+            self.vehicle.center_point, self.vehicle.get_heading_point()
         )
 
         self.update_sim_status()

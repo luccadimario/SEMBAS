@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 
 
 class Point:
@@ -48,7 +49,7 @@ class Point:
             Point: New heading of the vehicle
         """
         # clip angle to [-pi, pi]
-        rotation_angle = np.clip(rotation_angle, -np.pi, np.pi)
+        rotation_angle = np.clip(float(rotation_angle), -np.pi, np.pi)
 
         # Compute the direction vector from (x1, y1) to (x2, y2)
         x1, y1 = point.x, point.y

@@ -116,7 +116,7 @@ class Vehicle:
         """Converts given fps^2 value to mph^2"""
         return value_fps2 * self.fps2_to_mph2_conversion
 
-    def get_direction(self, angle: float = None) -> torch.Tensor:
+    def get_direction(self, angle: np.float32 = None) -> torch.Tensor:
         """Gets the direction vector x, y for a given angle. If angle is None, uses the vehicles heading angle.
 
         Args:
@@ -126,7 +126,7 @@ class Vehicle:
             torch.Tensor: Tensor containing x, y values of the direction vector
         """
         angle = angle or self.heading
-        return torch.tensor([np.cos(angle), np.sin(angle)])
+        return torch.tensor([np.cos(float(angle)), np.sin(float(angle))])
 
     def get_heading_point(self, angle: float = None) -> Point:
         """Returns the point of the center point of the vehicle updated by the directional vector.
@@ -165,7 +165,7 @@ class Vehicle:
             dt_sec (float): Time step in seconds.
         """
         # Updating acceleration by clipping by the vehicle max breaking and acceleration capabilities
-        self.acceleration_fps2 = np.clip(
+        self.acceleration_fps2 = torch.clip(
             self.mph2_to_fps2(acceleration_mph2),
             -self.max_breaking_fps2,
             self.max_acceleration_fps2,
@@ -175,7 +175,7 @@ class Vehicle:
         new_speed = self.speed_fps + (self.acceleration_fps2 * dt_sec)
 
         # Update speed based on acceleration and clipping based on the vehicles speed capabilities
-        new_speed = np.clip(new_speed, self.min_speed_fps, self.max_speed_fps)
+        new_speed = torch.clip(new_speed, self.min_speed_fps, self.max_speed_fps)
 
         # Apply steering: rotate the direction vector by the steering input
         turn_angle = steering_rad * dt_sec
