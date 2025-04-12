@@ -6,7 +6,6 @@ import numpy as np
 def test_going_left():
     v = Vehicle()
     center_point = Point(0, 0)
-    # heading_point = Point(0, 1)
     heading = np.pi / 2
     speed = 0.0
     v.vehicle_setup(center_point=center_point, heading=heading, speed_mph=speed)
@@ -27,20 +26,19 @@ def test_going_left():
 def test_going_right():
     v = Vehicle()
     center_point = Point(0, 0)
-    heading_point = Point(0, 1)
+    heading = np.pi / 2
     speed = 0.0
-    v.vehicle_setup(
-        center_point=center_point, heading_point=heading_point, speed_mph=speed
-    )
+    v.vehicle_setup(center_point=center_point, heading=heading, speed_mph=speed)
     accel = 0.0
     dt = 1.0
     steering = -np.pi / 2  # complete left turn 90 degrees
     v.update_position(steering_rad=steering, acceleration_mph2=accel, dt_sec=dt)
+    heading_point = v.get_heading_point()
     assert (
-        round(v.heading_point.x, 6) == 1 * v.heading_offset_ft
-    ), f"Vehicle heading x {v.heading_point.x} should be -1 * heading_offset_ft."
+        round(heading_point.x, 6) == 1
+    ), f"Vehicle heading x {v.heading_point.x} should be -1."
     assert (
-        round(v.heading_point.y, 6) == 0
+        round(heading_point.y, 6) == 0
     ), f"Vehicle heading y: {v.heading_point.y} should be 0 as there is no movement but a 90 degree turn."
     print("Vehicle Test: Turning left with no movement PASSED.")
 
@@ -112,7 +110,7 @@ def run_tests():
     # test_no_movement()
     # test_going_straight()
     test_going_left()
-    # test_going_right()
+    test_going_right()
     # test_breaking()
     print("Vehicle Test: All tests PASSED.\n")
 
