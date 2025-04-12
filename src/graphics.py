@@ -75,19 +75,23 @@ def plot_vehicle(vehicle: Vehicle):  # Tested as of 3/29/2025
     )
 
     # Plot vehicle heading with arrow
-    x = [vehicle.center_point.x, vehicle.heading_point.x]
-    y = [vehicle.center_point.y, vehicle.heading_point.y]
-    ax.annotate(
-        "",
-        xy=(x[1], y[1]),
-        xytext=(x[0], y[0]),
-        arrowprops=dict(
-            facecolor="green",
-            edgecolor="green",
-            arrowstyle="->",
-            lw=2,
-        ),
-    )
+    # Getting heading point and scalling by 10.0 so that it is visible.
+    d = np.array(vehicle.get_direction()) * 10.0
+    heading_point = vehicle.center_point + Point(d[0], d[1])
+    x = [vehicle.center_point.x, (heading_point.x)]
+    y = [vehicle.center_point.y, (heading_point.y)]
+    ax.plot(x, y, "g->", label="Vehicle Heading")
+    # ax.annotate(
+    #     "",
+    #     xy=(x[1], y[1]),
+    #     xytext=(x[0], y[0]),
+    #     arrowprops=dict(
+    #         facecolor="green",
+    #         edgecolor="green",
+    #         arrowstyle="->",
+    #         lw=2,
+    #     ),
+    # )
 
 
 def plot_sensors(sensor_array: SensorArray):  # Tested as of 3/29/2025
@@ -131,6 +135,18 @@ def show(
     plt.ylim(y_lim[0], y_lim[1])
     plt.title(title)
     plt.pause(0.1)
+
+
+def show_without_pause(
+    title: str = "", x_lim: list[float] = [0, 400], y_lim: list[float] = [0, 400]
+):  # Tested as of 3/29/2025
+    """Displays the plot."""
+    plt.tight_layout()
+    plt.legend()
+    plt.xlim(x_lim[0], x_lim[1])
+    plt.ylim(y_lim[0], y_lim[1])
+    plt.title(title)
+    plt.show()
 
 
 def render_simulation(sim: Simulation):

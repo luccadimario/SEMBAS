@@ -43,10 +43,9 @@ def test_sense():
     env = Environment(lane=lane)
     vehicle = Vehicle()
     center_point = Point(50, 50)
-    heading_point = Point(55, 50)
-    vehicle.vehicle_setup(
-        center_point=center_point, heading_point=heading_point, speed_mph=25.0
-    )
+    heading = 0.0
+    vehicle.vehicle_setup(center_point=center_point, heading=heading, speed_mph=25.0)
+    heading_point = vehicle.get_heading_point()
     sa.update_sensors(center_point, heading_point)
     points, distances = sa.sense(env, vehicle=vehicle)
     assert distances[0] == 6.0, "First sensor distance should be 6.0."
@@ -57,7 +56,8 @@ def test_sense():
     graphics.plot_vehicle(vehicle)
     graphics.plot_sensors(sa)
     graphics.plot_sensor_detections(points, distances)
-    graphics.show("Sensor data", [0, 200], [0, 200])
+    graphics.show_without_pause("Sensor data", [0, 200], [0, 200])
+
     print("Sensor Test: Sensing PASSED.")
 
 

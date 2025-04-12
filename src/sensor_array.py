@@ -56,7 +56,8 @@ class SensorArray:
         """
         # Update the sensors based on the vehicle's position and heading
         self.update_sensors(
-            origin_point=vehicle.center_point, direction_vector=vehicle.heading_point
+            origin_point=vehicle.center_point,
+            direction_vector=vehicle.get_heading_point(),
         )
         detection_points = []
         detection_distances = []

@@ -18,7 +18,6 @@ class Vehicle:
         vehicle_width_ft: float = 6,
         min_speed_mph: float = 0.0,
         max_speed_mph: float = 150.0,
-        heading_offset_ft: float = 15.0,
         sec_0_to_60: float = 8.0,
     ):  # Tested as of 3/31/2025
         """Initializes a vehicle object with default parameters.
@@ -36,7 +35,6 @@ class Vehicle:
             vehicle_width_ft (float): Width of the vehicle in feet. Defaults to 6.0.
             min_speed (float): Minimum speed capability of the vehicle in miles per hour. Defaults to 150 mph.
             max_speed (float): Maximum speed capability of the vehicle in miles per hour. Defaults to 0 mph.
-            heading_offset (float): The heading point offset from the center point in feet. Defaults to 15.0 feet.
             sec_0_to_60 (float): Number of seconds it takes the car to accelerate from 0 to 60 mph. Default is 8.0.
         """
         self.body = VehicleBody(
@@ -44,7 +42,6 @@ class Vehicle:
         )
         self.min_speed_fps = self.mph_to_fps(min_speed_mph)
         self.max_speed_fps = self.mph_to_fps(max_speed_mph)
-        self.heading_offset_ft = heading_offset_ft
         # Calculating the max acceleration based on the number of seconds it takes the car to go from 0 to 60 miles per hour.
         # Acceleration = (Final speed - initial speed) / time
         self.max_acceleration_fps2 = self.mph_to_fps(60.0) / sec_0_to_60
@@ -53,11 +50,11 @@ class Vehicle:
     def vehicle_setup(
         self, center_point: Point, heading: float, speed_mph: float
     ):  # Tested as of 3/29/2025
-        """Sets up the vehicle based on the given center point, heading point and speed.
+        """Sets up the vehicle based on the given center point, heading angle and speed.
 
         Args:
             center_point (Point): Point object representing the center of the vehicle. Grid scale is in feet so X, Y should be in reference to feet.
-            heading_point (Point): Point object representing the heading of the vehicle. Grid scale is in feet so X, Y should be in reference to feet.
+            heading (float): The heading angle of the vehicle, in radians. Represents the global angle following unit circle.
             speed_mph (float): Speed of the vehicle in miles per hour.
         """
         self.center_point = center_point
@@ -66,8 +63,8 @@ class Vehicle:
         self.heading = heading
         self.distance_travelled_ft = 0
         self.acceleration_fps2 = 0
-        self.velocity_fps = self.calculate_velocity()
-        self.body.build_body(center_point=center_point, angle=heading)
+        # self.velocity_fps = self.calculate_velocity()
+        self.body.build_body(center_point=center_point, turn_angle=heading)
 
     def vehicle_capabilities_str(self):  # Tested as of 3/31/2025
         """Returns string with the vehicles speed, acceleration, and breaking capabilities."""
@@ -120,26 +117,47 @@ class Vehicle:
         return value_fps2 * self.fps2_to_mph2_conversion
 
     def get_direction(self, angle: float = None) -> torch.Tensor:
+        """Gets the direction vector x, y for a given angle. If angle is None, uses the vehicles heading angle.
+
+        Args:
+            angle (float, optional): Angle of the direction vector. Defaults to None.
+
+        Returns:
+            torch.Tensor: Tensor containing x, y values of the direction vector
+        """
         angle = angle or self.heading
         return torch.tensor([np.cos(angle), np.sin(angle)])
 
-    def calculate_velocity(self) -> torch.Tensor:  # Tested as of 3/29/2025
-        """Calculates the velocity of the vehicle based on the center point, heading point, and speed.
+    def get_heading_point(self, angle: float = None) -> Point:
+        """Returns the point of the center point of the vehicle updated by the directional vector.
+
+        Args:
+            angle (float, optional): Direction angle. Defaults to None.
 
         Returns:
-            float: Velocity of the vehicle in miles per hour.
+            Point: Point object with x, y values for the point at the center offset by the direction vector.
         """
-        # direction = self.heading_point - self.center_point
-        # direction = direction / direction.norm()
-        direction = self.get_direction()
-        return direction * self.speed_fps
+        angle = angle or self.heading
+        heading_direction = np.array(self.get_direction(angle))
+        hx = self.center_point.x + heading_direction[0]
+        hy = self.center_point.y + heading_direction[1]
+        return Point(hx, hy)
+
+    # def calculate_velocity(self) -> torch.Tensor:  # Tested as of 3/29/2025
+    #     """Calculates the velocity of the vehicle based on the center point, heading point, and speed.
+
+    #     Returns:
+    #         float: Velocity of the vehicle in miles per hour.
+    #     """
+    #     direction = self.get_direction()
+    #     return direction * self.speed_fps
 
     def update_position(
         self, steering_rad: float, acceleration_mph2: float, dt_sec: float
     ):  # Tested as of 3/31/2025
         """Updates the position of the vehicle based on the steering, acceleration and time step.
 
-        Uses kinematic equations to update speed, center point, heading point, and acceleration.
+        Uses kinematic equations to update speed, center point, heading angle, and acceleration.
 
         Args:
             steering (float): Steering angle in radians.
@@ -173,6 +191,9 @@ class Vehicle:
         cy = self.center_point.y + new_direction[1] * distance
         self.center_point = Point(cx, cy)
 
+        # Update heading
+        self.heading = new_heading
+
         # Update speed
         self.speed_fps = new_speed
 
@@ -200,17 +221,15 @@ class VehicleBody:
         ]
 
     def build_body(self, center_point: Point, turn_angle: float):
-        """Creates the vehicle corners based on the center point and heading point.
+        """Creates the vehicle corners based on the center point and turn angle.
 
         Corners are in the order of: Front left, front right, back right, back left
 
         Args:
             center_point (float): Center point of the vehicle.
-            heading_point (float): Heading point of the vehicle.
+            turn_angle (float): Heading angle of the vehicle.
 
         """
-        # Compute the heading angle (in radians)
-        # angle = math.atan2(heading_point.y - center_point.y, heading_point.x - center_point.x)
         self.corners = []
         for c in self.base_corners:
             c = c + center_point
