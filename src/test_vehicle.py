@@ -46,18 +46,16 @@ def test_going_right():
 def test_going_straight():
     v = Vehicle()
     center_point = Point(0, 0)
-    heading_point = Point(0, 15)
+    heading = np.pi / 2
     speed = 0.0
-    v.vehicle_setup(
-        center_point=center_point, heading_point=heading_point, speed_mph=speed
-    )
+    v.vehicle_setup(center_point=center_point, heading=heading, speed_mph=speed)
     # 0 to 60 mph in 8 seconds should be: 27000 mph
     accel = 27000.0
     dt = 8.0
     v.update_position(steering_rad=0.0, acceleration_mph2=accel, dt_sec=dt)
     # print(v.vehicle_state_str())
     assert (
-        v.center_point.x == 0
+        round(v.center_point.x, 6) == 0
     ), "Vehicle center point x-coordinate should stay the same since vehicle is going straight."
     assert (
         v.center_point.y >= 351.999 and v.center_point.y <= 352.1
@@ -72,11 +70,9 @@ def test_going_straight():
 def test_breaking():
     v = Vehicle()
     center_point = Point(0, 0)
-    heading_point = Point(0, 1)
+    heading = np.pi / 2
     speed = 25.0
-    v.vehicle_setup(
-        center_point=center_point, heading_point=heading_point, speed_mph=speed
-    )
+    v.vehicle_setup(center_point=center_point, heading=heading, speed_mph=speed)
     accel = -1000
     dt = 5.0
     v.update_position(steering_rad=0.0, acceleration_mph2=accel, dt_sec=dt)
@@ -88,11 +84,9 @@ def test_breaking():
 def test_no_movement():
     v = Vehicle()
     center_point = Point(0, 0)
-    heading_point = Point(0, 1)
+    heading = np.pi / 2
     speed = 0
-    v.vehicle_setup(
-        center_point=center_point, heading_point=heading_point, speed_mph=speed
-    )
+    v.vehicle_setup(center_point=center_point, heading=heading, speed_mph=speed)
     acceleration = 0.0
     steering = 0.0
     dt = 1.0
@@ -107,14 +101,13 @@ def test_no_movement():
 
 
 def run_tests():
-    # test_no_movement()
-    # test_going_straight()
+    test_no_movement()
+    test_going_straight()
     test_going_left()
     test_going_right()
-    # test_breaking()
+    test_breaking()
     print("Vehicle Test: All tests PASSED.\n")
 
 
 if __name__ == "__main__":
     run_tests()
-    print("Vehicle test passed.")
