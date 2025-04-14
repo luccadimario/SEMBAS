@@ -10,7 +10,7 @@ import math
 
 def test_calc_end_point():
     s = Sensor(sensor_length=50, angle_offset=math.pi / 2)
-    s.update_sensor(Point(200, 200), Point(200, 210))
+    s.update_sensor(Point(200, 200), math.pi / 2)
     assert s.end_point.x == 150, "Sensor end point X does not match expected value."
     assert s.end_point.y == 200, "Sensor end point Y does not mathc expected value."
     print("Sensor Test: End point calculation PASSED.")
@@ -45,8 +45,7 @@ def test_sense():
     center_point = Point(50, 50)
     heading = 0.0
     vehicle.vehicle_setup(center_point=center_point, heading=heading, speed_mph=25.0)
-    heading_point = vehicle.get_heading_point()
-    sa.update_sensors(center_point, heading_point)
+    sa.update_sensors(center_point, vehicle.heading)
     points, distances = sa.sense(env, vehicle=vehicle)
     assert distances[0] == 6.0, "First sensor distance should be 6.0."
     assert distances[4] == 6.0, "Last sensor distance should be 6.0."
