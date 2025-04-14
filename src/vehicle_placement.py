@@ -135,22 +135,3 @@ def get_center_point(lane: Lane, longitude: float, latitude: float) -> Point:
     center_pt = Point(x, y)
 
     return center_pt
-
-
-def get_rotation_vector(direction_vector: Point, angle_offset: float) -> Point:
-    """Given a direction vector and an angle offset, returns the rotated vector.
-
-    Args:
-        direction_vector (Point): The direction vector to rotate.
-        angle_offset (float): The angle offset in radians.
-
-    Returns:
-        Point: The rotated vector as a Point object.
-    """
-    # Apply angle offset to that direction
-    cos_theta = np.cos(angle_offset)
-    sin_theta = np.sin(angle_offset)
-    rotated_x = direction_vector.x * cos_theta - direction_vector.y * sin_theta
-    rotated_y = direction_vector.x * sin_theta + direction_vector.y * cos_theta
-
-    return Point(rotated_x, rotated_y)
