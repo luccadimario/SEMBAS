@@ -60,32 +60,31 @@ class SummerAgent(Agent):
             gamma (float, optional): Discount rate for training. Defaults to 0.99.
         """
         super().__init__(sensor_array)
+        self.obs_dim = obs_dim
+        self.out_dim = action_dim
         self.actor = Actor(obs_dim, action_dim)
         self.critic = Critic(obs_dim)
         self.actor_optim = torch.optim.Adam(self.actor.parameters(), lr=lr_actor)
         self.critic_optim = torch.optim.Adam(self.critic.parameters(), lr=lr_critic)
         self.gamma = gamma
         self.max_accel = max_accel
+        self.output_scaling = torch.tensor([np.pi, self.max_accel])
 
-    def flatten_state(self, state: torch.Tensor) -> list[float]:
-        heading_x, heading_y, speed, sensor_data = state
-        return [heading_x, heading_y, speed] + sensor_data
-
-    def decide(self, state):
-        state_tensor = torch.tensor(self.flatten_state(state), dtype=torch.float32)
-        mean, std = self.actor(state_tensor)
+    def decide(self, state: torch.Tensor):
+        state = state.reshape(-1, self.obs_dim)
+        mean, std = self.actor(state)
         dist = torch.distributions.Normal(mean, std)
         raw_action = dist.rsample()
         self.last_log_prob = dist.log_prob(raw_action).sum()
-        self.last_state = state_tensor
+        self.last_state = state
         self.last_action = raw_action.detach()
 
-        steering = torch.tanh(raw_action[0]) * np.pi
-        accel = torch.sigmoid(raw_action[1]) * self.max_accel
-        return [steering.item(), accel.item()]
+        # steering = torch.tanh(raw_action[0]) * np.pi
+        # accel = torch.sigmoid(raw_action[1]) * self.max_accel
+        return raw_action * self.output_scaling
 
     def compute_reward(self, state, in_lane: bool, in_motion: bool) -> float:
-        heading_x, heading_y, speed, sensor_data = state
+        heading, speed, *sensor_data = state
         reward = 0.0
 
         # 1. Stay in lane
@@ -102,28 +101,18 @@ class SummerAgent(Agent):
         if min_sensor < 1.0:
             reward -= 1.0 - min_sensor
 
-        # 5. Encourage heading toward forward direction
-        heading_mag = np.linalg.norm([heading_x, heading_y])
-        if heading_mag > 1e-3:
-            heading_unit = np.array([heading_x, heading_y]) / heading_mag
-            forward = np.array([1.0, 0.0])
-            angle_diff = np.arccos(torch.clip(np.dot(heading_unit, forward), -1.0, 1.0))
-            reward -= angle_diff / np.pi  # Normalize to [0, 1]
-
         # 6. Small time penalty
         reward -= 0.01
 
         return reward
 
-    def train_step(self, next_state, reward, done):
-        next_state_tensor = torch.tensor(
-            self.flatten_state(next_state), dtype=torch.float32
-        )
+    def train_step(self, next_state: torch.Tensor, reward, done):
+        next_state = next_state.reshape(-1, self.obs_dim)
         reward_tensor = torch.tensor([reward], dtype=torch.float32)
         done_tensor = torch.tensor([done], dtype=torch.float32)
 
         value = self.critic(self.last_state)
-        next_value = self.critic(next_state_tensor).detach()
+        next_value = self.critic(next_state).detach()
         target = reward_tensor + self.gamma * next_value * (1 - done_tensor)
         advantage = target - value
 

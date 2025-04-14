@@ -165,9 +165,9 @@ class Vehicle:
         """
         # Updating acceleration by clipping by the vehicle max breaking and acceleration capabilities
         self.acceleration_fps2 = np.clip(
-            self.mph2_to_fps2(acceleration_mph2),
-            -self.max_breaking_fps2,
-            self.max_acceleration_fps2,
+            self.mph2_to_fps2(float(acceleration_mph2)),
+            -float(self.max_breaking_fps2),
+            float(self.max_acceleration_fps2),
         )
 
         # v = vo + a t

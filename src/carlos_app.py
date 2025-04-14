@@ -27,9 +27,9 @@ init_log()
 carlos_logging.log_message("Carlos App Initialized")
 
 ############# INITIALIZATION PARAMETERS ###############
-LAYOUT_FILE_PATH = "./layouts/train_straight_layout_0.txt"
+LAYOUT_FILE_PATH = "src/layouts/train_layout_5.txt"
 MAX_STEPS = 200
-MAX_EPISODES = 500
+MAX_EPISODES = 1000  # 500
 NUM_SENSORS = 9
 SENSOR_LENGTH = 200.0
 SENSOR_ANGLE_SPREAD = math.pi
@@ -41,11 +41,15 @@ INITIAL_DIR_ANGLE_OFFSET = 0.0  # radians
 
 
 #### Lane Initialization ####
-# lane_ctrl_points, lane_width, closed_loop = layout_utils.load_lane_from_file(LAYOUT_FILE_PATH)
-# lane = Lane(control_points=lane_ctrl_points, lane_width=lane_width, closed_loop=closed_loop)
-lane = Lane(
-    control_points=[Point(50, 350), Point(350, 350)], lane_width=12.0, closed_loop=False
+lane_ctrl_points, lane_width, closed_loop = layout_utils.load_lane_from_file(
+    LAYOUT_FILE_PATH
 )
+lane = Lane(
+    control_points=lane_ctrl_points, lane_width=lane_width, closed_loop=closed_loop
+)
+# lane = Lane(
+#     control_points=[Point(50, 350), Point(350, 350)], lane_width=12.0, closed_loop=False
+# )
 
 #### Environment Initialization ####
 env = Environment(lane)
@@ -67,20 +71,18 @@ MAX_ACCEL = vehicle.max_acceleration_fps2
 LR_ACTOR = 1e-4
 LR_CRITIC = 1e-3
 GAMMA = 0.99
-obs_size = (
-    NUM_SENSORS + 2 + 1
-)  # Number of sensors + 2 for vehicle heading + 1 for speed
-# agent = SummerAgent(
-#     sensor_array,
-#     obs_dim=obs_size,
-#     action_dim=ACTION_DIM,
-#     max_accel=MAX_ACCEL,
-#     lr_actor=LR_ACTOR,
-#     lr_critic=LR_CRITIC,
-#     gamma=GAMMA,
-# )  # Placeholder for actual agent implementation
+obs_size = NUM_SENSORS + 2  # Number of sensors + 2 for vehicle heading and speed
+agent = SummerAgent(
+    sensor_array,
+    obs_dim=obs_size,
+    action_dim=ACTION_DIM,
+    max_accel=MAX_ACCEL,
+    lr_actor=LR_ACTOR,
+    lr_critic=LR_CRITIC,
+    gamma=GAMMA,
+)  # Placeholder for actual agent implementation
 
-agent = NewAgent(sensor_array)
+# agent = NewAgent(sensor_array)
 
 #### Simulation Initialization ####
 sim = Simulation(vehicle=vehicle, environment=env, agent=agent, dt=TIME_STEP_SEC)
@@ -106,6 +108,7 @@ def execute_simulation(
     sim: Simulation, train: bool = True, render: bool = False
 ) -> list[float]:
     reward_log = []
+    step_count_log = []
     start_time = time.time()
     carlos_logging.log_message("Simulation Execution Started")
 
@@ -116,7 +119,6 @@ def execute_simulation(
         steps = 0
 
         # state = sim.get_state()
-
         while not done and steps < MAX_STEPS:
             # Get action + step simulation
             reward = sim.sim_step()
@@ -146,12 +148,13 @@ def execute_simulation(
         #     sim.agent.save(tag=f"summer_agent_{episode+1}.pt")
         #     carlos_logging.log_message(f"Model saved at episode {episode + 1}")
 
+        step_count_log.append(steps)
         reward_log.append(total_reward)
         carlos_logging.log_message(
             f"[{elapsed_time(start_time)}] | Episode {episode+1}/{MAX_EPISODES} | Total Reward: {total_reward:.2f} | Steps: {steps}"
         )
 
-    return reward_log
+    return reward_log, step_count_log
 
 
 def plot_rewards(reward_log, window=50):
@@ -173,10 +176,23 @@ def plot_rewards(reward_log, window=50):
     plt.show()
 
 
+print("training")
+reward_log, step_count_log = execute_simulation(sim=sim)
+
+print("done")
+import numpy as np
+
+plt.plot(np.arange(len(reward_log)), reward_log)
+plt.show()
+plt.plot(np.arange(len(step_count_log)), step_count_log)
+plt.show()
+
+# graphics.render_simulation(sim=sim)
+# graphics.show()
+reward_log, step_count_log = execute_simulation(sim=sim, train=False, render=True)
 # while True:
-#     graphics.render_simulation(sim=sim)
-#     graphics.show()
 #     sim.sim_step()
+#     graphics.show()
 
 
 # reward_log = execute_simulation(sim=sim, render=True)
