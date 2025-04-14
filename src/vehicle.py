@@ -54,7 +54,7 @@ class Vehicle:
 
         Args:
             center_point (Point): Point object representing the center of the vehicle. Grid scale is in feet so X, Y should be in reference to feet.
-            heading (float): The heading angle of the vehicle, in radians. Represents the global angle following unit circle.
+            heading (float): The heading angle of the vehicle, in radians. Represents the global angle the vehicle is at following unit circle.
             speed_mph (float): Speed of the vehicle in miles per hour.
         """
         self.center_point = center_point
@@ -63,7 +63,6 @@ class Vehicle:
         self.heading = heading
         self.distance_travelled_ft = 0
         self.acceleration_fps2 = 0
-        # self.velocity_fps = self.calculate_velocity()
         self.body.build_body(center_point=center_point, turn_angle=heading)
 
     def vehicle_capabilities_str(self):  # Tested as of 3/31/2025
