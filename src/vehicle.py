@@ -200,7 +200,7 @@ class Vehicle:
         self.distance_travelled_ft += distance
 
         # Rebuilding the body after updating position
-        self.body.build_body(self.center_point, turn_angle)
+        self.body.build_body(self.center_point, self.heading)
 
 
 class VehicleBody:

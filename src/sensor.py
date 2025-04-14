@@ -28,7 +28,7 @@ class Sensor:
         self.end_point = self.calculate_end_point(direction_angle)
 
     def calculate_end_point(
-        self, direction_angle: Point
+        self, direction_angle: float
     ) -> Point:  # Tested as of 3/29/2025
         """Calculates the end point of the sensor based on the origin point. Direction vector is the direction of the center of the sensor group.
         The sensors actual direction is calculated by adding the angle offset to the direction vector.

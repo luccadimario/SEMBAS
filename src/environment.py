@@ -80,7 +80,7 @@ class Environment:
         longitude: float,
         latitude: float,
         angle_offset: float,
-    ) -> tuple[Point, Point]:
+    ) -> tuple[Point, float]:
         """Given a longitude and latitude, both from 0 to 1, returns a point inside the lane longitudinal distance along the lane and lateral distance between the lane edges.
 
         Args:
@@ -89,7 +89,7 @@ class Environment:
             angle_offset (float): Angle offset, in radians, from the center line of the lane to calculate the heading point.
         Returns:
             Point: The center point in the lane at the coordinates provided.
-            Point: The heading point from the center point at the angle_offset from parallel to the center line.
+            float: The heading angle from the center point at the angle_offset from parallel to the center line.
         """
         # Ensuring both are from 0 to 1
         longitude = np.clip(longitude, 0.0, 1.0)

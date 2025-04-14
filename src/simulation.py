@@ -50,9 +50,9 @@ class Simulation:
             latitude=latitude,
             angle_offset=dir_angle_offset,
         )
-        self.vehicle.vehicle_setup(center_point, heading, speed)  # TODO
+        self.vehicle.vehicle_setup(center_point, heading, speed)
         self.agent.sensors.update_sensors(
-            self.vehicle.center_point, self.vehicle.get_heading_point()
+            self.vehicle.center_point, self.vehicle.heading
         )
 
     def sim_random_reset(self, speed_range: list[float] = [10.0, 75.0]):
@@ -66,10 +66,10 @@ class Simulation:
             angle_offset=dir_angle_offset,
         )
         self.vehicle.vehicle_setup(
-            center_point=center_point, heading=heading, speed_mph=speed  # TODO
+            center_point=center_point, heading=heading, speed_mph=speed
         )
         self.agent.sensors.update_sensors(
-            self.vehicle.center_point, self.vehicle.get_heading_point()
+            self.vehicle.center_point, self.vehicle.heading
         )
 
     def get_state(self) -> Tensor:
@@ -85,14 +85,15 @@ class Simulation:
 
     def sim_step(self) -> None:
         """Executes a single step in the simulation.
-        1. Updates the sensors based on the vehicle's position and heading.
-        2. Gets the current state of the simulation.
-        3. Gets the action from the agent based on the current state.
-        4. Updates the vehicle's position based on the action.
+        1. Gets the current state of the simulation.
+        2. Gets the action from the agent based on the current state.
+        3. Updates the vehicle's position based on the action.
+        4. Updates the sensors based on the vehicle's position and heading.
         5. Updates the simulation status.
+        6. Gets reward from agent and returns it.
         """
         self.agent.sensors.update_sensors(
-            self.vehicle.center_point, self.vehicle.get_heading_point()
+            self.vehicle.center_point, self.vehicle.heading
         )
 
         state = self.get_state()
@@ -103,7 +104,7 @@ class Simulation:
         self.vehicle.update_position(steering, acceleration, self.dt)
 
         self.agent.sensors.update_sensors(
-            self.vehicle.center_point, self.vehicle.get_heading_point()
+            self.vehicle.center_point, self.vehicle.heading
         )
 
         self.update_sim_status()
