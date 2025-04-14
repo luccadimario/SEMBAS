@@ -58,19 +58,11 @@ def test_sim_reset_left_edge():
     assert (
         105.000001 <= sim.vehicle.center_point.y <= 106.000002
     ), "Vehicle center point Y does not match expected value."
-
-    hx = (
-        np.cos(-math.pi / 4) * sim.vehicle.heading_offset_ft
-    ) + sim.vehicle.center_point.x
     assert (
-        (hx - 0.000001) <= sim.vehicle.heading_point.x <= (hx + 0.000001)
-    ), f"Vehicle heading point X {sim.vehicle.heading_point.x} does not match expected value {hx}."
-    hy = (
-        np.sin(-math.pi / 4) * sim.vehicle.heading_offset_ft
-    ) + sim.vehicle.center_point.y
-    assert (
-        (hy - 0.000001) <= sim.vehicle.heading_point.y <= (hy + 0.000001)
-    ), "Vehicle heading point Y does not match expected value."
+        ((-math.pi / 4) - 0.0000001)
+        <= sim.vehicle.heading
+        <= ((-math.pi / 4) + 0.0000001)
+    ), "Heading angle does not match expected value."
 
     print("Simulation Test: Visualization of left edge reset PASSED. CONFIRM VISUALLY")
 
@@ -108,18 +100,9 @@ def test_sim_reset_right_edge():
     assert (
         93.999999 <= sim.vehicle.center_point.y <= 94.000001
     ), "Vehicle center point Y does not match expected value."
-    hx = (
-        np.cos(math.pi / 4) * sim.vehicle.heading_offset_ft
-    ) + sim.vehicle.center_point.x
     assert (
-        (hx - 0.000001) <= sim.vehicle.heading_point.x <= (hx + 0.000001)
-    ), "Vehicle heading point X does not match expected value."
-    hy = (
-        np.sin(math.pi / 4) * sim.vehicle.heading_offset_ft
-    ) + sim.vehicle.center_point.y
-    assert (
-        (hy - 0.000001) <= sim.vehicle.heading_point.y <= (hy + 0.000001)
-    ), "Vehicle heading point Y does not match expected value."
+        (math.pi / 4 - 0.0000001) <= sim.vehicle.heading <= (math.pi / 4 + 0.0000001)
+    ), "Heading angle does not match expected value."
 
     print(
         "Simulation Test: Visualization of right edge reset PASSED. CONFIRM VISUALLY."
@@ -197,18 +180,15 @@ def test_sim_status():
     print("Simulation Test: Sim status update PASSED.")
 
 
-## JMT: broken due to refactore to just make state a tensor.
-# def test_get_state():
-#     sim = init_sim()
-#     sim.sim_random_reset()
-#     state = sim.get_state()
-#     assert len(state) == 4, "State should contain 4 elements: heading x, heading y, speed, and list of detection distances."
-#     assert isinstance(state[0], float), "First element of state should be a float."
-#     assert isinstance(state[1], float), "Second element of state should be a float."
-#     assert isinstance(state[2], float), "Third element of state should be a float."
-#     assert isinstance(state[3], list), "Fourth element of state should be a list."
-#     assert len(state[3]) == 5, "Fourth element of state should be a list of length 5 for 5 detection distances."
-#     print("Simulation Test: State retrieval PASSED.")
+def test_get_state():
+    sim = init_sim()
+    sim.sim_random_reset()
+    state = np.array(sim.get_state())
+    assert (
+        len(state) == 7
+    ), "State should contain 7 elements: heading angle, speed, and 5 detection distances."
+
+    print("Simulation Test: State retrieval PASSED.")
 
 
 def run_tests():
@@ -218,7 +198,7 @@ def run_tests():
     test_sim_status()
     test_sim_step()
     test_get_state()
-    graphics.show(
+    graphics.show_without_pause(
         title="Simulation Test - Step - After", x_lim=[50, 350], y_lim=[50, 150]
     )
     print("Simulation Test: All tests PASSED.\n")

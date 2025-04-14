@@ -1,6 +1,10 @@
 from lane import Lane
 from point import Point
-import carlos_app as app
+from environment import Environment
+from vehicle import Vehicle
+from sensor_array import SensorArray
+
+# import carlos_app as app
 import graphics
 import math
 from sensor import Sensor
@@ -9,10 +13,14 @@ import test_simulation
 import test_environment
 import test_vehicle
 import test_sensors
+import layout_utils as LO
 
 
 def test_init_lane():
-    lane = app.init_lane("./layouts/train_straight_layout_0.txt")
+    ctrl_pts, width, closed = LO.load_lane_from_file(
+        "./layouts/train_straight_layout_0.txt"
+    )
+    lane = Lane(control_points=ctrl_pts, lane_width=width, closed_loop=closed)
     assert isinstance(lane, Lane), "Lane initialization failed."
     assert len(lane.control_points) > 0, "Lane control points are empty."
     assert lane.lane_width > 0, "Lane width is not positive."
@@ -34,11 +42,12 @@ def test_init_lane():
 
 
 def test_init_environment():
-    lane = app.init_lane("./layouts/train_layout_4.txt")
+    ctrl_pts, width, closed = LO.load_lane_from_file("./layouts/train_layout_4.txt")
+    lane = Lane(control_points=ctrl_pts, lane_width=width, closed_loop=closed)
     assert len(lane.center_line) == len(
         lane.left_edge
     ), f"Center line {len(lane.center_line)} and edges {len(lane.left_edge)} should have the same number of points."
-    env = app.init_environment(lane)
+    env = Environment(lane=lane)
     assert env is not None, "Environment initialization failed."
     assert isinstance(env.lane, Lane), "Environment lane is not a Lane object."
     print("App Test: Environment initialization test PASSED.")
@@ -47,14 +56,13 @@ def test_init_environment():
 
 def test_init_vehicle():
     center_point = Point(10, 10)
-    heading_point = Point(10, 11)
+    heading = math.pi / 2
     speed = 10.0
-    vehicle = app.init_vehicle(
-        center_point=center_point, heading_point=heading_point, speed=speed
-    )
+    vehicle = Vehicle()
+    vehicle.vehicle_setup(center_point=center_point, heading=heading, speed_mph=speed)
     assert vehicle is not None, "Vehicle initialization failed."
     assert hasattr(vehicle, "center_point"), "Vehicle center point is not set."
-    assert hasattr(vehicle, "heading_point"), "Vehicle heading point is not set."
+    assert hasattr(vehicle, "heading"), "Vehicle heading is not set."
     assert hasattr(vehicle, "speed_fps"), "Vehicle speed is not set."
     assert (
         vehicle.center_point.x == center_point.x
@@ -62,22 +70,16 @@ def test_init_vehicle():
     assert (
         vehicle.center_point.y == center_point.y
     ), "Vehicle center point y-coordinate does not match."
-    assert (
-        vehicle.heading_point.x == heading_point.x
-    ), "Vehicle heading point x-coordinate does not match."
-    assert (
-        vehicle.heading_point.y == heading_point.y
-    ), "Vehicle heading point y-coordinate does not match."
+
     assert round(vehicle.speed_mph, 3) == speed, "Vehicle speed does not match."
     assert vehicle.body is not None, "Vehicle body is not built."
-    assert vehicle.velocity_fps is not None, "Vehicle velocity is not calculated."
     print("App Test: Vehicle initialization test PASSED.")
     return vehicle  # Return the vehicle object for further testing
 
 
 def test_init_sensor_array():
     """Test function to initialize the sensor array."""
-    sensor_array = app.init_sensor_array(
+    sensor_array = SensorArray(
         num_sensors=5, sensor_length=50, sensor_angle_spread=math.pi / 2
     )
     assert sensor_array is not None, "Sensor array initialization failed."
@@ -152,12 +154,12 @@ def test_graphics():
     graphics.plot_environment(env)  # Plot the environment
     graphics.plot_vehicle(vehicle)  # Plot the vehicle
     sensor_array.update_sensors(
-        vehicle.center_point, vehicle.heading_point
+        vehicle.center_point, vehicle.heading
     )  # Update sensor positions based on vehicle
     # print(f"center: {vehicle.center_point.values()}, heading: {vehicle.heading_point.values()}")
     # print([s.angle_offset for s in sensor_array.sensors])
     graphics.plot_sensors(sensor_array)
-    graphics.show(title="Graphics Test")  # Show the plot
+    graphics.show_without_pause(title="Graphics Test")  # Show the plot
     print("App Test: Graphics test NEEDS VISUAL CONFIRMATION.")
 
 
