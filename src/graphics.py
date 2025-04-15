@@ -37,13 +37,13 @@ def plot_lane(lane: Lane):  # Tested as of 3/29/2025
 
     # Plot center line
     center_x, center_y = list_points_as_values(lane.center_line)
-    ax.plot(center_x, center_y, "k--", label="Center Line")
+    ax.plot(center_x, center_y, "ko", label="Center Line")
 
     # Plot control points
-    ctrl_x, ctrl_y = list_points_as_values(lane.control_points)
-    ax.plot(ctrl_x, ctrl_y, "ro", label="Control Points")
-    for i, (x, y) in enumerate(zip(ctrl_x, ctrl_y)):
-        ax.annotate(text=f"{i}", xy=(x, y), fontsize=8, ha="right")
+    # ctrl_x, ctrl_y = list_points_as_values(lane.control_points)
+    # ax.plot(ctrl_x, ctrl_y, "ro", label="Control Points")
+    # for i, (x, y) in enumerate(zip(ctrl_x, ctrl_y)):
+    #     ax.annotate(text=f"{i}", xy=(x, y), fontsize=8, ha="right")
 
     # Plot left edge
     left_x, left_y = list_points_as_values(lane.left_edge)
