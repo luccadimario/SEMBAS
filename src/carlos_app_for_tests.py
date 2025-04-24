@@ -1,3 +1,4 @@
+from new_agent import NewAgent
 from point import Point
 from vehicle import Vehicle
 from lane import Lane
@@ -7,9 +8,13 @@ from sensor_array import SensorArray
 import math
 import layout_utils
 import carlos_logging
-from agent import TestAgent
+from summer_agent import SummerAgent
 import time
+import matplotlib.pyplot as plt
 import graphics
+
+from presentation_agent import PresentationAgent
+
 
 # Creating Log
 def init_log(file_path: str = None):
@@ -18,84 +23,220 @@ def init_log(file_path: str = None):
         carlos_logging.init_logger(f"./logs/{curr_time}_carlos_app.log")
     else:
         carlos_logging.init_logger(file_path)
-        
+
+
 init_log()
 carlos_logging.log_message("Carlos App Initialized")
 
-#### Lane Initialization ####
-def init_lane(file_path: str = None): # Tested as of 3/29/2025
-    """Initializes a lane object based on the given file path. If no file path is provided, a file dialog will be opened to select the file.
-    The file should contain the control points, lane width and closed loop parameter."""
-    lane_ctrl_points, lane_width, closed_loop = layout_utils.load_lane_from_file(file_path)
-    lane = Lane(control_points=lane_ctrl_points, lane_width=lane_width, closed_loop=closed_loop)
-    return lane
+############# INITIALIZATION PARAMETERS ###############
+LAYOUT_FILE_PATH = "./layouts/open_loop_0.txt"
+MAX_STEPS = 200
+MAX_EPISODES = 100  # 500
+NUM_SENSORS = 9
+SENSOR_LENGTH = 200.0
+SENSOR_ANGLE_SPREAD = math.pi
+TIME_STEP_SEC = 0.1  # seconds
+INITIAL_SPEED_MPH = 25.0  # mph
+INITIAL_LONGITUDE = 0.98  # 0 to 1
+INITIAL_LATITUDE = 0.5  # 0 to 1
+INITIAL_DIR_ANGLE_OFFSET = 0.0  # radians
 
+confirm = False
+x_lim = [0, 300]
+y_lim = [0, 300]
+#### Lane Initialization ####
+# while not confirm:
+# lane_ctrl_points, lane_width, closed_loop = layout_utils.load_lane_from_file(
+#     LAYOUT_FILE_PATH
+# )
+lane_ctrl_points = [Point(50, 150), Point(250, 150)]
+lane = Lane(control_points=lane_ctrl_points, lane_width=12, closed_loop=False)
+# graphics.plot_lane(lane)
+# graphics.show_without_pause()
+# confirm = input("Is the lane correct? (y/n): ").strip().lower() == "y"
+# if not confirm:
+#     file = "./layouts/"
+#     file += input("Enter new file name:") + ".txt"
+# else:
+#     x_lim = input("Enter x limits (min, max): ").split(",")
+#     y_lim = input("Enter y limits (min, max): ").split(",")
+
+
+# lane = Lane(
+#     control_points=[Point(50, 350), Point(350, 350)], lane_width=12.0, closed_loop=False
+# )
 
 #### Environment Initialization ####
-def init_environment(lane): # Tested as of 3/29/2025
-    """Initializes an environment object based on the given lane object."""
-    env = Environment(lane)
-    return env
-
+env = Environment(lane)
 
 #### Vehicle Initialization ####
-def init_vehicle(center_point, heading_point, speed): # Tested as of 3/29/2025
-    """Initializes a vehicle object based on the given center point, heading point and speed."""
-    vehicle = Vehicle()
-    vehicle.vehicle_setup(center_point=center_point, heading_point=heading_point, speed_mph=speed)
-    return vehicle
-
+vehicle = Vehicle()
 
 #### Sensor Array Initialization ####
-def init_sensor_array(num_sensors: int = 5, sensor_length: float = 10, sensor_angle_spread: float = math.pi / 2): # Tested as of 3/29/2025
-    """Initializes a sensor array object based on the given number of sensors, sensor length and angle spread."""
-    sensor_array = SensorArray(num_sensors=num_sensors, sensor_length=sensor_length, sensor_angle_spread=sensor_angle_spread)
-    return sensor_array
-
+sensor_array = SensorArray(
+    num_sensors=NUM_SENSORS,
+    sensor_length=SENSOR_LENGTH,
+    sensor_angle_spread=SENSOR_ANGLE_SPREAD,
+)
 
 #### Agent Initialization ####
-def init_agent(sensor_array: SensorArray):
-    agent = TestAgent(sensor_array)  # Placeholder for actual agent implementation
-    return agent
-
+# action_dim: int=2, max_accel=5.0, lr_actor=1e-4, lr_critic=1e-3, gamma=0.99
+ACTION_DIM = 2
+MAX_ACCEL = vehicle.max_acceleration_fps2
+LR_ACTOR = 1e-4
+LR_CRITIC = 1e-3
+GAMMA = 0.99
+obs_size = NUM_SENSORS + 2  # Number of sensors + 2 for vehicle heading and speed
+# agent = SummerAgent(
+#     sensor_array,
+#     obs_dim=obs_size,
+#     action_dim=ACTION_DIM,
+#     max_accel=MAX_ACCEL,
+#     lr_actor=LR_ACTOR,
+#     lr_critic=LR_CRITIC,
+#     gamma=GAMMA,
+# )  # Placeholder for actual agent implementation
+agent = PresentationAgent(sensor_array)
+# agent = NewAgent(sensor_array)
 
 #### Simulation Initialization ####
-def init_simulation(vehicle: Vehicle, env: Environment, agent, dt: float):
-    sim = Simulation(vehicle=vehicle, environment=env, agent=agent, dt=dt)
-    return sim
+sim = Simulation(vehicle=vehicle, environment=env, agent=agent, dt=TIME_STEP_SEC)
+sim.sim_reset(
+    longitude=INITIAL_LONGITUDE,
+    latitude=INITIAL_LATITUDE,
+    dir_angle_offset=INITIAL_DIR_ANGLE_OFFSET,
+    speed=INITIAL_SPEED_MPH,
+)
+
+carlos_logging.log_message("Simulation Initialized")
+
+
+def elapsed_time(start_time: float) -> float:
+    elapsed = time.time() - start_time
+    minutes = int(elapsed // 60)
+    seconds = int(elapsed % 60)
+    return f"{minutes}m {seconds}s"
 
 
 #### Sim Execution ####
-def execute_simulation(sim: Simulation):
-    sim.sim_step()
-    sim_status = sim.get_sim_status()
-    return sim_status
+def execute_simulation(
+    sim: Simulation, train: bool = True, render: bool = False
+) -> list[float]:
+    reward_log = []
+    step_count_log = []
+    start_time = time.time()
+    carlos_logging.log_message("Simulation Execution Started")
+
+    for episode in range(MAX_EPISODES):
+        sim.sim_random_reset()
+        # sim.sim_reset(
+        #     longitude=INITIAL_LONGITUDE,
+        #     latitude=INITIAL_LATITUDE,
+        #     dir_angle_offset=INITIAL_DIR_ANGLE_OFFSET,
+        #     speed=INITIAL_SPEED_MPH,
+        # )
+
+        total_reward = 0
+        done = False
+        steps = 0
+        speed = sim.vehicle.speed_mph
+
+        # state = sim.get_state()
+        while not done and steps < MAX_STEPS:
+            # Get action + step simulation
+            reward = sim.sim_step()
+
+            # Get next state
+            next_state = sim.get_state()
+
+            # Check status
+            _, in_lane, in_motion = sim.get_sim_status()
+            done = not in_lane or not in_motion
+
+            # Train agent
+            if train:
+                sim.agent.train_step(next_state, reward, done)
+
+            if render:
+                graphics.render_simulation(
+                    sim=sim,
+                )
+                graphics.show(
+                    title="CARLOS Execution Example",
+                    x_lim=x_lim,
+                    y_lim=y_lim,
+                )
+                # input()
+
+            # Update state
+            state = next_state
+            total_reward += reward
+            steps += 1
+
+            speed += sim.vehicle.speed_mph
+
+        avg_speed = speed / steps
+
+        # if (episode + 1) % 100 == 0:
+        #     sim.agent.save(tag=f"summer_agent_{episode+1}.pt")
+        #     carlos_logging.log_message(f"Model saved at episode {episode + 1}")
+
+        step_count_log.append(steps)
+        reward_log.append(total_reward)
+        carlos_logging.log_message(
+            f"[{elapsed_time(start_time)}] | Episode {episode+1}/{MAX_EPISODES} | "
+            f"Total Reward: {total_reward:.2f} | Steps: {steps} | "
+            f"Distance: {round(sim.vehicle.distance_travelled_ft, 3)} ft | Avg. Speed: {round(avg_speed, 2)} mph"
+        )
+
+    return reward_log, step_count_log
 
 
-def main():
-    vehicle = init_vehicle(Point(0, 0), Point(0, 1), 10.0)
-    lane = init_lane("./layouts/train_straight_layout_0.txt")
-    env = init_environment(lane)
-    sensor_array = init_sensor_array()
-    agent = init_agent(sensor_array)
-    sim = init_simulation(vehicle, env, agent, dt=0.1)
-    return sim
-    
-    
-def run_sim(sim: Simulation):
-    sim.sim_reset(longitude=0.0, latitude=0.5, dir_angle_offset=0.0, speed=25.0)
-    for i in range(20):
-        graphics.render_simulation(sim)
-        graphics.show()
-        sim.sim_step()
-    
-if __name__ == "__main__":
-    sim = main()
-    run_sim(sim)
-    
+def plot_rewards(reward_log, window=50):
+    avg_rewards = []
+    for i in range(len(reward_log)):
+        start = max(0, i - window + 1)
+        avg = sum(reward_log[start : i + 1]) / (i - start + 1)
+        avg_rewards.append(avg)
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(reward_log, label="Total Reward per Episode", alpha=0.3)
+    plt.plot(avg_rewards, label=f"Moving Avg (window={window})", linewidth=2)
+    plt.xlabel("Episode")
+    plt.ylabel("Reward")
+    plt.title("Training Reward Over Time")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
 
 
+print("training")
+while True:
+    reward_log, step_count_log = execute_simulation(sim=sim, train=False, render=True)
 
-    
-    
-    
+
+# print("done")
+# import numpy as np
+
+# plt.plot(np.arange(len(reward_log)), reward_log)
+# plt.show()
+# plt.plot(np.arange(len(step_count_log)), step_count_log)
+# plt.show()
+
+# # graphics.render_simulation(sim=sim)
+# # graphics.show()
+# reward_log, step_count_log = execute_simulation(sim=sim, train=False, render=True)
+# while True:
+#     sim.sim_step()
+#     graphics.show()
+
+
+# reward_log = execute_simulation(sim=sim, render=True)
+# carlos_logging.log_message("Simulation Executed")
+# plot_rewards(reward_log, window=50)
+# carlos_logging.log_message("Carlos App Finished")
+# input("Press Enter to begin test...")
+
+# while True:
+#     reward_log = execute_simulation(sim=sim, train=False, render=True)

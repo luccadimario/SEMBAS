@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 
 
 class Point:
@@ -35,10 +36,8 @@ class Point:
 
     def distanceTo(self, other: "Point") -> float:
         return (self - other).norm(p=2)
-    
-    def rotate_point_by_radians(
-        self, point: "Point", rotation_angle: float
-    ) -> "Point":
+
+    def rotate_point_by_radians(self, point: "Point", rotation_angle: float) -> "Point":
         """Returns the new point that is rotated around a center point by a given angle.
 
         Args:
@@ -50,7 +49,7 @@ class Point:
             Point: New heading of the vehicle
         """
         # clip angle to [-pi, pi]
-        rotation_angle = np.clip(rotation_angle, -np.pi, np.pi)
+        rotation_angle = np.clip(float(rotation_angle), -np.pi, np.pi)
 
         # Compute the direction vector from (x1, y1) to (x2, y2)
         x1, y1 = point.x, point.y
@@ -71,5 +70,3 @@ class Point:
         offset_y = y1 + new_dy
 
         return Point(offset_x, offset_y)
-    
-    

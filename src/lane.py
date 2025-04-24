@@ -2,8 +2,14 @@ from point import Point
 from scipy.interpolate import CubicSpline
 import numpy as np
 
+
 class Lane:
-    def __init__(self, control_points: list[Point], lane_width: float=12.0, closed_loop: bool = False):
+    def __init__(
+        self,
+        control_points: list[Point],
+        lane_width: float = 12.0,
+        closed_loop: bool = False,
+    ):
         """Represents a lane in an environment. Based on given control points, it creates a lane with a given width.
         The lane is represented as a series of splines through the control points. The lane is created based on the closed_loop parameter.
 
@@ -15,10 +21,15 @@ class Lane:
         self.lane_width = lane_width
         self.closed_loop = closed_loop
         self.lane_setup(control_points, lane_width, closed_loop)
-        
-    def lane_setup(self, control_points: list[Point], lane_width: float=None, closed_loop: bool=None):
+
+    def lane_setup(
+        self,
+        control_points: list[Point],
+        lane_width: float = None,
+        closed_loop: bool = None,
+    ):
         """Sets up the lane based on the given control points, lane width and closed loop parameter.
-        
+
         Args:
             control_points (list[Point]): List of Point object with x, y values to create spline through.
             lane_width (float, optional): Width (in feet) of the lane. Defaults to None.
@@ -29,40 +40,46 @@ class Lane:
             self.lane_width = lane_width
         if closed_loop is not None:
             self.closed_loop = closed_loop
-        
-        self.center_line, x_center, y_center = self.calculate_center(self.control_points)
+
+        self.center_line, x_center, y_center = self.calculate_center(
+            self.control_points
+        )
         self.left_edge, self.right_edge = self.calculate_edges(x_center, y_center)
-        
-    def calculate_center(self, control_points: list[Point]) -> tuple[list[Point], list[float], list[float]]:
+
+    def calculate_center(
+        self, control_points: list[Point]
+    ) -> tuple[list[Point], list[float], list[float]]:
         """Calculates the center line of the lane based on the given control points.
-        
+
         Args:
             control_points (list[Point]): List of Point object with x, y values to create spline through.
-        
+
         Returns:
-            tuple(list[Point], list[float], list[float]): 
+            tuple(list[Point], list[float], list[float]):
             - list[Point]: List of Point object representing the center line of the lane.
             - list[float], list[float]: Lists representing the x and y center values
         """
-        num_points = 500 # Number of points to sample along the spline
+        num_points = 500  # Number of points to sample along the spline
         self.x = np.array([p.x for p in control_points])
         self.y = np.array([p.y for p in control_points])
-        
+
         self.spline_x, self.spline_y, self.t = self.__calculate_xy_spline(
             self.x, self.y
         )
-        
+
         # Generate points along the spline path
         self.t_center = np.linspace(self.t.min(), self.t.max(), num_points)
         x_center = self.spline_x(self.t_center)
         y_center = self.spline_y(self.t_center)
         center = [Point(x, y) for x, y in zip(x_center, y_center)]
-        
+
         if self.closed_loop:
-            center.append(center[0]) # Appends the reference to the first point rather than creating a new point at the exact same spot
-        
+            center.append(
+                center[0]
+            )  # Appends the reference to the first point rather than creating a new point at the exact same spot
+
         return center, x_center, y_center
-    
+
     def __calculate_xy_spline(self, x_pts: list[float], y_pts: list[float]):
         """Calculates the x and y splines from the given x and y point values.
 
@@ -93,7 +110,7 @@ class Lane:
         spline_y = CubicSpline(t, y_pts, bc_type=bc_type)
 
         return spline_x, spline_y, t
-    
+
     def __calculate_slope_vectors(self):
         """Calculates the slope vectors to offset from the center line to created the lane edges.
 
@@ -115,27 +132,31 @@ class Lane:
         slope_vector_y = dx_dt * scale_factor  # Rotate by 90 degrees
 
         return slope_vector_x, slope_vector_y
-    
+
     def calculate_edges(self, x_center, y_center) -> tuple[list[Point], list[Point]]:
         """Calculates the left and right edges of the lane based on the center line and lane width.
         Edges are calculated by offsetting the center line points by half the lane width in the perpendicular direction.
         The perpendicular direction is determined by the tangent of the spline at each point.
         The left edge is offset to the left of the center line and the right edge is offset to the right.
-        
+
         Returns:
             tuple[list[Point], list[Point]]: Tuple of two lists of Point object representing the left and right edges of the lane.
         """
-        
+
         slope_vector_x, slope_vector_y = self.__calculate_slope_vectors()
 
         # # Calculate the right edge coordinates
         right_edge = self.calculate_edge_coordinates(
-            center_xy=(x_center, y_center), slope_vector_xy=(slope_vector_x, slope_vector_y), multiplier=-1
+            center_xy=(x_center, y_center),
+            slope_vector_xy=(slope_vector_x, slope_vector_y),
+            multiplier=-1,
         )
 
         # Calculate the left edge coordinates
         left_edge = self.calculate_edge_coordinates(
-            center_xy=(x_center, y_center), slope_vector_xy=(slope_vector_x, slope_vector_y), multiplier=1
+            center_xy=(x_center, y_center),
+            slope_vector_xy=(slope_vector_x, slope_vector_y),
+            multiplier=1,
         )
 
         # If closed, ensure the edges connect at both ends
@@ -143,17 +164,19 @@ class Lane:
             # Append the first point to the end of the edges
             right_edge = np.vstack((right_edge, right_edge[0]))
             left_edge = np.vstack((left_edge, left_edge[0]))
-            
+
         left_edge = [Point(x, y) for x, y in left_edge]
         right_edge = [Point(x, y) for x, y in right_edge]
         return left_edge, right_edge
-    
-    def calculate_edge_coordinates(self, center_xy, slope_vector_xy, multiplier) -> tuple[float, float]:
+
+    def calculate_edge_coordinates(
+        self, center_xy, slope_vector_xy, multiplier
+    ) -> tuple[float, float]:
         """Calculates the coordinates of the lane at a given parameter t.
-        
+
         Args:
             t (float): Parameter value to calculate the coordinates at.
-        
+
         Returns:
             tuple[float, float]: Tuple of x and y coordinates at the given parameter t.
         """
@@ -161,6 +184,3 @@ class Lane:
         y = center_xy[1] + slope_vector_xy[1] * multiplier
         edge = np.array([x, y]).T
         return edge
-    
-    
-        
