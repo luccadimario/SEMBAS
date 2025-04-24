@@ -98,7 +98,7 @@ class Simulation:
 
         state = self.get_state()
 
-        action = self.agent.decide(state)[0]
+        action = self.agent.decide(state)
         steering, acceleration = action[0], action[1]
 
         self.vehicle.update_position(steering, acceleration, self.dt)
