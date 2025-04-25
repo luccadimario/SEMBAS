@@ -202,13 +202,45 @@ Run the application from the src folder:
 python companion_app.py
 ```
 
-The following image will appear:
+## Layout Creator
+Create environemnt layouts using the ```Go to Layout Creator``` button in the GUI of the companion application. 
+
+Below is what you should see:
 
 
-## Layout Creator Application
-Create environemnt layouts using the ```Go to Layout Creator``` button in the GUI of hte companion application.
+When adding contorl points:
+
+
+When plotting the lane:
+
+
+When selecting a point:
+
+You can then remove the blue, highlighted point using the remove button or move the point by clicking and dragging it.
+
+## Layout Selector
+View, select, and group layout filenames into one file with the ```Go to Layout Selector``` button.
+
+Click the ```Save Files``` button for the filenames to be saved to a text file. To use batch testing, 
+use the ```layout_unils.load_lane_from_file()``` method as described above when initializing lanes, in a loop to create all lanes.
+
+Example viewing a layout:
+
+
+## Vehicle/Sensor Editor
+Use the ```Go to Vehicle Editor``` to view vehicle placement and sensor parameters on different layouts.
+
+STEP 1: Select a layout
+
+Select a layout before you do anything else. Once you do, the lane will be displayed with a vehicle with sensors. Use the sliders and entry boxes to modify the vehicle and sensors.
+
+Example:
 
 
 
+## Help Page
+The ```Help``` button goes into details on what each button, checkbox, slider, and entry box does and what each part of the GUI is for. It also includes file formatting for layouts, vehicles, and layout groups.
+
+Example help option:
 
 
