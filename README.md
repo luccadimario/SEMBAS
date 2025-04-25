@@ -25,7 +25,7 @@ py test_app.py
 ```
 The output will be in the console and several plots will be displayed. 
 
-See [Output from test_app.pdf](./Output from test app.pdf) for what is displayed and in what order. If you get to "App Test: All tests PASSED" then it means everything is working how it should.
+See ![Output from test_app.pdf](Outputfromtestapp.pdf) for what is displayed and in what order. If you get to "App Test: All tests PASSED" then it means everything is working how it should.
 
 ## Testing CARLOS Execution
 Run the "carlos_app_pres_agent.py" from the src folder with the following command:
@@ -206,41 +206,45 @@ python companion_app.py
 Create environemnt layouts using the ```Go to Layout Creator``` button in the GUI of the companion application. 
 
 Below is what you should see:
-![alt text](./README Images/Layout Creator - Blank.png)
+![alt text](Images/LayoutCreatorBlank.png)
 
 When adding contorl points:
-![alt text](./README Images/Layout Creator - Add control points.png)
+![alt text](Images/AddControlPoints.png)
 
 When plotting the lane:
-![alt text](./README Images/Layout Creator - Plotting lane.png)
+![alt text](Images/LayoutCreatorPlottingLane.png)
 
 When selecting a point:
-![alt text](./README Images/Layout Creator - Select point.png)
+![alt text](Images/SelectPoint.png)
 You can then remove the blue, highlighted point using the remove button or move the point by clicking and dragging it.
 
 ## Layout Selector
 View, select, and group layout filenames into one file with the ```Go to Layout Selector``` button.
 
+![alt text](Images/LayoutSelector.png)
+
 Click the ```Save Files``` button for the filenames to be saved to a text file. To use batch testing, 
 use the ```layout_unils.load_lane_from_file()``` method as described above when initializing lanes, in a loop to create all lanes.
 
 Example viewing a layout:
-
+![alt text](Images/LayoutSelectorViewLayout.png)
 
 ## Vehicle/Sensor Editor
 Use the ```Go to Vehicle Editor``` to view vehicle placement and sensor parameters on different layouts.
+
+![alt text](Images/VehicleEditor.png)
 
 STEP 1: Select a layout
 
 Select a layout before you do anything else. Once you do, the lane will be displayed with a vehicle with sensors. Use the sliders and entry boxes to modify the vehicle and sensors.
 
 Example:
-
+![alt text](Images/ModifyingVehicleParameters.png)
 
 
 ## Help Page
 The ```Help``` button goes into details on what each button, checkbox, slider, and entry box does and what each part of the GUI is for. It also includes file formatting for layouts, vehicles, and layout groups.
 
 Example help option:
-
+![alt text](Images/HelpPageExample.png)
 
