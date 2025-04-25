@@ -11,7 +11,7 @@ These instructions are in linux.
 
 To install the dependencies, run the following command from the main SEMBAS-RL folder:
 ```
-pip install -r requirements
+pip install -r requirements.txt
 ```
 These need to have installed with no issues for the test of the steps.
 
@@ -119,9 +119,96 @@ sim = Simulation(vehicle, environment, agent, dt)
 ```
 Note: ```dt``` is the time step and is defaulted to ```0.1```
 
-# Implementing your own agent
-
 # Implementing your own CARLOS Application/Execution script
+For initializing the individual components, see the section above this.
+
+With the simualtion, you can:
+- Randomly place the vehicle back in the environment
+- Provide parameters to reset the vehicle in the environment
+- Execute a single simulation step
+- Retireve the simulation status
+
+## Vehicle Resets -> located in simulation.py
+Both resets use:
+- ```longitude: float``` -> Placement of vehicle down the lane, 0.0 is start of the lane, 1.0 is the end of the lane
+- ```latitude: float``` -> Placement of vehicle side to side in the lane, 0.0 is the left edge, 1.0 is the right edge
+- ```dir_angle_offset: float``` -> Heading angle offset from teh direction of the lane at the long/lat placement, in radians from -pi to pi
+- ```speed: float``` -> Speed of the vehicle in miles per hour
+
+The vehicle center point is set to the longitude/latitude placement of the vehicle. The vehicle heading is based on the direction angle offset and speed is set to the speed.
+
+### Random Reset -> ```sim_random_reset(speed_range: list[float] = [10.0, 75.0])```
+The ```speed_range``` is the range for the speed to be randomized in. 
+- ```longitude``` is from 0.0 to 1.0
+- ```latitude``` is from 0.25 to 0.75
+- ```direction_angle_offset``` is from -pi/4 to pi/4
+
+Execute the random reset using:
+```python
+simulation.sim_random_reset()
+```
+
+### Chosen Reset -> ```sim_reset(longitude: float, latitude: float, dir_angle_offset: float, speed: float)```
+The reset follows the process as described in the paper. 
+
+Execute using:
+```python
+simulation.sim_reset(longitude, latitude, dir_angle_offset, speed)
+```
+
+## Execute simulation step -> ```sim_step()```
+Executes a single time step over ```dt``` following steps:
+1. Updates the sensors based on the vehicle's position and heading.
+2. Gets the current state of the simulation.
+3. Gets the action from the agent based on the current state.
+4. Updates the vehicle's position based on the action.
+5. Updates the sensors based on the vehicle's position and heading.
+6. Updates the simulation status.
+7. Gets reward from agent and returns it.
+
+Execute with the following line:
+```python
+simulation.sim_step()
+```
+
+## Display the simulation -> using graphics.py
+_**Make sure to import graphics.py from the src folder:**_
+```python
+import graphics
+```
+
+To plot the simulation wiht the lane, vehicle, and sensors:
+```python
+# sim is a Simulation object
+graphics.render_simulation(sim)
+```
+
+There are two ways to display the simulation:
+1. Static display that shows the simulation in a single state until you close the plot:
+```python
+graphics.show_without_pause()
+```
+
+2. Displaying the current simulation state for 0.001 seconds:
+```python
+graphics.show()
+```
 
 # CARLOS Companion Layout Creator Application (CLC)
-The CLC allows you to 
+The CLC allows you to create, modify, and view the environment layouts. You are also able to view vehicle placements and group environment layouts.
+
+Run the application from the src folder:
+```python
+python companion_app.py
+```
+
+The following image will appear:
+
+
+## Layout Creator Application
+Create environemnt layouts using the ```Go to Layout Creator``` button in the GUI of hte companion application.
+
+
+
+
+
