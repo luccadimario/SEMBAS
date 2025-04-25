@@ -25,7 +25,7 @@ py test_app.py
 ```
 The output will be in the console and several plots will be displayed. 
 
-See "Output from test_app.pdf" for what is displayed and in what order. If you get to "App Test: All tests PASSED" then it means everything is working how it should.
+See [Output from test_app.pdf](./Output from test app.pdf) for what is displayed and in what order. If you get to "App Test: All tests PASSED" then it means everything is working how it should.
 
 ## Testing CARLOS Execution
 Run the "carlos_app_pres_agent.py" from the src folder with the following command:
@@ -205,8 +205,7 @@ python companion_app.py
 ## Layout Creator
 Create environemnt layouts using the ```Go to Layout Creator``` button in the GUI of the companion application. 
 
-Below is what you should see:
-
+[Below is what you should see:](./README Images/Layout Creator - Blank.png)
 
 When adding contorl points:
 
