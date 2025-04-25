@@ -205,16 +205,17 @@ python companion_app.py
 ## Layout Creator
 Create environemnt layouts using the ```Go to Layout Creator``` button in the GUI of the companion application. 
 
-[Below is what you should see:](./README Images/Layout Creator - Blank.png)
+Below is what you should see:
+![alt text](./README Images/Layout Creator - Blank.png)
 
 When adding contorl points:
-
+![alt text](./README Images/Layout Creator - Add control points.png)
 
 When plotting the lane:
-
+![alt text](./README Images/Layout Creator - Plotting lane.png)
 
 When selecting a point:
-
+![alt text](./README Images/Layout Creator - Select point.png)
 You can then remove the blue, highlighted point using the remove button or move the point by clicking and dragging it.
 
 ## Layout Selector
