@@ -248,3 +248,27 @@ The ```Help``` button goes into details on what each button, checkbox, slider, a
 Example help option:
 ![alt text](Images/HelpPageExample.png)
 
+## Citations
+For SEMBAS:
+```tex
+@inproceedings{Thompson2023Strategy,
+  author={Thompson, John M. and Goss, Quentin and Akbaş, Akba\c{s}, Mustafa \.{I}lhan},
+  booktitle={2023 IEEE International Conference on Mobility, Operations, Services and Technologies (MOST)}, 
+  title={A Strategy for Boundary Adherence and Exploration in Black-Box Testing of Autonomous Vehicles}, 
+  year={2023},
+  pages={193-201},
+  doi={10.1109/MOST57249.2023.00028}
+}
+```
+
+For CARLoS:
+```tex
+@inproceedings{Summer2025CARloS,
+  author={Summer, AnnaMaria and Thompson, John M. and Akba\c{s}, Mustafa \.{I}lhan},
+  booktitle={2025 IEEE World Forum on Public Safety Technology (WF-PST)}, 
+  title={CARLoS: Customizable Autonomy Research Low-fidelity Simulator for Safety Testing of Agents}, 
+  year={2025},
+  pages={},
+  doi={}
+}
+```
