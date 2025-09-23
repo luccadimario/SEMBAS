@@ -1,5 +1,7 @@
 # SEMBAS-RL
-Applying SEMBAS to training Reinforcement Learning algorithms.
+This repository includes:
+1) CARLoS, a low-fidelity, lightweight simulator for the safety testing of ML-based AV agents
+2) [SEMBAS](https://ieeexplore.ieee.org/abstract/document/10210870) applied to Reinforcement Learning agent training in CARLoS.
 
 
 # Setting up CARLOS:
