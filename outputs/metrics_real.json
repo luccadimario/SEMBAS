@@ -1,0 +1,20 @@
+{
+  "hausdorff": 0.16559322286382422,
+  "hausdorff_A_to_B": 0.009844867804270525,
+  "hausdorff_B_to_A": 0.16559322286382422,
+  "chamfer": 0.03436206013945136,
+  "boundary_sampling_efficiency_pct": 15.486725663716813,
+  "near_boundary_failure_prob": 0.5876190476190476,
+  "boundary_drift": {
+    "chamfer_drift": 0.1756364625443629,
+    "hausdorff_drift": 0.4868293831863206,
+    "mean_displacement": 0.14183839798874764
+  },
+  "coverage": {
+    "coverage_pct": 0.619533527696793,
+    "cells_covered": 17,
+    "total_cells": 2744,
+    "samples_used": 35,
+    "coverage_efficiency": 48.57142857142857
+  }
+}

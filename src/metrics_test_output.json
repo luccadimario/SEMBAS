@@ -1,0 +1,8 @@
+{
+  "hausdorff_distance": 0.11843561159334383,
+  "chamfer_distance": 0.059194711227413155,
+  "boundary_sampling_efficiency": 500.0,
+  "near_boundary_failure_probability": 0.436,
+  "boundary_drift_chamfer": 0.08683195743202898,
+  "coverage_efficiency": 69.75
+}
