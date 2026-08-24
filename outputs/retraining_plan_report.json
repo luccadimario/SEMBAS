@@ -1,0 +1,404 @@
+{
+  "source_file": "boundary_ppo_stage3_hard_282k.json",
+  "baseline_reference": {
+    "pass_rates": {
+      "stage1_easy_50k": 0.333,
+      "stage2_med_131k": 0.377,
+      "stage2_med_181k": 0.405,
+      "stage3_hard_232k": 0.409,
+      "stage3_hard_282k": 0.403
+    },
+    "speed_ceiling_mph": {
+      "stage1": 17.7,
+      "stage2_plus": 20.1
+    },
+    "hausdorff": 0.0097,
+    "chamfer": 0.0173,
+    "bse": 0.0062,
+    "near_boundary_fail_prob": 0.816
+  },
+  "failure_region_analysis": {
+    "n_boundary": 35,
+    "n_pass": 91,
+    "n_fail": 135,
+    "ceiling_mph": 20.068227496061972,
+    "naive_bins": [
+      {
+        "speed_mph_lo": 10.0,
+        "speed_mph_hi": 16.5,
+        "n_pass": 74,
+        "n_fail": 75,
+        "fail_rate": 0.5033557046979866
+      },
+      {
+        "speed_mph_lo": 16.5,
+        "speed_mph_hi": 23.0,
+        "n_pass": 17,
+        "n_fail": 40,
+        "fail_rate": 0.7017543859649122
+      },
+      {
+        "speed_mph_lo": 23.0,
+        "speed_mph_hi": 29.5,
+        "n_pass": 0,
+        "n_fail": 6,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 29.5,
+        "speed_mph_hi": 36.0,
+        "n_pass": 0,
+        "n_fail": 5,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 36.0,
+        "speed_mph_hi": 42.5,
+        "n_pass": 0,
+        "n_fail": 4,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 42.5,
+        "speed_mph_hi": 49.0,
+        "n_pass": 0,
+        "n_fail": 1,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 49.0,
+        "speed_mph_hi": 55.5,
+        "n_pass": 0,
+        "n_fail": 1,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 55.5,
+        "speed_mph_hi": 62.0,
+        "n_pass": 0,
+        "n_fail": 1,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 62.0,
+        "speed_mph_hi": 68.5,
+        "n_pass": 0,
+        "n_fail": 1,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 68.5,
+        "speed_mph_hi": 75.0,
+        "n_pass": 0,
+        "n_fail": 1,
+        "fail_rate": 1.0
+      }
+    ],
+    "naive_transition": {
+      "speed_mph_lo": 10.0,
+      "speed_mph_hi": 16.5,
+      "n_pass": 74,
+      "n_fail": 75,
+      "fail_rate": 0.5033557046979866
+    },
+    "n_compound_fail": 24,
+    "refined_bins": [
+      {
+        "speed_mph_lo": 10.0,
+        "speed_mph_hi": 16.5,
+        "n_pass": 74,
+        "n_fail": 60,
+        "fail_rate": 0.44776119402985076
+      },
+      {
+        "speed_mph_lo": 16.5,
+        "speed_mph_hi": 23.0,
+        "n_pass": 17,
+        "n_fail": 34,
+        "fail_rate": 0.6666666666666666
+      },
+      {
+        "speed_mph_lo": 23.0,
+        "speed_mph_hi": 29.5,
+        "n_pass": 0,
+        "n_fail": 4,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 29.5,
+        "speed_mph_hi": 36.0,
+        "n_pass": 0,
+        "n_fail": 4,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 36.0,
+        "speed_mph_hi": 42.5,
+        "n_pass": 0,
+        "n_fail": 4,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 42.5,
+        "speed_mph_hi": 49.0,
+        "n_pass": 0,
+        "n_fail": 1,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 49.0,
+        "speed_mph_hi": 55.5,
+        "n_pass": 0,
+        "n_fail": 1,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 55.5,
+        "speed_mph_hi": 62.0,
+        "n_pass": 0,
+        "n_fail": 1,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 62.0,
+        "speed_mph_hi": 68.5,
+        "n_pass": 0,
+        "n_fail": 1,
+        "fail_rate": 1.0
+      },
+      {
+        "speed_mph_lo": 68.5,
+        "speed_mph_hi": 75.0,
+        "n_pass": 0,
+        "n_fail": 1,
+        "fail_rate": 1.0
+      }
+    ],
+    "refined_transition": {
+      "speed_mph_lo": 16.5,
+      "speed_mph_hi": 23.0,
+      "n_pass": 17,
+      "n_fail": 34,
+      "fail_rate": 0.6666666666666666
+    },
+    "speed_threshold_mph": 16.5,
+    "near_ceiling_points": [
+      {
+        "lane_width_ft": 13.79,
+        "num_obstacles": 4,
+        "speed_mph": 19.78
+      },
+      {
+        "lane_width_ft": 13.97,
+        "num_obstacles": 4,
+        "speed_mph": 18.17
+      },
+      {
+        "lane_width_ft": 13.67,
+        "num_obstacles": 5,
+        "speed_mph": 20.07
+      }
+    ],
+    "n_low_speed_fail": 75,
+    "low_speed_fail_clusters": [
+      {
+        "n_points": 49,
+        "centroid": {
+          "lane_width_ft": 11.47,
+          "num_obstacles": 5,
+          "speed_mph": 12.6
+        }
+      },
+      {
+        "n_points": 20,
+        "centroid": {
+          "lane_width_ft": 11.74,
+          "num_obstacles": 9,
+          "speed_mph": 13.46
+        }
+      },
+      {
+        "n_points": 5,
+        "centroid": {
+          "lane_width_ft": 13.21,
+          "num_obstacles": 7,
+          "speed_mph": 15.51
+        }
+      },
+      {
+        "n_points": 1,
+        "centroid": {
+          "lane_width_ft": 14.0,
+          "num_obstacles": 10,
+          "speed_mph": 10.97
+        }
+      }
+    ],
+    "near_boundary_fail_prob": 0.8148148148148148,
+    "near_boundary_fail_count_r15": 110,
+    "coverage_pct": 12.770726960617711
+  },
+  "proposals": [
+    {
+      "id": "P1",
+      "name": "Speed Ceiling Extension",
+      "goal": "Push the pass speed ceiling from 20.1 mph to at least 28 mph.",
+      "mechanism": "Progressive speed-increase training: add a Stage 4 curriculum after stage3_hard_282k.",
+      "training_phase": "Stage 4 (post stage3_hard_282k)",
+      "scenario_mix": {
+        "targeted_speed_18_28mph_pct": 60,
+        "normal_distribution_pct": 40
+      },
+      "scenario_range": {
+        "lane_width_ft": [
+          10,
+          14
+        ],
+        "num_obstacles": [
+          4,
+          10
+        ],
+        "speed_mph": [
+          18,
+          30
+        ]
+      },
+      "simulation": {
+        "n_boundary_points_shifted": 3,
+        "shift_applied_mph": 8.0,
+        "expected_hausdorff_from_baseline": 0.1231,
+        "expected_chamfer_from_baseline": 0.0202,
+        "baseline_coverage_pct": 12.77,
+        "expected_coverage_pct": 23.17,
+        "coverage_delta_pct": 10.4,
+        "expected_new_speed_ceiling_mph": 28.1
+      },
+      "stop_criterion": "Pass rate in the 18-28 mph band >= 0.50"
+    },
+    {
+      "id": "P2",
+      "name": "Near-Boundary Consolidation",
+      "goal": "Reduce near_boundary_fail_prob from 0.816 to below 0.65.",
+      "mechanism": "Oversample scenarios in the epsilon-neighborhood of the current 35 boundary points.",
+      "scenario_mix": {
+        "near_boundary_pct": 40,
+        "normal_distribution_pct": 60
+      },
+      "scenario_range": {
+        "speed_mph": [
+          17,
+          23
+        ],
+        "lane_width_ft": [
+          10,
+          14
+        ],
+        "num_obstacles": [
+          4,
+          10
+        ]
+      },
+      "simulation": {
+        "baseline_near_boundary_fail_prob": 0.8148,
+        "n_near_boundary_fail_r015": 110,
+        "n_total_fail": 135,
+        "expected_prob_at_40pct_mix": 0.7253,
+        "mix_rate_needed_for_target_0_65": 0.578,
+        "note": "A 40% near-boundary training mix is expected to reduce near_boundary_fail_prob from 0.815 to ~0.725 in one retraining cycle. Hitting the <0.65 target in a single cycle requires a ~58% mix rate or two successive Stage-4/5 retraining cycles at 40%."
+      },
+      "stop_criterion": "near_boundary_fail_prob < 0.65 (may require 2 retraining cycles at 40% mix)"
+    },
+    {
+      "id": "P3",
+      "name": "Compound Difficulty Hardening",
+      "goal": "Fix rare compound failures (narrow lane + many obstacles + any speed).",
+      "mechanism": "Targeted adversarial training on the narrow-lane/high-obstacle corner of the domain.",
+      "scenario_mix": {
+        "adversarial_pct": 20,
+        "normal_distribution_pct": 80
+      },
+      "scenario_range": {
+        "lane_width_ft": [
+          10,
+          11.5
+        ],
+        "num_obstacles": [
+          8,
+          10
+        ],
+        "speed_mph": [
+          10,
+          25
+        ]
+      },
+      "volume_additional_steps": 30000,
+      "simulation": {
+        "current_zone_fail_count": 6,
+        "current_zone_pass_count": 0,
+        "current_zone_local_fail_rate": 1.0,
+        "assumed_relative_reduction_from_adversarial_training": 0.5,
+        "projected_zone_fail_count": 3.0
+      },
+      "stop_criterion": "Local fail rate in the compound zone reduced by >= 50% relative to current"
+    }
+  ],
+  "prioritization": [
+    {
+      "id": "P1",
+      "safety_impact": 9,
+      "safety_reason": "Directly targets the dominant, primary failure mode (speed-driven transition at ~20mph accounts for the bulk of the boundary).",
+      "feasibility": 6,
+      "feasibility_reason": "Requires a new Stage 4 training phase and a widened scenario range; moderate additional training volume.",
+      "measurability": 9,
+      "measurability_reason": "Clear pass-rate-in-band criterion (18-28mph), directly re-checkable with a single follow-up SEMBAS scan.",
+      "total_score": 8.1
+    },
+    {
+      "id": "P2",
+      "safety_impact": 7,
+      "safety_reason": "Reduces fragility of the existing boundary (near_boundary_fail_prob) without changing the operating envelope.",
+      "feasibility": 8,
+      "feasibility_reason": "Reuses the existing scenario range at a narrower speed band; cheaper than extending the ceiling.",
+      "measurability": 8,
+      "measurability_reason": "near_boundary_fail_prob is already tracked; may need 2 scan cycles to confirm the full target is met.",
+      "total_score": 7.6
+    },
+    {
+      "id": "P3",
+      "safety_impact": 5,
+      "safety_reason": "Fixes a rare, narrow compound-failure corner; low overall query volume affected (6 of 135 current fails).",
+      "feasibility": 7,
+      "feasibility_reason": "Small, well-bounded scenario range and modest 30k-step adversarial budget.",
+      "measurability": 6,
+      "measurability_reason": "Rare-event zone: a single follow-up scan may not sample enough compound-zone points to confirm improvement statistically.",
+      "total_score": 5.9
+    }
+  ],
+  "top_recommendation": "P1",
+  "baseline_vs_planner": [
+    {
+      "id": "P1",
+      "name": "Speed Ceiling Extension",
+      "targeted_domain_fraction_pct": 18.46,
+      "efficiency_gain_x": 5.4,
+      "baseline_approach": "continue Stage 3 curriculum: uniform re-sampling across the full domain (lane_width 10-14ft, obstacles 4-10, speed 10-75mph)",
+      "planner_approach": "targeted sampling in {'lane_width_ft': [10, 14], 'num_obstacles': [4, 10], 'speed_mph': [18, 30]}"
+    },
+    {
+      "id": "P2",
+      "name": "Near-Boundary Consolidation",
+      "targeted_domain_fraction_pct": 9.23,
+      "efficiency_gain_x": 10.8,
+      "baseline_approach": "continue Stage 3 curriculum: uniform re-sampling across the full domain (lane_width 10-14ft, obstacles 4-10, speed 10-75mph)",
+      "planner_approach": "targeted sampling in {'speed_mph': [17, 23], 'lane_width_ft': [10, 14], 'num_obstacles': [4, 10]}"
+    },
+    {
+      "id": "P3",
+      "name": "Compound Difficulty Hardening",
+      "targeted_domain_fraction_pct": 2.88,
+      "efficiency_gain_x": 34.7,
+      "baseline_approach": "continue Stage 3 curriculum: uniform re-sampling across the full domain (lane_width 10-14ft, obstacles 4-10, speed 10-75mph)",
+      "planner_approach": "targeted sampling in {'lane_width_ft': [10, 11.5], 'num_obstacles': [8, 10], 'speed_mph': [10, 25]}"
+    }
+  ]
+}

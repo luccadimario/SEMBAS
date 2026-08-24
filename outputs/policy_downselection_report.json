@@ -1,0 +1,303 @@
+{
+  "gates": {
+    "G1_speed_ceiling": {
+      "desc": "Boundary speed ceiling >= 18.0 mph",
+      "justification": "18 mph is the minimum operational speed CARLoS must sustain up to the boundary of its safe envelope to be useful on the target course; a policy that only holds together below this speed is not deployable regardless of how well it scores on pass rate.",
+      "threshold": 18.0,
+      "compare": "gte",
+      "metric": "boundary_speed_ceiling"
+    },
+    "G2_pass_rate": {
+      "desc": "Pass rate >= 35% of sampled test space",
+      "justification": "35% is the pass rate of the weakest checkpoint that has historically been considered viable in this project; it is a floor, not a target, so it screens out policies that regressed rather than rewarding the single highest scorer.",
+      "threshold": 0.35,
+      "compare": "gte",
+      "metric": "pass_rate"
+    },
+    "G3_boundary_stability": {
+      "desc": "Boundary drift (std of boundary speed) <= 4.0 mph",
+      "justification": "A tight, consistent boundary speed (low std-dev across boundary points) means the failure envelope is predictable; a policy whose boundary speed swings widely is unsafe to certify at any single speed limit even if its mean/max look good.",
+      "threshold": 4.0,
+      "compare": "lte",
+      "metric": "boundary_drift"
+    },
+    "G4_near_boundary_safety": {
+      "desc": "Fraction of fail points within 0.15 (normalized) of the boundary <= 0.85",
+      "justification": "If almost all failures cluster immediately adjacent to the boundary, the safe margin is razor-thin and small perturbations (sensor noise, actuation delay) push the vehicle from pass to fail; capping this fraction ensures some fail points are safely far from the edge, i.e. the envelope has real margin rather than being a knife-edge.",
+      "threshold": 0.85,
+      "compare": "lte",
+      "metric": "near_boundary_fail_prob"
+    },
+    "G5_query_efficiency": {
+      "desc": "Query efficiency (boundary points / n_queries) >= 0.12",
+      "justification": "This checks that the boundary search actually found and resolved a reasonably dense boundary given its query budget; low efficiency means the scan under-sampled the boundary and the reported metrics for that checkpoint are statistically less trustworthy.",
+      "threshold": 0.12,
+      "compare": "gte",
+      "metric": "query_efficiency"
+    }
+  },
+  "checkpoints": {
+    "stage1_easy_50k": {
+      "metrics": {
+        "n_queries": 219,
+        "n_pass": 73,
+        "n_fail": 146,
+        "n_boundary": 35,
+        "pass_rate": 0.3333333333333333,
+        "boundary_speed_ceiling": 17.697895281931267,
+        "boundary_speed_mean": 13.143057558062907,
+        "boundary_drift": 1.8418016838336848,
+        "near_boundary_fail_prob": 0.7602739726027398,
+        "boundary_coverage": 0.06405648020538425,
+        "query_efficiency": 0.1598173515981735
+      },
+      "gates": {
+        "G1_speed_ceiling": {
+          "passed": false,
+          "value": 17.697895281931267,
+          "threshold": 18.0,
+          "compare": "gte"
+        },
+        "G2_pass_rate": {
+          "passed": false,
+          "value": 0.3333333333333333,
+          "threshold": 0.35,
+          "compare": "gte"
+        },
+        "G3_boundary_stability": {
+          "passed": true,
+          "value": 1.8418016838336848,
+          "threshold": 4.0,
+          "compare": "lte"
+        },
+        "G4_near_boundary_safety": {
+          "passed": true,
+          "value": 0.7602739726027398,
+          "threshold": 0.85,
+          "compare": "lte"
+        },
+        "G5_query_efficiency": {
+          "passed": true,
+          "value": 0.1598173515981735,
+          "threshold": 0.12,
+          "compare": "gte"
+        }
+      },
+      "gates_passed": 3,
+      "gates_total": 5,
+      "verdict": "ELIMINATE"
+    },
+    "stage2_med_131k": {
+      "metrics": {
+        "n_queries": 219,
+        "n_pass": 83,
+        "n_fail": 136,
+        "n_boundary": 35,
+        "pass_rate": 0.3789954337899543,
+        "boundary_speed_ceiling": 20.068227496061972,
+        "boundary_speed_mean": 14.684477941641493,
+        "boundary_drift": 2.6584055718006936,
+        "near_boundary_fail_prob": 0.8014705882352942,
+        "boundary_coverage": 0.08614232222729531,
+        "query_efficiency": 0.1598173515981735
+      },
+      "gates": {
+        "G1_speed_ceiling": {
+          "passed": true,
+          "value": 20.068227496061972,
+          "threshold": 18.0,
+          "compare": "gte"
+        },
+        "G2_pass_rate": {
+          "passed": true,
+          "value": 0.3789954337899543,
+          "threshold": 0.35,
+          "compare": "gte"
+        },
+        "G3_boundary_stability": {
+          "passed": true,
+          "value": 2.6584055718006936,
+          "threshold": 4.0,
+          "compare": "lte"
+        },
+        "G4_near_boundary_safety": {
+          "passed": true,
+          "value": 0.8014705882352942,
+          "threshold": 0.85,
+          "compare": "lte"
+        },
+        "G5_query_efficiency": {
+          "passed": true,
+          "value": 0.1598173515981735,
+          "threshold": 0.12,
+          "compare": "gte"
+        }
+      },
+      "gates_passed": 5,
+      "gates_total": 5,
+      "verdict": "ADVANCE"
+    },
+    "stage2_med_181k": {
+      "metrics": {
+        "n_queries": 226,
+        "n_pass": 89,
+        "n_fail": 137,
+        "n_boundary": 35,
+        "pass_rate": 0.3938053097345133,
+        "boundary_speed_ceiling": 20.068227496061972,
+        "boundary_speed_mean": 14.259887478205014,
+        "boundary_drift": 2.5778871696926764,
+        "near_boundary_fail_prob": 0.8175182481751825,
+        "boundary_coverage": 0.1284111591351405,
+        "query_efficiency": 0.15486725663716813
+      },
+      "gates": {
+        "G1_speed_ceiling": {
+          "passed": true,
+          "value": 20.068227496061972,
+          "threshold": 18.0,
+          "compare": "gte"
+        },
+        "G2_pass_rate": {
+          "passed": true,
+          "value": 0.3938053097345133,
+          "threshold": 0.35,
+          "compare": "gte"
+        },
+        "G3_boundary_stability": {
+          "passed": true,
+          "value": 2.5778871696926764,
+          "threshold": 4.0,
+          "compare": "lte"
+        },
+        "G4_near_boundary_safety": {
+          "passed": true,
+          "value": 0.8175182481751825,
+          "threshold": 0.85,
+          "compare": "lte"
+        },
+        "G5_query_efficiency": {
+          "passed": true,
+          "value": 0.15486725663716813,
+          "threshold": 0.12,
+          "compare": "gte"
+        }
+      },
+      "gates_passed": 5,
+      "gates_total": 5,
+      "verdict": "ADVANCE"
+    },
+    "stage3_hard_232k": {
+      "metrics": {
+        "n_queries": 226,
+        "n_pass": 90,
+        "n_fail": 136,
+        "n_boundary": 35,
+        "pass_rate": 0.39823008849557523,
+        "boundary_speed_ceiling": 20.068227496061972,
+        "boundary_speed_mean": 14.2964402819645,
+        "boundary_drift": 2.5539310338417063,
+        "near_boundary_fail_prob": 0.8161764705882353,
+        "boundary_coverage": 0.1278153880564237,
+        "query_efficiency": 0.15486725663716813
+      },
+      "gates": {
+        "G1_speed_ceiling": {
+          "passed": true,
+          "value": 20.068227496061972,
+          "threshold": 18.0,
+          "compare": "gte"
+        },
+        "G2_pass_rate": {
+          "passed": true,
+          "value": 0.39823008849557523,
+          "threshold": 0.35,
+          "compare": "gte"
+        },
+        "G3_boundary_stability": {
+          "passed": true,
+          "value": 2.5539310338417063,
+          "threshold": 4.0,
+          "compare": "lte"
+        },
+        "G4_near_boundary_safety": {
+          "passed": true,
+          "value": 0.8161764705882353,
+          "threshold": 0.85,
+          "compare": "lte"
+        },
+        "G5_query_efficiency": {
+          "passed": true,
+          "value": 0.15486725663716813,
+          "threshold": 0.12,
+          "compare": "gte"
+        }
+      },
+      "gates_passed": 5,
+      "gates_total": 5,
+      "verdict": "ADVANCE"
+    },
+    "stage3_hard_282k": {
+      "metrics": {
+        "n_queries": 226,
+        "n_pass": 91,
+        "n_fail": 135,
+        "n_boundary": 35,
+        "pass_rate": 0.4026548672566372,
+        "boundary_speed_ceiling": 20.068227496061972,
+        "boundary_speed_mean": 14.383796072030748,
+        "boundary_drift": 2.68992994357798,
+        "near_boundary_fail_prob": 0.8148148148148148,
+        "boundary_coverage": 0.12770726960617712,
+        "query_efficiency": 0.15486725663716813
+      },
+      "gates": {
+        "G1_speed_ceiling": {
+          "passed": true,
+          "value": 20.068227496061972,
+          "threshold": 18.0,
+          "compare": "gte"
+        },
+        "G2_pass_rate": {
+          "passed": true,
+          "value": 0.4026548672566372,
+          "threshold": 0.35,
+          "compare": "gte"
+        },
+        "G3_boundary_stability": {
+          "passed": true,
+          "value": 2.68992994357798,
+          "threshold": 4.0,
+          "compare": "lte"
+        },
+        "G4_near_boundary_safety": {
+          "passed": true,
+          "value": 0.8148148148148148,
+          "threshold": 0.85,
+          "compare": "lte"
+        },
+        "G5_query_efficiency": {
+          "passed": true,
+          "value": 0.15486725663716813,
+          "threshold": 0.12,
+          "compare": "gte"
+        }
+      },
+      "gates_passed": 5,
+      "gates_total": 5,
+      "verdict": "ADVANCE"
+    }
+  },
+  "naive_baseline_pick": "stage3_hard_282k",
+  "agent_advance": [
+    "stage2_med_131k",
+    "stage2_med_181k",
+    "stage3_hard_232k",
+    "stage3_hard_282k"
+  ],
+  "agent_conditional": [],
+  "agent_eliminate": [
+    "stage1_easy_50k"
+  ],
+  "agent_vs_naive_agree": true
+}

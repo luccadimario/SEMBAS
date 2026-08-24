@@ -1,0 +1,75 @@
+==============================================================================
+FAILURE-MECHANISM ANALYST -- SUMMARY REPORT
+==============================================================================
+
+Primary checkpoint analyzed: Stage3_Hard_282k
+
+------------------------------------------------------------------------------
+BASELINE (non-agentic)
+------------------------------------------------------------------------------
+  135 fail points exist, pass rate = 40.27%. Boundary is speed-constrained.
+  No failure taxonomy, no causal chains, no per-type breakdown.
+
+------------------------------------------------------------------------------
+AGENT OUTPUT -- Stage3_Hard_282k failure taxonomy
+------------------------------------------------------------------------------
+
+Type A -- Speed-Induced Failure
+  Count            : 42 (31.11% of failures)
+  Mean (raw units) : lane_width=12.56 ft, obstacles=6.98, speed=29.15 mph
+  Std  (normalized): [0.2224, 0.3583, 0.2049]
+  Mean dist -> nearest boundary point : 0.2343
+  Mean dist -> nearest pass point     : 0.231
+  Causal chain     : Speed exceeds the agent's reaction threshold (>17.8 mph) -> the agent cannot course-correct fast enough to avoid obstacles or hold the lane -> collision or lane departure occurs before the episode timeout.
+
+Type B -- Boundary Proximity Failure
+  Count            : 86 (63.7% of failures)
+  Mean (raw units) : lane_width=11.75 ft, obstacles=7.05, speed=13.92 mph
+  Std  (normalized): [0.1729, 0.3606, 0.0373]
+  Mean dist -> nearest boundary point : 0.0295
+  Mean dist -> nearest pass point     : 0.0316
+  Causal chain     : Speed is within the agent's controllable range, but the sampled scenario sits within 0.10 (normalized) of a known boundary point -> the agent is operating right at the edge of its competence envelope -> a small perturbation (obstacle placement, lane geometry) tips the episode from pass to fail.
+
+Type C -- Compound Deviation Failure
+  Count            : 0 (0.0% of failures)
+  Causal chain     : Speed is controllable, but lane width is near its minimum AND obstacle count is near its maximum simultaneously -> the agent faces two compounding difficulty factors at once (little lateral room + dense obstacle field) -> the two individually-survivable stressors combine into an unrecoverable situation.
+
+Type D -- Ambiguous / Unclassified
+  Count            : 7 (5.19% of failures)
+  Mean (raw units) : lane_width=12.04 ft, obstacles=7.12, speed=12.89 mph
+  Std  (normalized): [0.3166, 0.2507, 0.0354]
+  Mean dist -> nearest boundary point : 0.2109
+  Mean dist -> nearest pass point     : 0.1814
+  Causal chain     : None of the dominant failure geometries (speed, boundary proximity, compound lane/obstacle stress) explain the failure on their own -> the cause is likely a higher-order interaction between dimensions, or policy stochasticity/noise not captured by the 3 scan dimensions -> flagged for manual inspection rather than automatic attribution.
+
+------------------------------------------------------------------------------
+CROSS-CHECKPOINT TREND (training progression)
+------------------------------------------------------------------------------
+  Checkpoint              Fail     A     B     C     D     DVS
+  Stage1_Easy_50k          146    39    95     0    12   0.604
+  Stage2_Medium_131k       136    52    74     0    10   0.642
+  Stage2_Medium_181k       137    43    86     0     8   0.593
+  Stage3_Hard_232k         136    43    86     0     7   0.582
+  Stage3_Hard_282k         135    42    86     0     7   0.580
+
+  Type A share: 26.7% (Stage1_Easy_50k) -> 31.1% (Stage3_Hard_282k)  [INCREASED/FLAT]
+  Type B share: 65.1% (Stage1_Easy_50k) -> 63.7% (Stage3_Hard_282k)  [DECREASED/FLAT]
+
+  Finding: Type A (speed-induced) failures remain the dominant mechanism
+  across all checkpoints -- later-stage training has not materially shifted
+  the failure mix toward boundary-proximity or compound-deviation cases.
+
+------------------------------------------------------------------------------
+DIAGNOSTIC VALUE -- what the analyst adds over the baseline
+------------------------------------------------------------------------------
+  Baseline diagnostic value score (raw pass/fail only) : 0.000  (single undifferentiated class)
+  Agent diagnostic value score (Stage3_Hard_282k)       : 0.580  (normalized entropy of A/B/C/D mix, 1.0 = maximally informative)
+  Diagnostic value gain                                : 0.580
+
+  Baseline says: "141 fails, mostly at high speed."
+  Agent says: per-type counts + causal chain per type + cross-checkpoint
+  trend (is training fixing the *right* failure mode?) + specific,
+  actionable findings (e.g. which failures need lower speed limits vs.
+  which need better recovery behavior near the edge of the envelope).
+
+==============================================================================

@@ -1,0 +1,26 @@
+{
+  "stage4": {
+    "n_queries": 226,
+    "pass_rate": 0.4026548672566372,
+    "speed_ceiling_mph": 19.83408267057216,
+    "boundary_points": 35,
+    "pass_points": 91,
+    "fail_points": 135,
+    "near_boundary_fail_prob": 0.7481481481481481
+  },
+  "stage3": {
+    "n_queries": 226,
+    "pass_rate": 0.4026548672566372,
+    "speed_ceiling_mph": 19.83408267057216,
+    "boundary_points": 35,
+    "pass_points": 91,
+    "fail_points": 135,
+    "near_boundary_fail_prob": 0.7481481481481481
+  },
+  "comparison": {
+    "hausdorff_boundary_distance": 0.023725538760193617,
+    "chamfer_boundary_distance": 0.0013557450720110638,
+    "speed_ceiling_delta_mph": 0.0,
+    "pass_rate_delta": 0.0
+  }
+}

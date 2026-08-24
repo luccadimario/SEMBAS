@@ -16,7 +16,15 @@ Or manually from a WSL shell with rl_venv313 activated:
 
     export SDL_VIDEODRIVER=dummy
     export PYTHONPATH=/mnt/c/Users/lucca/Documents/CARLoS-Agents:$PYTHONPATH
-    python3 /mnt/c/Users/lucca/Documents/SEMBAS-RL/src/carlos_sembas_client.py
+    python3 /mnt/c/Users/lucca/Documents/SEMBAS-RL/src/carlos_sembas_client.py \
+        --checkpoint "C:\\Users\\lucca\\Documents\\CARLoS-Agents\\checkpoints\\ppo_Stage3_Hard_282272_steps.zip" \
+        --algo ppo
+
+CLI Arguments
+-------------
+  --checkpoint  Windows path to the .zip checkpoint (translated to /mnt/c/...
+                automatically). Default: ppo_Stage2_Medium_181920_steps.zip
+  --algo        RL algorithm class: ppo | ddpg | sac  (default: ppo)
 
 Scenario space (ndim=3)
 -----------------------
@@ -25,6 +33,7 @@ Scenario space (ndim=3)
   x[2] → initial_speed  = 10 + x[2] * 65   range [10, 75] mph
 """
 
+import argparse
 import os
 import struct
 import sys
@@ -46,18 +55,99 @@ if _here not in sys.path:
 
 from sembas_api import receive_request, send_response, setup_socket  # noqa: E402
 
-# ── Best available PPO Stage-3 Hard checkpoint ────────────────────────────────
-_CHECKPOINT = os.path.join(
-    _CARLOS_AGENTS, "checkpoints", "ppo_Stage2_Medium_181920_steps"
+_DEFAULT_CHECKPOINT = (
+    r"C:\Users\lucca\Documents\CARLoS-Agents\checkpoints"
+    r"\ppo_Stage2_Medium_181920_steps.zip"
 )
 
 NDIM = 3
 SEED = 42
 
+_ALGO_MAP = {"ppo": "PPO", "ddpg": "DDPG", "sac": "SAC"}
+
+
+def _win_to_wsl(path: str) -> str:
+    """Translate a Windows path (C:\\...) to its WSL /mnt/<drive>/... equivalent."""
+    if len(path) >= 2 and path[1] == ":":
+        drive = path[0].lower()
+        rest = path[2:].replace("\\", "/")
+        return f"/mnt/{drive}{rest}"
+    return path.replace("\\", "/")
+
+
+def _load_algo_class(name: str):
+    """Return the stable_baselines3 class for the given algo name."""
+    import importlib
+    cls_name = _ALGO_MAP.get(name.lower())
+    if cls_name is None:
+        raise ValueError(f"Unknown algo '{name}'. Choose from: {list(_ALGO_MAP)}")
+    return getattr(importlib.import_module("stable_baselines3"), cls_name)
+
 
 def main() -> None:
-    print(f"Loading ScenarioEvaluator: {_CHECKPOINT}")
-    evaluator = ScenarioEvaluator(_CHECKPOINT, seed=SEED)
+    parser = argparse.ArgumentParser(description="CARLoS SEMBAS client")
+    parser.add_argument(
+        "--checkpoint",
+        default=_DEFAULT_CHECKPOINT,
+        help=(
+            "Path to the .zip checkpoint. Windows paths (C:\\...) are translated "
+            "to /mnt/<drive>/... automatically. Default: ppo_Stage2_Medium_181920_steps.zip"
+        ),
+    )
+    parser.add_argument(
+        "--algo",
+        default="ppo",
+        choices=list(_ALGO_MAP),
+        help="RL algorithm used to load the checkpoint (default: ppo).",
+    )
+    parser.add_argument(
+        "--speed-aware",
+        action="store_true",
+        default=False,
+        help=(
+            "Wrap the env with SpeedAwareEnv (13D obs: 12 sensors + normalised speed). "
+            "Required for SAC checkpoints from train_sac_speed_obs.py. "
+            "Default: False (plain 12D env for PPO checkpoints)."
+        ),
+    )
+    parser.add_argument(
+        "--sps",
+        action="store_true",
+        default=False,
+        help=(
+            "Wrap the env with SpeedProportionalSteeringEnv at evaluation time. "
+            "Required for checkpoints trained with train_sps_ppo.py or ExpD/ExpE. "
+            "Default: False."
+        ),
+    )
+    parser.add_argument(
+        "--sensor-length",
+        type=float,
+        default=None,
+        metavar="FT",
+        help=(
+            "Override sensor range to FT feet and use normalised [0,1] obs with "
+            "speed appended (13D).  Required for ExpE checkpoints trained with "
+            "train_expe_extended_sensors.py (default sensor_length=300).  "
+            "When set, overrides --speed-aware.  Default: None (120 ft, raw obs)."
+        ),
+    )
+    args = parser.parse_args()
+
+    checkpoint_path = _win_to_wsl(args.checkpoint)
+    algo_cls = _load_algo_class(args.algo)
+
+    print(
+        f"Loading ScenarioEvaluator: {checkpoint_path} "
+        f"(algo={args.algo.upper()}, speed_aware={args.speed_aware}, "
+        f"sps={args.sps}, sensor_length={args.sensor_length})"
+    )
+    evaluator = ScenarioEvaluator(
+        checkpoint_path, seed=SEED, algo_class=algo_cls,
+        speed_aware=args.speed_aware,
+        sps=args.sps,
+        sensor_length_ft=args.sensor_length,
+    )
     print("Model loaded.")
 
     print("Connecting to SEMBAS server (127.0.0.1:2000)…")

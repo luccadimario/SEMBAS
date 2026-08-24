@@ -1,0 +1,53 @@
+====================================================================================================
+POLICY DOWN-SELECTION AGENT - SUMMARY REPORT
+====================================================================================================
+
+Safety gates applied (independent of raw pass-rate ranking):
+  G1_speed_ceiling: Boundary speed ceiling >= 18.0 mph  (boundary_speed_ceiling >= 18.0)
+      Why: 18 mph is the minimum operational speed CARLoS must sustain up to the boundary of its safe envelope to be useful on the target course; a policy that only holds together below this speed is not deployable regardless of how well it scores on pass rate.
+  G2_pass_rate: Pass rate >= 35% of sampled test space  (pass_rate >= 0.35)
+      Why: 35% is the pass rate of the weakest checkpoint that has historically been considered viable in this project; it is a floor, not a target, so it screens out policies that regressed rather than rewarding the single highest scorer.
+  G3_boundary_stability: Boundary drift (std of boundary speed) <= 4.0 mph  (boundary_drift <= 4.0)
+      Why: A tight, consistent boundary speed (low std-dev across boundary points) means the failure envelope is predictable; a policy whose boundary speed swings widely is unsafe to certify at any single speed limit even if its mean/max look good.
+  G4_near_boundary_safety: Fraction of fail points within 0.15 (normalized) of the boundary <= 0.85  (near_boundary_fail_prob <= 0.85)
+      Why: If almost all failures cluster immediately adjacent to the boundary, the safe margin is razor-thin and small perturbations (sensor noise, actuation delay) push the vehicle from pass to fail; capping this fraction ensures some fail points are safely far from the edge, i.e. the envelope has real margin rather than being a knife-edge.
+  G5_query_efficiency: Query efficiency (boundary points / n_queries) >= 0.12  (query_efficiency >= 0.12)
+      Why: This checks that the boundary search actually found and resolved a reasonably dense boundary given its query budget; low efficiency means the scan under-sampled the boundary and the reported metrics for that checkpoint are statistically less trustworthy.
+
+----------------------------------------------------------------------------------------------------
+PER-CHECKPOINT METRICS
+----------------------------------------------------------------------------------------------------
+Checkpoint            PassRate  SpeedCeil  SpeedMean   Drift  NearBFail  QueryEff
+stage1_easy_50k          33.3%      17.7m      13.1m    1.8m      76.0%     0.160
+stage2_med_131k          37.9%      20.1m      14.7m    2.7m      80.1%     0.160
+stage2_med_181k          39.4%      20.1m      14.3m    2.6m      81.8%     0.155
+stage3_hard_232k         39.8%      20.1m      14.3m    2.6m      81.6%     0.155
+stage3_hard_282k         40.3%      20.1m      14.4m    2.7m      81.5%     0.155
+
+----------------------------------------------------------------------------------------------------
+GATE PASS/FAIL TABLE  (P = pass, F = FAIL)
+----------------------------------------------------------------------------------------------------
+Checkpoint              G1    G2    G3    G4    G5   Score       Verdict
+stage1_easy_50k          F     F     P     P     P     3/5     ELIMINATE
+stage2_med_131k          P     P     P     P     P     5/5       ADVANCE
+stage2_med_181k          P     P     P     P     P     5/5       ADVANCE
+stage3_hard_232k         P     P     P     P     P     5/5       ADVANCE
+stage3_hard_282k         P     P     P     P     P     5/5       ADVANCE
+
+----------------------------------------------------------------------------------------------------
+BASELINE (non-agentic) vs AGENT VERDICT COMPARISON
+----------------------------------------------------------------------------------------------------
+Checkpoint             Baseline PassRate   Baseline MaxSpd   Agent Verdict
+stage1_easy_50k                    33.3%             17.7m       ELIMINATE
+stage2_med_131k                    37.9%             20.1m         ADVANCE
+stage2_med_181k                    39.4%             20.1m         ADVANCE
+stage3_hard_232k                   39.8%             20.1m         ADVANCE
+stage3_hard_282k                   40.3%             20.1m         ADVANCE
+
+Naive 'pick highest pass rate' would select: stage3_hard_282k
+Agent ADVANCE list:    ['stage2_med_131k', 'stage2_med_181k', 'stage3_hard_232k', 'stage3_hard_282k']
+Agent CONDITIONAL list: (none)
+Agent ELIMINATE list:  ['stage1_easy_50k']
+
+=> Agent AGREES with naive pass-rate ranking on this checkpoint set.
+====================================================================================================

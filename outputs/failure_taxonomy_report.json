@@ -1,0 +1,534 @@
+{
+  "thresholds": {
+    "speed_thresh_normalized": 0.12,
+    "boundary_proximity_normalized": 0.1,
+    "lane_min_thresh_normalized": 0.2,
+    "obstacle_max_thresh_normalized": 0.8
+  },
+  "checkpoints": {
+    "Stage1_Easy_50k": {
+      "n_queries": 219,
+      "n_boundary": 35,
+      "n_pass": 73,
+      "n_fail": 146,
+      "pass_rate_pct": 33.33,
+      "type_stats": {
+        "A": {
+          "type_label": "Speed-Induced Failure",
+          "count": 39,
+          "pct_of_failures": 26.71,
+          "mean_dims_normalized": [
+            0.6654,
+            0.45,
+            0.2995
+          ],
+          "std_dims_normalized": [
+            0.223,
+            0.3631,
+            0.2105
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 12.66,
+            "num_obstacles": 6.7,
+            "speed_mph": 29.47
+          },
+          "mean_dist_to_boundary": 0.2915,
+          "mean_dist_to_pass": 0.2954,
+          "causal_chain": "Speed exceeds the agent's reaction threshold (>17.8 mph) -> the agent cannot course-correct fast enough to avoid obstacles or hold the lane -> collision or lane departure occurs before the episode timeout."
+        },
+        "B": {
+          "type_label": "Boundary Proximity Failure",
+          "count": 95,
+          "pct_of_failures": 65.07,
+          "mean_dims_normalized": [
+            0.6379,
+            0.6704,
+            0.0538
+          ],
+          "std_dims_normalized": [
+            0.1749,
+            0.4024,
+            0.0309
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 12.55,
+            "num_obstacles": 8.02,
+            "speed_mph": 13.5
+          },
+          "mean_dist_to_boundary": 0.0268,
+          "mean_dist_to_pass": 0.0311,
+          "causal_chain": "Speed is within the agent's controllable range, but the sampled scenario sits within 0.10 (normalized) of a known boundary point -> the agent is operating right at the edge of its competence envelope -> a small perturbation (obstacle placement, lane geometry) tips the episode from pass to fail."
+        },
+        "C": {
+          "type_label": "Compound Deviation Failure",
+          "count": 0,
+          "pct_of_failures": 0.0,
+          "mean_dims_normalized": [
+            null,
+            null,
+            null
+          ],
+          "std_dims_normalized": [
+            null,
+            null,
+            null
+          ],
+          "mean_dims_raw": [
+            null,
+            null,
+            null
+          ],
+          "mean_dist_to_boundary": null,
+          "mean_dist_to_pass": null,
+          "causal_chain": "Speed is controllable, but lane width is near its minimum AND obstacle count is near its maximum simultaneously -> the agent faces two compounding difficulty factors at once (little lateral room + dense obstacle field) -> the two individually-survivable stressors combine into an unrecoverable situation."
+        },
+        "D": {
+          "type_label": "Ambiguous / Unclassified",
+          "count": 12,
+          "pct_of_failures": 8.22,
+          "mean_dims_normalized": [
+            0.5925,
+            0.5189,
+            0.0265
+          ],
+          "std_dims_normalized": [
+            0.3199,
+            0.3061,
+            0.026
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 12.37,
+            "num_obstacles": 7.11,
+            "speed_mph": 11.72
+          },
+          "mean_dist_to_boundary": 0.2855,
+          "mean_dist_to_pass": 0.2897,
+          "causal_chain": "None of the dominant failure geometries (speed, boundary proximity, compound lane/obstacle stress) explain the failure on their own -> the cause is likely a higher-order interaction between dimensions, or policy stochasticity/noise not captured by the 3 scan dimensions -> flagged for manual inspection rather than automatic attribution."
+        }
+      },
+      "diagnostic_value_score": 0.6042
+    },
+    "Stage2_Medium_131k": {
+      "n_queries": 219,
+      "n_boundary": 35,
+      "n_pass": 83,
+      "n_fail": 136,
+      "pass_rate_pct": 37.9,
+      "type_stats": {
+        "A": {
+          "type_label": "Speed-Induced Failure",
+          "count": 52,
+          "pct_of_failures": 38.24,
+          "mean_dims_normalized": [
+            0.6507,
+            0.5498,
+            0.2602
+          ],
+          "std_dims_normalized": [
+            0.2064,
+            0.389,
+            0.1947
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 12.6,
+            "num_obstacles": 7.3,
+            "speed_mph": 26.91
+          },
+          "mean_dist_to_boundary": 0.1961,
+          "mean_dist_to_pass": 0.1991,
+          "causal_chain": "Speed exceeds the agent's reaction threshold (>17.8 mph) -> the agent cannot course-correct fast enough to avoid obstacles or hold the lane -> collision or lane departure occurs before the episode timeout."
+        },
+        "B": {
+          "type_label": "Boundary Proximity Failure",
+          "count": 74,
+          "pct_of_failures": 54.41,
+          "mean_dims_normalized": [
+            0.6707,
+            0.5709,
+            0.0582
+          ],
+          "std_dims_normalized": [
+            0.1769,
+            0.3998,
+            0.039
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 12.68,
+            "num_obstacles": 7.43,
+            "speed_mph": 13.78
+          },
+          "mean_dist_to_boundary": 0.0266,
+          "mean_dist_to_pass": 0.0311,
+          "causal_chain": "Speed is within the agent's controllable range, but the sampled scenario sits within 0.10 (normalized) of a known boundary point -> the agent is operating right at the edge of its competence envelope -> a small perturbation (obstacle placement, lane geometry) tips the episode from pass to fail."
+        },
+        "C": {
+          "type_label": "Compound Deviation Failure",
+          "count": 0,
+          "pct_of_failures": 0.0,
+          "mean_dims_normalized": [
+            null,
+            null,
+            null
+          ],
+          "std_dims_normalized": [
+            null,
+            null,
+            null
+          ],
+          "mean_dims_raw": [
+            null,
+            null,
+            null
+          ],
+          "mean_dist_to_boundary": null,
+          "mean_dist_to_pass": null,
+          "causal_chain": "Speed is controllable, but lane width is near its minimum AND obstacle count is near its maximum simultaneously -> the agent faces two compounding difficulty factors at once (little lateral room + dense obstacle field) -> the two individually-survivable stressors combine into an unrecoverable situation."
+        },
+        "D": {
+          "type_label": "Ambiguous / Unclassified",
+          "count": 10,
+          "pct_of_failures": 7.35,
+          "mean_dims_normalized": [
+            0.611,
+            0.4977,
+            0.0273
+          ],
+          "std_dims_normalized": [
+            0.3475,
+            0.3266,
+            0.0284
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 12.44,
+            "num_obstacles": 6.99,
+            "speed_mph": 11.77
+          },
+          "mean_dist_to_boundary": 0.2631,
+          "mean_dist_to_pass": 0.2637,
+          "causal_chain": "None of the dominant failure geometries (speed, boundary proximity, compound lane/obstacle stress) explain the failure on their own -> the cause is likely a higher-order interaction between dimensions, or policy stochasticity/noise not captured by the 3 scan dimensions -> flagged for manual inspection rather than automatic attribution."
+        }
+      },
+      "diagnostic_value_score": 0.6425
+    },
+    "Stage2_Medium_181k": {
+      "n_queries": 226,
+      "n_boundary": 35,
+      "n_pass": 89,
+      "n_fail": 137,
+      "pass_rate_pct": 39.38,
+      "type_stats": {
+        "A": {
+          "type_label": "Speed-Induced Failure",
+          "count": 43,
+          "pct_of_failures": 31.39,
+          "mean_dims_normalized": [
+            0.6479,
+            0.4863,
+            0.2891
+          ],
+          "std_dims_normalized": [
+            0.2268,
+            0.3611,
+            0.2052
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 12.59,
+            "num_obstacles": 6.92,
+            "speed_mph": 28.79
+          },
+          "mean_dist_to_boundary": 0.2311,
+          "mean_dist_to_pass": 0.2277,
+          "causal_chain": "Speed exceeds the agent's reaction threshold (>17.8 mph) -> the agent cannot course-correct fast enough to avoid obstacles or hold the lane -> collision or lane departure occurs before the episode timeout."
+        },
+        "B": {
+          "type_label": "Boundary Proximity Failure",
+          "count": 86,
+          "pct_of_failures": 62.77,
+          "mean_dims_normalized": [
+            0.4434,
+            0.5003,
+            0.0599
+          ],
+          "std_dims_normalized": [
+            0.1698,
+            0.3679,
+            0.0372
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 11.77,
+            "num_obstacles": 7.0,
+            "speed_mph": 13.89
+          },
+          "mean_dist_to_boundary": 0.029,
+          "mean_dist_to_pass": 0.031,
+          "causal_chain": "Speed is within the agent's controllable range, but the sampled scenario sits within 0.10 (normalized) of a known boundary point -> the agent is operating right at the edge of its competence envelope -> a small perturbation (obstacle placement, lane geometry) tips the episode from pass to fail."
+        },
+        "C": {
+          "type_label": "Compound Deviation Failure",
+          "count": 0,
+          "pct_of_failures": 0.0,
+          "mean_dims_normalized": [
+            null,
+            null,
+            null
+          ],
+          "std_dims_normalized": [
+            null,
+            null,
+            null
+          ],
+          "mean_dims_raw": [
+            null,
+            null,
+            null
+          ],
+          "mean_dist_to_boundary": null,
+          "mean_dist_to_pass": null,
+          "causal_chain": "Speed is controllable, but lane width is near its minimum AND obstacle count is near its maximum simultaneously -> the agent faces two compounding difficulty factors at once (little lateral room + dense obstacle field) -> the two individually-survivable stressors combine into an unrecoverable situation."
+        },
+        "D": {
+          "type_label": "Ambiguous / Unclassified",
+          "count": 8,
+          "pct_of_failures": 5.84,
+          "mean_dims_normalized": [
+            0.5019,
+            0.4762,
+            0.0486
+          ],
+          "std_dims_normalized": [
+            0.2967,
+            0.2626,
+            0.0349
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 12.01,
+            "num_obstacles": 6.86,
+            "speed_mph": 13.16
+          },
+          "mean_dist_to_boundary": 0.1981,
+          "mean_dist_to_pass": 0.1727,
+          "causal_chain": "None of the dominant failure geometries (speed, boundary proximity, compound lane/obstacle stress) explain the failure on their own -> the cause is likely a higher-order interaction between dimensions, or policy stochasticity/noise not captured by the 3 scan dimensions -> flagged for manual inspection rather than automatic attribution."
+        }
+      },
+      "diagnostic_value_score": 0.5929
+    },
+    "Stage3_Hard_232k": {
+      "n_queries": 226,
+      "n_boundary": 35,
+      "n_pass": 90,
+      "n_fail": 136,
+      "pass_rate_pct": 39.82,
+      "type_stats": {
+        "A": {
+          "type_label": "Speed-Induced Failure",
+          "count": 43,
+          "pct_of_failures": 31.62,
+          "mean_dims_normalized": [
+            0.6479,
+            0.4863,
+            0.2891
+          ],
+          "std_dims_normalized": [
+            0.2268,
+            0.3611,
+            0.2052
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 12.59,
+            "num_obstacles": 6.92,
+            "speed_mph": 28.79
+          },
+          "mean_dist_to_boundary": 0.2305,
+          "mean_dist_to_pass": 0.2272,
+          "causal_chain": "Speed exceeds the agent's reaction threshold (>17.8 mph) -> the agent cannot course-correct fast enough to avoid obstacles or hold the lane -> collision or lane departure occurs before the episode timeout."
+        },
+        "B": {
+          "type_label": "Boundary Proximity Failure",
+          "count": 86,
+          "pct_of_failures": 63.24,
+          "mean_dims_normalized": [
+            0.4386,
+            0.5079,
+            0.0603
+          ],
+          "std_dims_normalized": [
+            0.1729,
+            0.3606,
+            0.0373
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 11.75,
+            "num_obstacles": 7.05,
+            "speed_mph": 13.92
+          },
+          "mean_dist_to_boundary": 0.0295,
+          "mean_dist_to_pass": 0.0316,
+          "causal_chain": "Speed is within the agent's controllable range, but the sampled scenario sits within 0.10 (normalized) of a known boundary point -> the agent is operating right at the edge of its competence envelope -> a small perturbation (obstacle placement, lane geometry) tips the episode from pass to fail."
+        },
+        "C": {
+          "type_label": "Compound Deviation Failure",
+          "count": 0,
+          "pct_of_failures": 0.0,
+          "mean_dims_normalized": [
+            null,
+            null,
+            null
+          ],
+          "std_dims_normalized": [
+            null,
+            null,
+            null
+          ],
+          "mean_dims_raw": [
+            null,
+            null,
+            null
+          ],
+          "mean_dist_to_boundary": null,
+          "mean_dist_to_pass": null,
+          "causal_chain": "Speed is controllable, but lane width is near its minimum AND obstacle count is near its maximum simultaneously -> the agent faces two compounding difficulty factors at once (little lateral room + dense obstacle field) -> the two individually-survivable stressors combine into an unrecoverable situation."
+        },
+        "D": {
+          "type_label": "Ambiguous / Unclassified",
+          "count": 7,
+          "pct_of_failures": 5.15,
+          "mean_dims_normalized": [
+            0.5088,
+            0.5208,
+            0.0444
+          ],
+          "std_dims_normalized": [
+            0.3166,
+            0.2507,
+            0.0354
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 12.04,
+            "num_obstacles": 7.12,
+            "speed_mph": 12.89
+          },
+          "mean_dist_to_boundary": 0.2109,
+          "mean_dist_to_pass": 0.1814,
+          "causal_chain": "None of the dominant failure geometries (speed, boundary proximity, compound lane/obstacle stress) explain the failure on their own -> the cause is likely a higher-order interaction between dimensions, or policy stochasticity/noise not captured by the 3 scan dimensions -> flagged for manual inspection rather than automatic attribution."
+        }
+      },
+      "diagnostic_value_score": 0.5818
+    },
+    "Stage3_Hard_282k": {
+      "n_queries": 226,
+      "n_boundary": 35,
+      "n_pass": 91,
+      "n_fail": 135,
+      "pass_rate_pct": 40.27,
+      "type_stats": {
+        "A": {
+          "type_label": "Speed-Induced Failure",
+          "count": 42,
+          "pct_of_failures": 31.11,
+          "mean_dims_normalized": [
+            0.6392,
+            0.4973,
+            0.2946
+          ],
+          "std_dims_normalized": [
+            0.2224,
+            0.3583,
+            0.2049
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 12.56,
+            "num_obstacles": 6.98,
+            "speed_mph": 29.15
+          },
+          "mean_dist_to_boundary": 0.2343,
+          "mean_dist_to_pass": 0.231,
+          "causal_chain": "Speed exceeds the agent's reaction threshold (>17.8 mph) -> the agent cannot course-correct fast enough to avoid obstacles or hold the lane -> collision or lane departure occurs before the episode timeout."
+        },
+        "B": {
+          "type_label": "Boundary Proximity Failure",
+          "count": 86,
+          "pct_of_failures": 63.7,
+          "mean_dims_normalized": [
+            0.4386,
+            0.5079,
+            0.0603
+          ],
+          "std_dims_normalized": [
+            0.1729,
+            0.3606,
+            0.0373
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 11.75,
+            "num_obstacles": 7.05,
+            "speed_mph": 13.92
+          },
+          "mean_dist_to_boundary": 0.0295,
+          "mean_dist_to_pass": 0.0316,
+          "causal_chain": "Speed is within the agent's controllable range, but the sampled scenario sits within 0.10 (normalized) of a known boundary point -> the agent is operating right at the edge of its competence envelope -> a small perturbation (obstacle placement, lane geometry) tips the episode from pass to fail."
+        },
+        "C": {
+          "type_label": "Compound Deviation Failure",
+          "count": 0,
+          "pct_of_failures": 0.0,
+          "mean_dims_normalized": [
+            null,
+            null,
+            null
+          ],
+          "std_dims_normalized": [
+            null,
+            null,
+            null
+          ],
+          "mean_dims_raw": [
+            null,
+            null,
+            null
+          ],
+          "mean_dist_to_boundary": null,
+          "mean_dist_to_pass": null,
+          "causal_chain": "Speed is controllable, but lane width is near its minimum AND obstacle count is near its maximum simultaneously -> the agent faces two compounding difficulty factors at once (little lateral room + dense obstacle field) -> the two individually-survivable stressors combine into an unrecoverable situation."
+        },
+        "D": {
+          "type_label": "Ambiguous / Unclassified",
+          "count": 7,
+          "pct_of_failures": 5.19,
+          "mean_dims_normalized": [
+            0.5088,
+            0.5208,
+            0.0444
+          ],
+          "std_dims_normalized": [
+            0.3166,
+            0.2507,
+            0.0354
+          ],
+          "mean_dims_raw": {
+            "lane_width_ft": 12.04,
+            "num_obstacles": 7.12,
+            "speed_mph": 12.89
+          },
+          "mean_dist_to_boundary": 0.2109,
+          "mean_dist_to_pass": 0.1814,
+          "causal_chain": "None of the dominant failure geometries (speed, boundary proximity, compound lane/obstacle stress) explain the failure on their own -> the cause is likely a higher-order interaction between dimensions, or policy stochasticity/noise not captured by the 3 scan dimensions -> flagged for manual inspection rather than automatic attribution."
+        }
+      },
+      "diagnostic_value_score": 0.5799
+    }
+  },
+  "baseline_comparison": {
+    "baseline": {
+      "description": "Non-agentic baseline: raw pass/fail counts only, no taxonomy.",
+      "fail_count": 135,
+      "pass_rate_pct": 40.27,
+      "known_insight": "boundary is speed-constrained (qualitative only)",
+      "diagnostic_value_score": 0.0
+    },
+    "agent": {
+      "diagnostic_value_score": 0.5799,
+      "types_identified": 4
+    },
+    "diagnostic_value_gain": 0.5799
+  }
+}

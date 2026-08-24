@@ -1,0 +1,85 @@
+====================================================================================================
+BOUNDARY-AWARE RETRAINING PLANNER - SUMMARY REPORT
+Production checkpoint analyzed: boundary_ppo_stage3_hard_282k.json
+====================================================================================================
+
+----------------------------------------------------------------------------------------------------
+1. FAILURE REGION ANALYSIS
+----------------------------------------------------------------------------------------------------
+Boundary points: 35   Pass: 91   Fail: 135
+Measured speed ceiling (max boundary speed): 20.1 mph
+
+Naive speed-only binning flips fail_rate>0.5 at bin [10.0, 16.5) mph (fail_rate=0.503) -- this bin is CONTAMINATED by compound low-speed failures.
+Compound fails detected (narrow lane <12ft AND obstacles >7): 24 of 135 total fails.
+Refined (compound-excluded) speed transition zone: [16.5, 23.0) mph (fail_rate=0.667, pass=17, fail=34) -- consistent with the measured ~20.1mph ceiling.
+=> True speed threshold used for downstream analysis: 16.5 mph
+
+Near-ceiling zone (boundary speed >= 90% of ceiling): 3 points
+    lane=13.79ft  obstacles=4  speed=19.78mph
+    lane=13.97ft  obstacles=4  speed=18.17mph
+    lane=13.67ft  obstacles=5  speed=20.07mph
+
+Secondary failure modes: 75 fails below 16.5mph, clustered into 4 clusters:
+    Cluster 1: n= 49  centroid: lane=11.47ft  obstacles=5  speed=12.6mph
+    Cluster 2: n= 20  centroid: lane=11.74ft  obstacles=9  speed=13.46mph
+    Cluster 3: n=  5  centroid: lane=13.21ft  obstacles=7  speed=15.51mph
+    Cluster 4: n=  1  centroid: lane=14.0ft  obstacles=10  speed=10.97mph
+
+Measured near_boundary_fail_prob (r=0.15): 0.8148  (baseline reference: 0.816)
+Measured boundary bbox coverage: 12.77%  (baseline reference: 12.84%)
+
+----------------------------------------------------------------------------------------------------
+2. CURRICULUM PROPOSALS
+----------------------------------------------------------------------------------------------------
+[P1] Speed Ceiling Extension
+    Goal: Push the pass speed ceiling from 20.1 mph to at least 28 mph.
+    Mechanism: Progressive speed-increase training: add a Stage 4 curriculum after stage3_hard_282k.
+    Scenario mix: {'targeted_speed_18_28mph_pct': 60, 'normal_distribution_pct': 40}
+    Scenario range: {'lane_width_ft': [10, 14], 'num_obstacles': [4, 10], 'speed_mph': [18, 30]}
+    Stop criterion: Pass rate in the 18-28 mph band >= 0.50
+    Simulated outcome: {"n_boundary_points_shifted": 3, "shift_applied_mph": 8.0, "expected_hausdorff_from_baseline": 0.1231, "expected_chamfer_from_baseline": 0.0202, "baseline_coverage_pct": 12.77, "expected_coverage_pct": 23.17, "coverage_delta_pct": 10.4, "expected_new_speed_ceiling_mph": 28.1}
+
+[P2] Near-Boundary Consolidation
+    Goal: Reduce near_boundary_fail_prob from 0.816 to below 0.65.
+    Mechanism: Oversample scenarios in the epsilon-neighborhood of the current 35 boundary points.
+    Scenario mix: {'near_boundary_pct': 40, 'normal_distribution_pct': 60}
+    Scenario range: {'speed_mph': [17, 23], 'lane_width_ft': [10, 14], 'num_obstacles': [4, 10]}
+    Stop criterion: near_boundary_fail_prob < 0.65 (may require 2 retraining cycles at 40% mix)
+    Simulated outcome: {"baseline_near_boundary_fail_prob": 0.8148, "n_near_boundary_fail_r015": 110, "n_total_fail": 135, "expected_prob_at_40pct_mix": 0.7253, "mix_rate_needed_for_target_0_65": 0.578, "note": "A 40% near-boundary training mix is expected to reduce near_boundary_fail_prob from 0.815 to ~0.725 in one retraining cycle. Hitting the <0.65 target in a single cycle requires a ~58% mix rate or two successive Stage-4/5 retraining cycles at 40%."}
+
+[P3] Compound Difficulty Hardening
+    Goal: Fix rare compound failures (narrow lane + many obstacles + any speed).
+    Mechanism: Targeted adversarial training on the narrow-lane/high-obstacle corner of the domain.
+    Scenario mix: {'adversarial_pct': 20, 'normal_distribution_pct': 80}
+    Scenario range: {'lane_width_ft': [10, 11.5], 'num_obstacles': [8, 10], 'speed_mph': [10, 25]}
+    Stop criterion: Local fail rate in the compound zone reduced by >= 50% relative to current
+    Simulated outcome: {"current_zone_fail_count": 6, "current_zone_pass_count": 0, "current_zone_local_fail_rate": 1.0, "assumed_relative_reduction_from_adversarial_training": 0.5, "projected_zone_fail_count": 3.0}
+
+----------------------------------------------------------------------------------------------------
+3. PRIORITIZATION MATRIX  (total = safety*0.4 + feasibility*0.3 + measurability*0.3)
+----------------------------------------------------------------------------------------------------
+Rank  ID   Name                              Safety  Feasib.  Measur.   Total
+1     P1   Speed Ceiling Extension                9        6        9    8.10
+2     P2   Near-Boundary Consolidation            7        8        8    7.60
+3     P3   Compound Difficulty Hardening          5        7        6    5.90
+
+TOP RECOMMENDATION: [P1] Speed Ceiling Extension  (score=8.10)
+
+----------------------------------------------------------------------------------------------------
+4. BASELINE (non-agentic) vs PLANNER-GUIDED CURRICULUM
+----------------------------------------------------------------------------------------------------
+Without the planner: 'continue Stage 3 curriculum' = uniform re-sampling across the full domain (lane 10-14ft, obstacles 4-10, speed 10-75mph).
+
+[P1] Speed Ceiling Extension
+    Targeted domain fraction: 18.46% of full scenario space
+    Efficiency gain vs uniform baseline sampling: ~5.4x fewer scenario evaluations needed to achieve the same sample density in the targeted failure region
+
+[P2] Near-Boundary Consolidation
+    Targeted domain fraction: 9.23% of full scenario space
+    Efficiency gain vs uniform baseline sampling: ~10.8x fewer scenario evaluations needed to achieve the same sample density in the targeted failure region
+
+[P3] Compound Difficulty Hardening
+    Targeted domain fraction: 2.88% of full scenario space
+    Efficiency gain vs uniform baseline sampling: ~34.7x fewer scenario evaluations needed to achieve the same sample density in the targeted failure region
+
+====================================================================================================

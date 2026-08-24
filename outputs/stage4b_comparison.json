@@ -1,0 +1,20 @@
+{
+  "stage3_baseline": {
+    "pass_rate": 0.4026548672566372,
+    "speed_ceiling_mph": 19.83408267057216,
+    "near_bnd_fail_prob": 0.7481481481481481,
+    "boundary_pts": 35
+  },
+  "stage4b_new": {
+    "pass_rate": 0.3879310344827586,
+    "speed_ceiling_mph": 19.83408267057216,
+    "near_bnd_fail_prob": 0.7605633802816901,
+    "boundary_pts": 35
+  },
+  "delta": {
+    "pass_rate": -0.014723832773878565,
+    "speed_ceiling_mph": 0.0
+  },
+  "hausdorff": 0.029413553837750236,
+  "chamfer": 0.006350791476581926
+}

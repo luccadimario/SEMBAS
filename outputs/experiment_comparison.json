@@ -1,0 +1,42 @@
+{
+  "Stage3_Baseline": {
+    "total_queries": 226,
+    "pass": 91,
+    "fail": 135,
+    "boundary": 35,
+    "pass_rate": 40.3,
+    "speed_ceiling_mph": 19.8,
+    "mean_pass_speed_mph": 13.4,
+    "near_bnd_fail_prob": 0.748
+  },
+  "ExpA_HighLR_Entropy": {
+    "total_queries": 226,
+    "pass": 92,
+    "fail": 134,
+    "boundary": 35,
+    "pass_rate": 40.7,
+    "speed_ceiling_mph": 19.8,
+    "mean_pass_speed_mph": 13.6,
+    "near_bnd_fail_prob": 0.746
+  },
+  "ExpB_Staged": {
+    "total_queries": 222,
+    "pass": 90,
+    "fail": 132,
+    "boundary": 35,
+    "pass_rate": 40.5,
+    "speed_ceiling_mph": 19.8,
+    "mean_pass_speed_mph": 13.5,
+    "near_bnd_fail_prob": 0.742
+  },
+  "ExpC_RewardShaping": {
+    "total_queries": 232,
+    "pass": 90,
+    "fail": 142,
+    "boundary": 35,
+    "pass_rate": 38.8,
+    "speed_ceiling_mph": 19.8,
+    "mean_pass_speed_mph": 13.7,
+    "near_bnd_fail_prob": 0.761
+  }
+}

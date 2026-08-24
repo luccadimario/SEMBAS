@@ -1,0 +1,46 @@
+{
+  "Stage3-282k (baseline)": {
+    "pass_rate": 40.27,
+    "speed_ceiling_mph": 19.83,
+    "n_boundary_points": 35
+  },
+  "Stage4-30k": {
+    "pass_rate": 40.27,
+    "speed_ceiling_mph": 19.83,
+    "n_boundary_points": 35
+  },
+  "Stage4b-150k": {
+    "pass_rate": 38.79,
+    "speed_ceiling_mph": 19.83,
+    "n_boundary_points": 35
+  },
+  "ExpA (lr+entropy)": {
+    "pass_rate": 40.71,
+    "speed_ceiling_mph": 19.83,
+    "n_boundary_points": 35
+  },
+  "ExpB (staged)": {
+    "pass_rate": 40.54,
+    "speed_ceiling_mph": 19.83,
+    "n_boundary_points": 35
+  },
+  "ExpC (reward)": {
+    "pass_rate": 38.79,
+    "speed_ceiling_mph": 19.83,
+    "n_boundary_points": 35
+  },
+  "SAC-500k": {
+    "pass_rate": 41.15,
+    "speed_ceiling_mph": 19.37,
+    "n_boundary_points": 35
+  },
+  "SPS-PPO-500k": {
+    "algorithm": "PPO+SPS",
+    "pass_rate_pct": 39.7,
+    "speed_ceiling_mph": 19.4,
+    "hausdorff_vs_baseline": 0.024,
+    "pass_above_20mph": 0,
+    "status": "NULL"
+  },
+  "_conclusion": "All 9 experiments: speed ceiling \u2264 19.8 mph, 0 pass points above 20 mph. Structural ODD boundary confirmed."
+}

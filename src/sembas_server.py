@@ -25,6 +25,7 @@ Algorithm:
 Run this BEFORE starting carlos_sembas_client.py (or use run_boundary_scan.sh).
 """
 
+import argparse
 import json
 import math
 import os
@@ -240,7 +241,7 @@ def phase3_walk(conn: socket.socket, state: ScanState) -> None:
 
 # ── Results ───────────────────────────────────────────────────────────────────
 
-def save_results(state: ScanState) -> None:
+def save_results(state: ScanState, output_file: str) -> None:
     out = {
         "ndim": NDIM,
         "dimensions": ["lane_width_ft", "num_obstacles", "speed_mph"],
@@ -254,7 +255,7 @@ def save_results(state: ScanState) -> None:
         "pass_points_normalized":     state.pass_pts,
         "fail_points_normalized":     state.fail_pts,
     }
-    out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), OUTPUT_FILE)
+    out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), output_file)
     with open(out_path, "w") as f:
         json.dump(out, f, indent=2)
     print(f"  Results → {out_path}")
@@ -263,6 +264,14 @@ def save_results(state: ScanState) -> None:
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 def run() -> None:
+    parser = argparse.ArgumentParser(description="SEMBAS adaptive boundary scanner")
+    parser.add_argument(
+        "--output",
+        default=OUTPUT_FILE,
+        help=f"Output JSON filename (saved alongside this script). Default: {OUTPUT_FILE}",
+    )
+    args = parser.parse_args()
+
     server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_sock.bind((HOST, PORT))
@@ -296,7 +305,7 @@ def run() -> None:
     print(f"  Total queries:   {state.n_queries}")
     print(f"  Boundary points: {len(state.boundary_pts)}")
     print(f"  Pass / Fail:     {len(state.pass_pts)} / {len(state.fail_pts)}")
-    save_results(state)
+    save_results(state, args.output)
 
 
 if __name__ == "__main__":
